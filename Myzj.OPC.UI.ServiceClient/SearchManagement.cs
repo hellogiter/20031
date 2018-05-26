@@ -1,0 +1,210 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using MYZJ.VIP.ServiceModel;
+using Myzj.MKMS.ServiceModel;
+using Myzj.OPC.UI.Model.SearchManagement;
+using Myzj.SearchEngine.ServiceModel;
+using Myzj.SearchEngine.ServiceModel.Base;
+
+namespace Myzj.OPC.UI.ServiceClient
+{
+    public class SearchManagementClient : BaseService
+    {
+        private SearchManagementClient()
+        {
+        }
+        private static readonly object Lockobj = new object();
+        private static SearchManagementClient _instance;
+        public static SearchManagementClient Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    lock (Lockobj)
+                    {
+                        if (_instance == null)
+                        {
+                            _instance = new SearchManagementClient();
+                        }
+                    }
+                }
+                return _instance;
+            }
+        }
+
+		#region 根据商品id查询商品搜索词及商品名称列表
+		/// <summary>
+        /// 商品搜索词列表
+        /// </summary>
+        /// <param name="search"></param>
+        /// <returns></returns>
+        public SearchManagementRefer QueryWebSearchManagement(SearchManagementRefer search)
+        {
+            var result = new SearchManagementRefer();
+            var req = new QueryWebSearchManagementRequest();
+
+            if (search.SearchDetail != null)
+            {
+				var productIds = search.SearchDetail.TempProductId;
+	            if (!string.IsNullOrEmpty(productIds))
+				{
+					string[] inputpids = productIds.IndexOf(',') > 0 ? productIds.Split(',').Distinct().ToArray() : new string[] { productIds };
+					int[] outputpids = Array.ConvertAll<string, int>(inputpids, delegate(string s)
+					{
+						var val = 0;
+						int.TryParse(s, out val);
+						return val;
+					});
+					req.ProductIds = outputpids.Where(c=>c>0).ToList();
+	            }
+            }
+            req.PageIndex = search.PageIndex;
+            req.PageSize = search.PageSize;
+			var res = MKMSClient.Send<QueryWebSearchManagementResponse>(req);
+			if (res.DoFlag && res.WebSearchManagementList.Any())
+			{
+				res.WebSearchManagementList.RemoveAll(c => string.IsNullOrEmpty(c.ProductName));
+                result.List =
+					Mapper.MappGereric<WebSearchManagement, SearchManagementDetail>(res.WebSearchManagementList);
+            }
+			result.SearchDetail = search.SearchDetail;
+            return result;
+        }
+        #endregion
+
+		/// <summary>
+		/// 如果先查询了商品有词，将词带到新页面
+		/// </summary>
+		/// <param name="pid"></param>
+		/// <returns></returns>
+		public SearchManCheckDetail QueryWebSearchManagementToAdd(string pid)
+		{
+			var result = new SearchManCheckDetail();
+			var req = new QueryWebSearchManagementEntity() { Pids = pid };
+			var res = MKMSClient.Send<QueryWebSearchManagementEntityResponse>(req);
+			if (res.DoFlag)
+			{
+				result.ProductIds = res.SearchManAddEntity.ProductIds;
+				result.KeyWords = res.SearchManAddEntity.KeyWords;
+			}
+			else
+			{
+				result.ProductIds = pid;
+			}
+			return result;
+		}
+
+		/// <summary>
+		/// 查询添加记录
+		/// </summary>
+		/// <param name="search"></param>
+		/// <returns></returns>
+		public SearchManagementRefer QueryWebSearchAddRecords(SearchManagementRefer search)
+		{
+			var result = new SearchManagementRefer();
+			var req = new QueryWebSearchAddRecordsRequest();
+
+			if (search.SearchManCheckDetail != null)
+			{
+				req.SearchManCheck = Mapper.Map<SearchManCheckDetail, SearchManCheck>(search.SearchManCheckDetail);
+			}
+			req.PageIndex = search.PageIndex;
+			req.PageSize = search.PageSize;
+
+			var res = MKMSClient.Send<QueryWebSearchAddRecordsResponse>(req);
+			if (res.DoFlag)
+			{
+				result.SearchList =
+					Mapper.MappGereric<SearchManCheck, SearchManCheckDetail>(res.SearchManCheckList);
+				result.Total = res.Total;
+
+				result.SearchManCheckDetail = search.SearchManCheckDetail;
+				result.PageIndex = search.PageIndex;
+				result.PageSize = search.PageSize;
+			}
+			else
+			{
+				result.ErrorMsg = res.DoResult;
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// 添加一条记录
+		/// </summary>
+		/// <param name="request"></param>
+		/// <returns></returns>
+	    public AddSearchManCheckResponse AddSearchManCheck(SearchManCheckDetail request)
+	    {
+		    var result = new AddSearchManCheckResponse();
+			var req = Mapper.Map<SearchManCheckDetail, AddSearchManCheckRequest>(request);
+			result = MKMSClient.Send<AddSearchManCheckResponse>(req);
+		    return result;
+	    }
+
+		/// <summary>
+		/// 商品搜索词小项是否被审核
+		/// </summary>
+		/// <param name="cid"></param>
+		/// <returns></returns>
+		public bool IsSearchItem(string cid)
+		{
+			var req = new IsAuditSearchItemRequest()
+			{
+				CheckId = cid
+			};
+			var res = MKMSClient.Send<IsAuditSearchItemResponse>(req);
+			return res.DoFlag;
+		}
+	
+		/// <summary>
+		/// 审核商品搜索词明细表
+		/// </summary>
+		/// <param name="cid"></param>
+		/// <returns></returns>
+		public SearchManagementRefer QueryWebSearchManagementItem(string cid)
+		{
+			var result = new SearchManagementRefer();
+			var req = new QueryWebSearchManagementItemRequest()
+			{
+				CheckId=cid
+			};
+			var res = MKMSClient.Send<QueryWebSearchManagementItemResponse>(req);
+			if (res.DoFlag)
+			{
+				result.SearchItemList = Mapper.MappGereric<Web_SearchManagementItem, SearchManagementItemDetail>(res.SearchItemList);
+			}
+			return result;
+		}
+
+		/// <summary>
+		/// 批量审核商品搜索词
+		/// </summary>
+		/// <param name="checkId"></param>
+		/// <param name="productIds">多个商品id</param>
+		/// <param name="refusedReason">拒绝理由</param>
+		/// <param name="lastoperator">更新人</param>
+		/// <param name="lastupdateTime">更新时间</param>
+		/// <returns></returns>
+		public AuditWebSearchManagementResponse AuditWebSearchManagement(string checkId, string productIds, string refusedReason, int lastoperator, DateTime lastupdateTime)
+		{
+			var result = new AuditWebSearchManagementResponse();
+			var req = new AuditWebSearchManagementRequest()
+			{
+				CheckId = checkId,
+				ProductIds = productIds,
+				RefusedReason = refusedReason,
+				UpdateBy = lastoperator,
+				UpdateDate = lastupdateTime
+			};
+			result = MKMSClient.Send<AuditWebSearchManagementResponse>(req);
+			return result;
+		}
+		
+	}
+}

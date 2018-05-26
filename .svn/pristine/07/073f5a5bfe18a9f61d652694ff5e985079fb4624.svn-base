@@ -1,0 +1,221 @@
+﻿@{
+    ViewBag.Title = "QueryDiscountCodeUser";
+}
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.BaseDiscountCodeConfig
+@using Myzj.OPC.UI.ServiceClient
+@model BaseRefer<DiscountCodeUserReq, DiscountCodeUserRes>
+<h2>查询优惠码</h2>
+
+
+<style>
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+    <div>
+        <table class="showDetailTable">
+            <tr>
+                <td>活动Key</td>
+                <td>
+                    @Html.TextBoxFor(m=>m.SearchDetail.ActivityKey)
+                </td>
+                <td>会员ID</td>
+                <td>
+                    @Html.TextBoxFor(m=>m.SearchDetail.UserId)
+                </td>
+            </tr>
+            <tr>
+                <td>优惠码</td>
+                <td>
+                    @Html.TextBoxFor(m=>m.SearchDetail.DiscountCode)
+                </td>
+                <td>使用状态</td>
+                <td>
+                    @{
+                      //使用状态  1 已使用 2 未使用 3 作废
+                        var list = new Dictionary<int, string>();
+                        list.Add(1, "已使用");
+                        list.Add(2, "未使用");
+                        list.Add(3, "作废");
+                       
+                    }
+                    @Html.DropDownListFor(m => m.SearchDetail.State, new KvSelectList(list),true)
+
+                </td>
+            </tr>
+             <tr class="tk-guanli">
+                <td class="tk-name">作废原因</td>
+                <td colspan="3">
+                    <textarea id="txtReason" placeholder="作废时必填,限100字符内"></textarea>
+                   
+                </td>
+               
+            </tr>
+        </table>
+    </div>
+    <div class="rowButton">
+        <input type="submit" id="btnSearch" value="查询" />
+         <input type="button" value="批量作废" id="btnCancel" onclick="CancelDiscountCode();" />
+    </div>
+    if (Model.List2 != null && Model.List2.Any())
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                      <th>
+                    <input type="checkbox" id="chkAll" /></th>
+                    <th>SysNo</th>
+                    <th>活动Key</th>
+                    <th>优惠码</th>
+                    <th>码转券次数</th>
+                    <th>会员ID</th>
+                    <th>发送时间</th>
+                    <th>发送来源</th>
+                    <th>发送描述</th>
+                    <th>发送人</th>
+                    <th>状态</th>
+                    <th>备注</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.List2)
+                {
+                    <tr>
+                        @if (item.IsEnable == true && item.ChangeCount<=0)
+                        {
+                               
+                            <td>
+                                <input type="checkbox" name="chkItem" value="@item.SysNo" />
+                            </td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+                        <td>@item.SysNo</td>
+                        <td>@item.ActivityKey</td>
+                        <td>@item.DiscountCode</td>
+                        <td>@item.ChangeCount</td>
+                        <td>@item.UserId</td>
+                        <td>@item.SendTime</td>
+                        <td>@item.SendSource</td>
+                        <td>@item.SendDescription</td>
+                        <td>@item.SendUserName</td>
+                        @if (item.IsEnable == true)
+                        {
+                            <td>启用</td>
+                        }
+                        else
+                        {
+                            <td style="color: red">作废</td>
+                        }
+                        <td>@item.Remark</td>
+                        
+                         @if (item.IsEnable == true && item.ChangeCount<=0)
+                        {
+                            <td>
+                                <a style="color: #191970; cursor: pointer" target="_blank" onclick="CancelDiscountCode(@item.SysNo, this); ">作废</a>
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                 <a style="color: #808080; cursor: pointer" target="_blank">作废</a>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    @Html.Partial("Pager", @Model)
+    }
+}
+
+<script type="text/javascript">
+    $(function () {
+        $("#SearchDetail_UserId").keyup(function () {
+            var tmptxt = $(this).val();
+            $(this).val(tmptxt.replace(/\D|^0/g, ''));
+        }).bind("paste", function () {
+            var tmptxt = $(this).val();
+            $(this).val(tmptxt.replace(/\D|^0/g, ''));
+        }).css("ime-mode", "disabled");
+
+        $("input[type=checkbox]").click(function () {
+            var id = $(this).attr("id");
+            if (id == "chkAll") {
+                if ($('#chkAll').prop('checked')) {
+                    $("input[type=checkbox]:checkbox").each(function () {
+                        this.checked = true;
+                    });
+                } else {
+                    $("input[type=checkbox]:checkbox").removeAttr("checked");
+                }
+            } else {
+                $("#chkAll").removeAttr("checked");
+            }
+        });
+    });
+
+    //批量作废 
+    function CancelDiscountCode(sysNo, obj) {
+        var strs = '';
+        if (sysNo != null) {
+            strs = sysNo;
+        }
+        else {
+            $("input[name=chkItem]:checked").each(function () {
+                if (strs) { strs += ','; }
+                strs += $(this).val();
+            });
+            if (strs.length < 1) {
+                alert("请选择作废项！");
+                return;
+            }
+        }
+        if ($.trim($("#txtReason").val()) == "") {
+            alert("请填写作废原因");
+            return;
+        }
+
+        if ($("#txtReason").val().length > 100) {
+            alert("请填写作废原因,100字符内");
+            return;
+        }
+
+        if (confirm("你确定作废吗？")) {
+            $.ajax({
+                type: "Post",
+                url: "/DiscountCodeManager/CancelDiscountCode",
+                data: "{sysNos:'" + strs + "',remarks:'" + $("#txtReason").val() + "'}",
+                contentType: "application/json;utf-8",
+                dataType: "json",
+                success: function (re) {
+                    alert(re.DoResult);
+                    if (re.DoFlag == true) {
+                        //window.location.href = window.location.href;
+                        location.reload();
+                    }
+
+                }
+            });
+        }
+    }
+
+</script>

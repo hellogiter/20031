@@ -1,0 +1,41 @@
+﻿
+@{
+    Layout = null;
+}
+@{
+    int rowindex = 0;
+} 
+
+@model Myzj.OPC.UI.Model.AdminCarriage.SeaWashesBuyCount
+    
+
+           <table class="resultTable" id="Plug_Configure">
+            <thead>
+                <tr>
+                     <th>操作</th>
+                    <th>供应商ID</th>
+                    <th>购买数量</th>
+                    <th>全邮费</th>
+                     <th>不全邮费</th>                  
+                    <th>优先级</th>                   
+                     
+                </tr>
+            </thead>
+            <tbody>
+               
+@foreach (var item in Model.SeaWashesBuyCountParams)
+{  
+    <tr>
+        <td><a   class="xiugai" href='javascript:modify(@rowindex);'>修改</a></td>
+        <td>@string.Join(",", @item.Suppliers)</td>
+      
+        <td>@item.BuyCount </td>
+        <td>@item.FullCarriage </td>
+        <td>@item.NoFullCarriage </td>
+        <td>@item.Priority</td>
+    </tr>
+    
+    rowindex++;
+}
+                 </tbody>
+                </table>      

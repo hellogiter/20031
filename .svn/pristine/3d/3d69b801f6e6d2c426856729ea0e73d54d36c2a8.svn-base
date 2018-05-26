@@ -1,0 +1,80 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.SpreadInfo
+@model Myzj.OPC.UI.Model.SpreadInfo.SpreadBaseRefer
+<h2>提交/注册数据统计列表</h2>
+@{
+    var reportRecord = (SpreadBaseRefer)ViewBag.SpreadBaseInfo;
+    reportRecord.PageSize = 10;
+    reportRecord.Fun = "loadList";
+    var roleInfo = Session["S_RoleInfo"] as SpreadUserRoleDetail;
+    var userInfo = Session["S_UserInfo"] as UserInfoDetail;
+}
+
+@using (Html.BeginForm("DrowldUnRegisterUser", "SpreadInfo", new { enctype = "multipart/form-data" }))
+{
+
+    if (roleInfo != null)
+    {
+        if (roleInfo.RoleLevel != null)
+        {
+            if (roleInfo.RoleLevel == AppEnum.RoleLevel.Administrator || roleInfo.RoleLevel == AppEnum.RoleLevel.Manager || roleInfo.RoleLevel == AppEnum.RoleLevel.Attribution)
+            {   
+            <table class="showDetailTable">
+                <tbody>
+                    <tr>
+                        <td>归属地:</td>
+                        <td>
+                            @Html.DropDownList("SearchDetail.RegionId", "--All--")
+                        </td>
+                        <td>推广点Id:</td>
+                        <td>@Html.TextBoxFor(m => m.SpreadId)</td>
+                    </tr>
+                    <tr>
+                        <td>开始时间:</td>
+                        <td>@Html.TextBoxFor(m => m.StartTime)</td>
+                        <td>结束时间:</td>
+                        <td>@Html.TextBoxFor(m => m.EndtTime)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="rowButton">
+                <input type="button" name="Query" id="Query" value="查询" onclick="loadList(1)" />
+            </div>
+    
+            <div>
+                <input type="submit" value="导出未注册用户信息" class="ExportExecl" />
+            </div>
+            }
+        }
+    }
+    
+    <div id="item">
+        @Html.Action("SpreadDataReportItem", "SpreadInfo", @reportRecord)
+    </div>
+}
+
+<script type="text/javascript">
+    //条件查询
+    function loadList(index) {
+        var model = {};
+        model.RegionId = $("#SearchDetail_RegionId").val();
+        model.SpreadId = $("#SpreadId").val();
+        model.StartTime = $("#StartTime").val();
+        model.EndtTime = $("#EndtTime").val();
+        model.Fun = "loadList";
+        model.PageIndex = index;
+        model.PageSize = '@reportRecord.PageSize';
+
+        $.ajax({
+            url: '@Url.Action("SpreadDataReportItem", "SpreadInfo")',
+            type: 'post',
+            dataType: 'html',
+            contentType: 'application/json',
+            data: JSON.stringify(model),
+            success: function (result) {
+                $("#item").html(result);
+            }
+        });
+    }
+</script>

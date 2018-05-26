@@ -1,0 +1,178 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.BaseCouponConfig
+@model Myzj.OPC.UI.Model.BaseCouponConfig.CouponAuditRefer
+<h2>优惠券审核</h2>
+<style>
+    .input-validation-error {
+        border: 1px solid #c0c0c0;
+        background-color: white;
+    }
+
+    .showDetailTable tbody tr.tk-guanli td {
+        width: 15%;
+    }
+
+        .showDetailTable tbody tr.tk-guanli td.tk-name {
+            width: 5%;
+            text-align: center;
+        }
+
+        .showDetailTable tbody tr.tk-guanli td input {
+            text-align: left;
+            width: 85%;
+        }
+
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+        <tbody>
+            <tr class="tk-guanli">
+                
+                <td class="tk-name">优惠券key:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.CouponKey)
+                </td>
+
+                <td class="tk-name">优惠券名称:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.CouponName)
+                </td>
+            </tr>
+            <tr class="tk-guanli">
+                <td class="tk-name">是否启用:</td>
+                <td>
+                    @{
+    var a = "";
+    var b = "";
+    var a1 = "";
+    var b1 = "";
+    if (Model.SearchDetail.IsEnable == true)
+    {
+        a = "selected='selected'";
+    }
+    if (Model.SearchDetail.IsEnable == false)
+    {
+        b = "selected='selected'";
+    }
+    if (Model.SearchDetail.IsDelete == true)
+    {
+        a1 = "selected='selected'";
+    }
+    if (Model.SearchDetail.IsDelete == false)
+    {
+        b1 = "selected='selected'";
+    }
+                    }
+                    <select id="SearchDetail_IsEnable" name="SearchDetail.IsEnable">
+                        <option value="">--ALL--</option>
+                        <option value="true" @a >启用</option>
+                        <option value="false" @b>已禁用</option>
+                    </select>
+                </td>
+                <td class="tk-name">是否有效:</td>
+                <td>
+                    <select class="input-validation-error" id="SearchDetail_IsDelete" name="SearchDetail.IsDelete">
+                        <option value="">--ALL--</option>
+                        <option value="false" @b1>有效</option>
+                        <option value="true" @a1>已删除</option>
+                    </select>
+                </td>
+                @*<td class="tk-name">审核状态:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.SearchDetail.AuditState, new KvSelectList(typeof(AppEnum.CouponAuditState).GetEnumList()), true)
+                </td>*@
+            </tr>
+        </tbody>
+    </table>
+    var success = @ViewData["SuccessMsg"];
+    if (null != success)
+    { 
+    <span style="color: green">@success</span>
+    }
+    var notice = @ViewData["ErrorMsg"];
+    if (null != notice)
+    {
+    <span style="color: red">@notice</span>
+    }
+    
+    <div class="rowButton">
+        <input type="submit" name="Query" id="Query" value="查询" />
+        <input type="button" name="Audit" id="Query" onclick="showAuditForm(0)" value="批量审核" />
+    </div>
+    
+    @Html.Partial("Item", @Model.List2)
+    
+    @Html.Partial("Pager", @Model)
+}
+<script type="text/javascript">
+    $(function () {
+
+        $("input[type=checkbox]").click(function () {//chkbox反选  
+            var id = $(this).attr("id");
+            if (id == "chkItem_0") {
+                if ($('#chkItem_0').prop('checked')) {
+                    $("input[type=checkbox]:checkbox").each(function () {
+                        this.checked = true;
+                    });
+                } else {
+                    $("input[type=checkbox]:checkbox").removeAttr("checked");
+                }
+            } else {
+                $("#chkItem_0").removeAttr("checked");
+            }
+        });
+
+    });
+
+    //审核
+    function showAuditForm(obj) {
+        var array = new Array();
+        var height = 400;
+        if (obj == 0) {//obj=0批量审核，否则单个审核
+            height = 200;
+            var cked = $("[name=item]:checked");
+            if (cked.length == 0) {
+                alert("请选择要审核的项！");
+                return false;
+            }
+            cked.each(function () {
+                array.push($(this).val());
+            });
+        } else {
+            array.push(obj);
+        }
+        var sysNos = array.join(",");
+      
+        dialog = new $.Zebra_Dialog("", {
+            'type': '', //- confirmation error information question warning
+            'modal': true,
+            'overlay_close': false,
+            'custom_class': 'dialog',
+            'overlay_opacity': 0.5,
+            'width': 500,
+            'height': height,
+            'title': '优惠券审核',
+            'buttons': false, //'buttons': ['确定', '取消'],
+            'onClose': function (caption) {
+                //
+            },
+            'source': {
+                //'ajax':{url:'url','cache':false}
+                'iframe': {
+                    'src': '/CouponAudit/Audit?Id=' + obj + '&sysNos=' + sysNos,
+                    'height': height,
+                    'frameborder': 0,
+                    'scrolling': 'yes'
+                }
+            },
+        });
+        // return true;
+    }
+</script>

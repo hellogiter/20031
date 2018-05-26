@@ -1,0 +1,28 @@
+﻿@model Myzj.OPC.UI.Model.QueryOrderBySearch
+@{
+    var orderReses = Model.QueryOrderBySearchInners;
+    if (orderReses != null && orderReses.Any())
+    {
+    <div class="resultDiv">
+
+        <table class="resultTable">
+            <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" name="chAll" /></th>
+                    <th>订单号
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var orderRes in orderReses)
+                {
+                    <tr>
+                        <td>@orderRes.OrderNo</td>
+                    </tr>   
+                }
+            </tbody>
+        </table>
+    </div>
+    }
+}

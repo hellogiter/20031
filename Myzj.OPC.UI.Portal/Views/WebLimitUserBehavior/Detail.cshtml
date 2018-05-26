@@ -1,0 +1,128 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.WebIndex
+@model Myzj.OPC.UI.Model.WebUserBe.UserBehaviorDetail
+@{
+    var isEdit = (Model != null && Model.SysNo > 0);
+    var actionName = isEdit ? "Update" : "Add";
+}
+
+@if (isEdit)
+{
+    <h2>修改用户行为</h2>
+}
+else
+{
+    <h2>新增用户行为</h2>
+}
+
+<div id="tableContainer">
+    <form id="detailForm">
+        <input type="hidden" id="hidIntSysNo" value="@Model.SysNo"/>
+
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>限制类型:</td>
+                    <td>
+                        @Html.DropDownListFor(m => m.ObjectType, new KvSelectList(typeof(AppEnum.ObjectType).GetEnumList()), false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>IP开始段(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.BegionIp)
+                    </td>
+                </tr>
+                <tr>
+                    <td>IP结束段(*):</td>
+                    <td>
+                        <input type="text" value="@Model.EndIp" id="EndIp" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>限制开始时间:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.LimitBegionTime)
+                    </td>
+                </tr>
+                <tr>
+                    <td>限制结束时间:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.LimitEndTime)
+                    </td>
+                </tr>
+                <tr>
+                    <td>是否启用:</td>
+                    <td>
+                        @Html.DropDownListFor(m => m.IsEnable, new KvSelectList(typeof(AppEnum.IsVisibleIndex).GetEnumList()), false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>提示信息(*):</td>
+                    <td>
+                        @Html.TextAreaFor(m => m.ShowMesage)
+                    </td>
+                </tr>
+                <tr>
+                    <td>备注信息:</td>
+                    <td>
+                        @Html.TextAreaFor(m => m.Remarks)
+                    </td>
+                </tr>
+        </table>
+    </form>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="保存" id="btnSave" />
+    <input type="button" value="取消" id="btnDel" onclick="window.location.href = window.close()" />
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $("#btnSave").click(function () {
+            var model = {};
+            model.SysNo = $("#hidIntSysNo").val();
+            model.ObjectType = $("#ObjectType").val();
+            model.BegionIp = $("#BegionIp").val();
+            model.EndIp = $("#EndIp").val();
+            model.LimitBegionTime = $("#LimitBegionTime").val();
+            model.LimitEndTime = $("#LimitEndTime").val();
+            model.IsEnable = $("#IsEnable").val();
+            model.ShowMesage = $("#ShowMesage").val();
+            model.IntSystemType = $("#IntSystemType").val();
+            model.Remarks = $("#Remarks").val();
+
+            if (model.BegionIp == null || model.BegionIp == "") {
+                alert("请输入IP开始段!");
+                return false;
+            } else if (model.EndIp == null || model.EndIp == "") {
+                alert("请输入IP结束段!");
+                return false;
+            } else if (model.ShowMesage == null || model.ShowMesage == "") {
+                alert("请输入提示信息!");
+                return false;
+            }
+
+            $.ajax({
+                url: '@Url.Action("Save", "WebLimitUserBehavior")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("保存成功！");
+                        reloadPage();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+
+
+

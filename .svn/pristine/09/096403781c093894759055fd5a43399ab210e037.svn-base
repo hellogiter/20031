@@ -1,0 +1,394 @@
+﻿@{
+    ViewBag.Title = "IndexItem";
+   
+}
+@using Myzj.OPC.UI.Common
+@using Myzj.OPC.UI.Model.Base
+@model List<Myzj.OPC.UI.Model.ExpressModel.ExpressInfoModelExt>
+<style>
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+
+    table {
+        table-layout: fixed;
+        word-wrap: break-word;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        $(".tipped").tipper();
+    });
+</script>
+@if (Model != null && Model.Any())
+{
+    <div class="resultDiv">
+        <span style="color: red; margin-left: 20px">*总条数：@ViewBag.Total</span>
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>SysNo</th>
+                    <th>操作</th>
+                    <th>订单号</th>
+                    <th>物流单号</th>
+                    <th>配送商ID</th>
+                    <th>快递公司</th>
+                    <th>订单扭转</th>
+                    <th>物流信息</th>
+                    <th>国际物流</th>
+                    <th>对接方式</th>
+                    <th>订阅状态</th>
+                    <th>订阅次数</th>
+                    <th>总调用(推送)次数</th>
+                    <th>运单状态</th>
+                    <th>快递100消息</th>
+                    <th>订阅失败原因</th>
+                    <th>订单类型</th>
+                    <th>创建日期</th>
+                    <th>备注</th>
+                    <th>是否作废</th>
+                    <th>处理建议</th>
+                    @if (ViewBag.OrderType == 1)
+                    {
+                        <th>供应商名称</th>
+                    }
+
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model)
+                {
+                    <tr class="gl-title">
+
+                        <td>
+                            @if (item.IsDel == 0)
+                            {
+                                <a style="color: #191970; font-weight:bold" title="修改" href="@Url.Action("UpdateExpressInfo", "Express", new { sysNo = item.SysNo, orderCode = item.OrderCode })" >@item.SysNo</a>
+                
+                            }
+                            else
+                            {
+                                <a style="color: #191970;">@item.SysNo</a>
+                            }
+                        </td>
+                        <td>
+                            @{
+                            var qid = "query_" + item.SysNo;
+                            }
+                            @if (item.IsDel == 0)
+                            {
+                                <a title="查询物流信息" id="@qid" style="color: #191970; text-decoration: underline" href="javascript:query(@item.SysNo,@item.OrderCode);">物流信息</a>
+                                <br />
+                                <a title="查看日志" style="color: #191970;text-decoration: underline"  href="javascript:log(@item.OrderCode)">查看日志</a>
+                                <br />
+                                <a title="刷新查询缓存" style="color: #191970;text-decoration: underline"  href="javascript:refreschCache(@item.OrderCode)">刷新缓存</a>
+                                <br />
+                                <a title="删除" style="color: #191970;text-decoration: underline"  href="javascript:del(@item.SysNo,@item.OrderCode)">删除运单</a>
+                                <br />
+                            }
+
+
+
+                        </td>
+
+                        <td>@item.OrderCode</td>
+                        <td>@item.LogiscticNo</td>
+                        <td>@item.LogiscticId</td>
+                        <td>@item.LogiscticCompanyName</td>
+                        <td>
+                            <a href="javascript:;" class=" tipped" data-title="@item.OrderStatusContentTitle"  data-tipper-options='{"direction":"top","follow":"true"}'>@item.OrderStatusContentShow</a>
+                        </td>
+                        <td>
+                            <a href="javascript:;" class=" tipped" data-title="@item.LogiscticContentTitle"  data-tipper-options='{"direction":"top","follow":"true"}'>@item.LogiscticContentShow</a>
+                        </td>
+                        <td>
+                            <a href="javascript:;" class=" tipped" data-title="@item.LogisticOuterContentTitle"  data-tipper-options='{"direction":"top","follow":"true"}'>@item.LogisticOuterContentShow</a>
+                        </td>
+
+                        <td>@item.CallTypeDesc</td>
+                        <td>@item.SubscribeStatusDesc</td>
+                        <td>
+                            @{
+                            var rid = "record_" + item.SysNo;
+                            }
+                            <a id="@rid" href="javascript:;" style="text-decoration:underline" title="查看订阅记录" onclick="record(@item.SysNo,@item.OrderCode)">@item.SubscribeCount</a>
+                        </td>
+                        <td>@item.CallCount</td>
+
+
+                        <td>@item.LastStatusDesc</td>
+
+                        @if (!string.IsNullOrEmpty(item.PushRequestMessage))
+                        {
+                            <td>
+                                <a href="javascript:;" class=" tipped" data-title="@item.PushRequestMessage"  data-tipper-options='{"direction":"top","follow":"true"}'>@item.PushRequestMessage</a>
+                            </td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+                        <td>@item.RequestFaildReason</td>
+                        <td>@item.OrderTypeDesc</td>
+                        <td>@item.RowCreateDate</td>
+                        <td>@item.Remark</td>
+                        @if (item.IsDel == 1)
+                        {
+                            <td><span style="color: red">已作废</span></td>
+                        }
+                        else
+                        {
+                            <td>有效</td>
+                        }
+                        <td><span style="color: red">@item.HandleSuggest</span></td>
+                        @if (ViewBag.OrderType == 1)
+                        {
+                            var aid = "aProvider_" + item.SysNo;
+                            <td><a id="@aid" href="javascript:void(0)" onclick="searchProvider(@item.SysNo,@item.OrderCode)">查询</a></td>
+                        }
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+}
+
+<script type="text/javascript">
+
+    $("#chk_all").click(function () {
+        var id = $(this).attr("id");
+        if (id == "chk_all") {
+            if ($('#chk_all').prop('checked')) {
+                $("input[type=checkbox]:checkbox").each(function () {
+                    this.checked = true;
+                });
+            } else {
+                $("input[type=checkbox]:checkbox").removeAttr("checked");
+            }
+        } else {
+            $("#chk_all").removeAttr("checked");
+        }
+    });
+
+    function del(sysno, ordercode) {
+        window.open('@Url.Action("DelInfo", "Express")?SysNo=' + sysno + '&OrderCode=' + ordercode, " newwindow", "height=500, width=500, top=0, left=600,top=200,toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no");
+    }
+
+    function log(obj) {
+        var model = {};
+        model.OrderCode = obj;
+
+        dialog = new $.Zebra_Dialog("", {
+            'type': '',
+            'modal': true,
+            'overlay_close': false,
+            'custom_class': 'dialog',
+            'overlay_opacity': 0.5,
+            'width': 940,
+            'height': 400,
+            'title': '日志信息',
+            'buttons': false,
+            'onClose': function (caption) {
+            },
+            'source': {
+                'iframe': {
+                    'src': '/Express/ShowLog?orderCode=' + obj,
+                    'height': 600,
+                    'width': 900,
+                    'frameborder': 0,
+                    'scrolling': 'yes'
+                }
+            },
+        });
+    }
+
+    function searchProvider(sysno,obj) {
+        $.ajax({
+            url: '../Exec/QueryTemaiProvider?orderCode=' + obj,
+            type: 'get',
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function (result) {
+                if (result.DoFlag) {
+                    $("#aProvider_" + sysno).text(result.DoResult);
+                } else {
+                    alert(result.DoResult);
+                }
+            }
+        });
+
+    }
+
+    function record(sysno, obj) {
+        var text = $("#record_" + sysno).text();
+        $("#record_" + sysno).text("加载中...");
+        var model = {};
+        model.OrderCode = obj;
+        var div = "";
+        $.ajax({
+            url: '@Url.Action("QuerySubscribeByNo", "Exec")',
+            type: 'post',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(model),
+            success: function (result) {
+                $("#record_" + sysno).text(text);
+                if (result != null && result.length > 0) {
+                    var html = "<div style=\"overflow-x: auto; overflow-y: auto; height: 600px; width:800px;\"><table class=\"resultTable\" > ";
+                    html += "  <thead>";
+                    html += "   <th>订单号</th>";
+                    html += "   <th>快递单号</th>";
+                    html += "   <th>配送商代码</th>";
+                    html += "   <th>请求url</th>";
+                    html += "   <th>失败原因</th>";
+                    html += "   <th>订阅时间</th>";
+                    html += "</thead>";
+                    html += "<tbody>";
+                    for (var i = 0; i < result.length; i++) {
+                        html += "  <tr>";
+                        html += "   <td>" + result[i].OrderCode + "</td>";
+                        html += "   <td>" + result[i].LogiscticNo + "</td>";
+                        html += "   <td>" + result[i].LogiscticCompany + "</td>";
+                        html += "   <td>" + result[i].RequestUrl + "</td>";
+                        html += "   <td>" + result[i].RequestFaildReason + "</td>";
+                        html += "   <td>" + result[i].FormatDate + "</td>";
+                        html += "  </tr>";
+                    }
+                    html += "</tbody>";
+                    html += "   </table></div>";
+                    div = html;
+                    dialog = new $.Zebra_Dialog(div, {
+                        'type': '',
+                        'modal': true,
+                        'overlay_close': false,
+                        'custom_class': 'dialog',
+                        'overlay_opacity': 0.5,
+                        'width': 850,
+                        'height': 650,
+                        'title': '订阅记录',
+                        'buttons': false,
+                        'onClose': function (caption) {
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    function query(sysNo, obj) {
+        var array = new Array();
+        var height = 700;
+        array.push(obj);
+        var orderCode = obj;
+        $("#query_" + sysNo).text('加载中..');
+        window.dscapi_url = "@Configurator.JsonServiceUrl("dataCenterDomainUrl")";
+        var div = "";
+        jQuery.ajax({
+            type: 'get',
+            url: window.dscapi_url + 'QueryLogsticsByOrderCode?orderCode=' + orderCode,
+            dataType: 'jsonp',
+            async: false,
+            //data: { orderCode: orderCode },
+            success: function (result) {
+                $("#query_" + sysNo).text('物流信息');
+                if (result != null && result.QueryLogsticsByOrderCodeDtos != null) {
+                    var _data_res = result.QueryLogsticsByOrderCodeDtos[0].LogisticsContent;
+                    if (_data_res != "") {
+                        _data_res = eval("(" + result.QueryLogsticsByOrderCodeDtos[0].LogisticsContent + ")");
+
+                        if (_data_res.ErrorMsg != null && _data_res.ErrorMsg != "" && _data_res.ErrorMsg != '') {
+
+                        } else {
+                            var colCount = _data_res.Track.length;
+
+                            var html = "<table>";
+                            html += "  <tr>";
+                            html += "  <td style=\"width: 80px;\" align=\"right\">物流公司：</td>";
+                            if (_data_res.DeliveryName != null && _data_res.DeliveryName != "") {
+                                html += "  <td><span>" + _data_res.DeliveryName + "</span></td>";
+                            }
+                            html += "  </tr>";
+                            html += "   <tr>";
+                            html += "  <td style=\"width: 80px;\" align=\"right\">运单号码：</td>";
+                            if (_data_res.BillNo != null && _data_res.BillNo != "") {
+                                html += "   <td><span>" + _data_res.BillNo + "</span></td>";
+                            }
+
+                            html += "   </tr>";
+                            html += "   <tr>";
+                            html += "  <td style=\"width: 80px;\" align=\"right\"  valign=\"top\">物流跟踪：</td>";
+                            for (var i = 0; i < colCount; i++) {
+                                if (_data_res.Track[i].Process != 'null' && _data_res.Track[i].Process != '' && _data_res.Track[i].Process != null) {
+                                    html += " <td><span>" + _data_res.Track[i].Process + "</span></td>";
+                                }
+                            }
+                            html += "  </tr>";
+                            html += "   </table>";
+                            html += "<span>*注：<br/></span>";
+                            html += "<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*物流信息=(订单扭转+国内物流+国际物流)<br/></span>";
+                            html += "<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*8小时无物流信息会在线查询快递100<br/></span>";
+                            html += "<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*以上物流信息的查询结果，跟前端订单物流信息的内容保持一致<br/></span>";
+                            html += "<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*物流信息根据订单号进行查询，目前默认多运单展示第一单<br/></span>";
+                            div = html;
+                        }
+                    }
+                    dialog = new $.Zebra_Dialog(div, {
+                        'type': '',
+                        'modal': true,
+                        'overlay_close': false,
+                        'custom_class': 'dialog',
+                        'overlay_opacity': 0.5,
+                        'width': 650,
+                        'height': height,
+                        'title': '物流信息',
+                        'buttons': false,
+                        'onClose': function (caption) {
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    function refreschCache(obj) {
+
+        $.ajax({
+            url: '../Exec/RefreshExpressCache?OrderCode=' + obj,
+            type: 'get',
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function (result) {
+                if (result.DoFlag) {
+                    alert(result.DoResult);
+                } else {
+                    alert(result.DoResult);
+                }
+            }
+        });
+    }
+
+    function setOnline(obj) {
+        alert('在线查询');
+    }
+
+    $("#batchDingYue").click(function () {
+        var sysNos = [];
+        $("input[name=chk_list]:checked").each(function () {
+            sysNos.push($(this).val());
+        });
+        if (sysNos.length < 1) {
+            alert("请选择要批量订阅的项！");
+            return;
+        }
+        if (confirm("你确定要批量订阅吗？")) {
+            alert(sysNos);
+
+        }
+    });
+
+</script>

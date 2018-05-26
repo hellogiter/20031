@@ -1,0 +1,326 @@
+﻿@{
+    ViewBag.Title = "TemplateIndexIndex";
+}
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.HotStyle
+@using Myzj.OPC.UI.ServiceClient
+@model Myzj.OPC.UI.Model.HotStyle.HotStyleRefer
+@{
+    var applyPlace = HotStyleClient.Instance.GetApplyPlace(new ApplyPlaceModel());
+}
+<h2>爆款管理</h2>
+<style>
+    .input-validation-error {
+        border: 1px solid #c0c0c0;
+        background-color: white;
+    }
+
+    .showDetailTable tbody tr.tk-guanli td {
+        width: 15%;
+    }
+
+        .showDetailTable tbody tr.tk-guanli td.tk-name {
+            width: 5%;
+            text-align: center;
+        }
+
+        .showDetailTable tbody tr.tk-guanli td input {
+            text-align: left;
+            width: 85%;
+        }
+
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+
+        .rowButton input {
+            margin: 2px 15px;
+            height: 30px;
+            width: 11%;
+            text-align: center;
+        }
+
+    textarea {
+        min-height: 41px;
+        min-width: 94%;
+    }
+</style>
+
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+        <tbody>
+            <tr class="tk-guanli">
+                <td class="tk-name">商品ID</td>
+                <td>
+                    @Html.TextBoxFor(m => m.Search.ProductId)
+                </td>
+                <td class="tk-name">商品名:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.Search.ProductName)
+                </td>
+
+                <td class="tk-name">应用位置:</td>
+                <td>
+                    @{
+    var sort = new SortedList<int?, string>();
+
+    foreach (var item in applyPlace)
+    {
+        sort.Add(item.ApplyPlaceId, item.ApplyPlaceName);
+    }
+                    }
+                    @Html.DropDownListFor(m => m.Search.ApplyPlace, new KvSelectList(sort), false)
+                </td>
+            </tr>
+            <tr class="tk-guanli">
+                <td class="tk-name">是否过期</td>
+                <td>
+                    @Html.DropDownListFor(m => m.Search.IsExpire, new KvSelectList(typeof(AppEnum.HotIsExpire).GetEnumList()), false)
+                </td>
+                <td class="tk-name">是否启用:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.Search.QueryIsEnable, new KvSelectList(typeof(AppEnum.HotIsEnable).GetEnumList()), false)
+                </td>
+
+            </tr>
+        </tbody>
+    </table>
+    <div class="rowButton">
+        <input type="submit" value="查询" id="btnSearch" />
+        <input type="button" value="新增" id="btnAdd" onclick="window.open('/HotStyle/HotStyleAdd')" />
+        <input type="button" value="刷新缓存" id="bthrefresh" onclick="refresh()" />
+    </div>
+    
+    if (Model.List != null && Model.List.Any())
+    {
+        <div class="resultDiv">
+           &nbsp; <span>*支持拖拽排序</span>
+            <table class="resultTable" id="sortable">
+                <thead>
+                    <tr class="gl-title">
+                        <th>SysNo</th>
+                        <th>操作</th>
+                        <th>商品ID</th>
+                        <th>商品名</th>
+                        <th>应用位置</th>
+                        <th>开始时间</th>
+                        <th>结束时间</th>
+                        @* <th>应用标签</th>*@
+                        <th>左上角标签</th>
+                        <th>图片</th>
+                        <th>国籍</th>
+                        <th>是否过期</th>
+                        <th>是否启用</th>
+                        <th>顺序</th>
+                        <th>更新时间</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model.List)
+                    {
+                        <tr class="gl-title" id="@item.Id" sort="@item.Sort">
+
+                            <td>
+                                <a href="javascript:void(0)">@item.Id</a>
+                            </td>
+                            <td>
+                                <a style="color: #191970; text-decoration: underline" href="javascript:void(0)" onclick="window.open('@Url.Action("HotStyleUpdate", "HotStyle", new { sysNo = item.Id })')" >修改</a>
+                                <a style="color: #191970;text-decoration: underline"  href="javascript:del(@item.Id)">删除</a>
+                                @if (item.IsEnable ?? false)
+                                {
+                                    <a style="color: #191970;text-decoration: underline;"  href="javascript:enable(@item.Id,1)">禁用</a>
+                                }
+                                else
+                                {
+                                    <a style="color: red;text-decoration: underline"  href="javascript:enable(@item.Id,2)">启用</a>
+                                }
+                                <a style="color: #191970;text-decoration: underline"  href="javascript:setTop(@item.Id)">置顶</a>
+                            </td>
+
+                            <td>@item.ProductId</td>
+                            <td>@item.ProductName</td>
+                            <td>@item.ApplyPlace</td>
+                            <td>@item.StartTime
+                            </td>
+                            <td>
+                                @item.EndTime</td>
+                            @*   <td>@item.ApplyLabel</td>*@
+                            <td>@Html.Raw(item.HotTag)</td>
+                            <td>
+                                <img style="width:100px;border-width:0px;" src="@item.PictureUrlTrans"  alt="" /></td>
+                            <td>@item.CountryName</td>
+                            <td>@Html.Raw(item.ExpireDesc)</td>
+                            @if (item.IsEnable ?? false)
+                            {
+                                <td>已启用</td>
+                            }
+                            else
+                            {
+                                <td>已禁用</td>
+                            }
+                            <td>@item.Sort</td>
+                            <td>@item.UpdateDate</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                </tfoot>
+            </table>
+        </div>
+    }
+
+    <script type="text/javascript">
+
+        window.oldStr = "";
+        window.newStr = "";
+        window.oldarr = [];
+        $("#sortable tbody tr").each(function (e, i) {
+            oldarr.push(i.id);
+        });
+        oldStr = oldarr.join(",");//原始顺序
+
+        $(function () {
+            $("#sortable tbody").sortable({
+                cursor: "move",
+                helper: function (e, tr) {
+                    var $originals = tr.children();
+                    var $helper = tr.clone();
+                    $helper.children().each(function (index) {
+                        $(this).width($originals.eq(index).width());
+                    });
+                    return $helper;
+                },
+                start: function (e, ui) {
+                    if (newStr != '') {
+                        oldStr = newStr;//原始顺序被修改后的顺序覆盖
+                    }
+                    console.log('oldStr:' + oldStr);
+                },
+                stop: function (e, ui) {
+                    var newarr = [];
+                    $("#sortable tbody tr").each(function (e, i) {
+                        newarr.push(i.id);
+                    });
+                    newStr = newarr.join(",");//新顺序
+                    console.log('newStr:' + newStr);
+                    //if (window.confirm("确定这么排吗？")) {
+                    //发送请求，对sort字段进行修改
+                    $.ajax({
+                        url: '/HotExec/SortableHotStyle',
+                        type: 'POST',
+                        async: false,
+                        data: { 'oldIds': oldStr, 'newIds': newStr },
+                        datatype: 'json',
+                        success: function (data) {
+                            console.log('修改结果:' + data);
+                        },
+                        error: function () {
+                            alert('保存排序异常');
+                        }
+                    });
+
+                    return ui;
+                },
+            }).disableSelection();
+        });
+
+        function refresh() {
+            var apply = 1;// $("#").val();
+            var model = {};
+            model.ApplyPlace = apply;
+            if (confirm("你确定刷新缓存吗？")) {
+                $.ajax({
+                    url: '@Url.Action("RefreshHotStyleCache", "HotExec")',
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: JSON.stringify(model),
+                    success: function (result) {
+                        if (result.DoFlag) {
+                            alert('刷新缓存成功');
+                        } else {
+                            alert('刷新缓存失败');
+                        }
+                    }
+                });
+            }
+        }
+
+        //启用2禁用1
+        function enable(Id, enable) {
+            var model = {};
+            model.Id = Id;
+            model.type = enable;
+            if (confirm("你确定修改吗？")) {
+                $.ajax({
+                    url: '@Url.Action("EnableHotStyle", "HotExec")',
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: JSON.stringify(model),
+                    success: function (result) {
+                        if (result.DoFlag) {
+                            window.location.href = window.location.href;
+                        } else {
+                            alert(result.DoResult);
+                        }
+                    }
+                });
+            }
+        }
+
+        function setTop(id) {
+            var model = {};
+            model.id = id;
+            if (confirm("你确定置顶吗？")) {
+                $.ajax({
+                    url: '@Url.Action("SetTopHotStyle", "HotExec")',
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: JSON.stringify(model),
+                    success: function (result) {
+                        if (result.DoFlag) {
+                            alert('置顶成功');
+                            window.location.href = window.location.href;
+                        } else {
+                            alert('置顶失败');
+                        }
+                    }
+                });
+            }
+        }
+
+        function del(sysNo) {
+            var model = {};
+            model.Id = sysNo;
+
+
+            if (confirm("你确定删除吗？")) {
+                $.ajax({
+                    url: '@Url.Action("DelHotStyle", "HotExec")',
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: JSON.stringify(model),
+                    success: function (result) {
+                        if (result.DoFlag) {
+                            alert('删除成功');
+                            window.location.href = window.location.href;
+                        } else {
+                            alert(result.DoResult);
+                        }
+                    }
+                });
+            }
+        }
+
+    </script>
+   
+    @Html.Partial("Pager", @Model)
+}

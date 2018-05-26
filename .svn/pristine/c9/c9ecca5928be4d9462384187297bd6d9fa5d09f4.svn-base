@@ -1,0 +1,482 @@
+@using System.Collections
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.WebAward
+@using Myzj.OPC.UI.Model.WebIndex
+@model Myzj.OPC.UI.Model.WebAward.WebPrizeItemDetail
+@{
+    var isEdit = (Model != null && Model.IntPrizeItemId > 0);
+    var actionName = isEdit ? "Update" : "Add";
+    var webArwardModel = (WebPrizeModelRefer)ViewBag.WebAwardPrizeModel;//奖品类型
+    var prize = (List<WebLotteryTemplateDetail>)ViewBag.PrizeDescription; //获取抽奖模型列表->奖品描述（一级分类）
+    var prizeTwo = (List<WebLotteryTempConDetail>)ViewBag.PrizeTwo;//获取抽奖模型列表->奖品描述(二级分类)
+    var rotation = (List<WebLotteryTemplateDetail>)ViewBag.RotationDescription;//获取抽奖模型列表->旋转角度（一级分类）
+    var rotationTwo = (List<WebLotteryTempConDetail>)ViewBag.RotaionTwo;//获取抽奖模型列表->旋转角度(二级分类)
+}
+
+@if (isEdit)
+{
+    <h2>修改奖项配置</h2>
+}
+else
+{
+    <h2>新增奖项配置</h2>
+}
+
+<div id="tableContainer">
+    <form id="detailForm">
+        <input type="hidden" id="hidIntPrizeItemId" value="@Model.IntPrizeItemId"/>
+        <input type="hidden" value="@ViewBag.AwardId" id="AwardId"/>
+        <input type="hidden" value="@ViewBag.strName " id="strName"/>
+        <input type="hidden" value="@ViewBag.PrizeId" id="HidPrizeId"/>
+        <input type="hidden" value="@ViewBag.PrizeType"/>
+
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>奖项选择(*):</td>
+                    <td colspan="2">
+                        @if (Model.IntPrizeType == null)
+                        {
+                            Model.IntPrizeType = ViewBag.PrizeType;
+                            Model.IntPrizeId = ViewBag.PrizeId;
+                        }
+                        <input type="hidden" value="@Model.IntPrizeId" id="IntPrizeId"/>
+                        <select id="IntPrizeType">
+                            @if (webArwardModel != null)
+                            {
+                                foreach (var item in webArwardModel.List)
+                                {
+                                    if (item.IntModelId == Model.IntPrizeType)
+                                    {
+                                        <option  selected="selected" value="@item.IntModelId">@item.VchModelName</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>类型选择(*):</td>
+                    <td colspan="2">
+                        <select id="IntPrizeType" name="IntPrizeType">
+                            @{
+                                var select = "";
+                            }
+                            @if (webArwardModel != null)
+                            {
+                                foreach (var item in webArwardModel.List)
+                                {
+                                    if (item.IntModelId == Model.IntPrizeType)
+                                    {
+                                        select = "selected='selected'";
+                                    }
+                                    else
+                                    {
+                                        select = "";
+                                    }
+                                <option  @select value="@item.IntModelId">@item.VchModelName</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>奖品关联ID:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.IntPrizeCaseId)
+                        <input type="button" value="验证" style="width: 50px;" class="checkPrizeCaseId" />
+                        <label class="PrizeCaseName"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>商品ID:</td>
+                    <td>@Html.TextBoxFor(m => m.IntProductId)
+                        <input type="button" value="验证" style="width: 50px;" class="checkIProductId" />
+                        <label class="ProductNameLabel"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>奖项名称(*):</td>
+                    <td colspan="2">
+                        @Html.TextBoxFor(m => m.VchPrizeName)-(用于前台展示滚动中奖信息)
+                    </td>
+                </tr>
+                <tr>
+                    <td>奖品名称(*):</td>
+                    <td colspan="2">
+                        @Html.TextBoxFor(m => m.VchPrizeNo) -(用于前台弹框展示给客户)
+                    </td>
+                </tr>
+                <tr>
+                    <td>权重(*):</td>
+                    <td colspan="2">
+                        @Html.TextBoxFor(m => m.IntPrizeWeight)
+                    </td>
+                </tr>
+                <tr>
+                    <td>数量(*):</td>
+                    <td colspan="2">
+                        @Html.TextBoxFor(m => m.IntPrizeCount)-(“-100” 不限数量)
+                    </td>
+                </tr>
+                <tr>
+                    <td>必中次数:</td>
+                    <td colspan="2">
+                        @Html.TextBoxFor(m => m.IntWillbein)-(数值大于0，则优先中当前奖品，此时权重无效)
+                    </td>
+                </tr>
+                <tr>
+                    <td>活动期间同会员可中次数:</td>
+                    <td colspan="2">
+                        @Html.TextBoxFor(m => m.IntPrizeActivityCount)-(“-100” 不限制) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>特殊奖品开奖间隔时间:</td>
+                    <td colspan="2">
+                        @Html.TextBoxFor(m => m.IntBeApart)-(分钟，“-100” 不限制，同时适用于奖品拉取) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>开始时间:</td>
+                    <td colspan="2">
+                        @Html.TextBoxFor(m => m.DtStartTime)
+                    </td>
+                </tr>
+                <tr>
+                    <td>结束时间:</td>
+                    <td colspan="2">
+                        @Html.TextBoxFor(m => m.DtEndTime)
+                    </td>
+                </tr>
+                <tr>
+
+                    @{
+                        var name1 = "";//必中次数是否排当前类型
+                        var check1 = "";
+                        var name2 = "";//当前奖品是否排他
+                        var check2 = "";
+                        if (Model.IntWillIsExclusive == 1)
+                        {
+                            name1 = "排他";
+                            check1 = "checked='checked'";
+                        }
+                        else
+                        {
+                            name1 = "排他";
+                            check1 = "";
+                        }
+
+                        if (Model.IntIsExclusive == 1)
+                        {
+                            name2 = "排他";
+                            check2 = "checked='checked'";
+                        }
+                        else
+                        {
+                            name2 = "排他";
+                            check2 = "";
+                        }
+                        <tr>
+                            <td>必中次数是否排当前类型:</td>
+                            <td style="float: left; width: 93px; margin-left: 14px;">
+                                <input type="checkbox" value="@Model.IntWillIsExclusive" @check1 id="IntWillIsExclusive"/>@name1
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>当前奖品是否排他:</td>
+                            <td style="float: left; width: 93px; margin-left: 14px;">
+                                <input type="checkbox" value="@Model.IntIsExclusive" @check2 id="IntIsExclusive"/>@name2
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>数量限制区间:</td>
+                            <td style="float: left; width: 184px; margin-left: 14px; height: 39px;">
+                                @if (Model.IntPrizeCountInter == 1)
+                                {
+                                    var Day = "以当日限制";
+                                    var Tempname = "以活动限制";
+                                    <input type="radio" value="1" name="IntPrizeCountInter" checked="checked" style="width: 30%" />
+                                    <label style="float: right; margin-top: -11px; margin-right: 99px; width: 30px;">@Day</label>
+                                    <input type="radio" value="2" name="IntPrizeCountInter" style="width: 30%" />
+                                    <label style="float: right; margin-top: -15px; margin-right: 99px; width: 30px;">@Tempname</label>
+                                }
+                                else
+                                {
+                                    var Day = "以当日限制";
+                                    var Tempname = "以活动限制";
+                                    <input type="radio" value="1" name="IntPrizeCountInter" style="width: 30%" />
+                                    <label style="float: right; margin-top: -11px; margin-right: 99px; width: 30px;">@Day</label>
+                                    <input type="radio" value="2" name="IntPrizeCountInter" checked="checked" style="width: 30%" />
+                                    <label style="float: right; margin-top: -15px; margin-right: 99px; width: 30px;">@Tempname</label>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tr>
+
+                <tr>
+                    <td>奖品描述:</td>
+                    <td colspan="2">
+                        <select style="width: 140px;" class="VchPrizeDes">
+                            @if (prize != null)
+                            {
+                                foreach (var item in prize)
+                                {
+                                <option value="@item.LtSysNos">@item.TempName</option>
+                                }
+                            }
+                        </select>
+                        <select style="width: 140px;" class="VchPrizeDesTwo" id="VchPrizeDesTwo">
+                            @if (prizeTwo != null)
+                            {
+                                <option value="-1">请选择</option>
+                                foreach (var item in prizeTwo)
+                                {
+                                <option value="@item.ConSysNos">@item.ItemName</option>
+                                }
+                            }
+                        </select>
+                        <input type="text" value="@Model.VchPrizeDes" id="VchPrizeDes" name="VchPrizeDes" style="width: 362px"/>-(用于前台弹框下面的文字)
+                    </td>
+                </tr>
+                <tr>
+                    <td>旋转角度(*):</td>
+                    <td colspan="2">
+                        <select style="width: 140px;" class="Selrotation">
+                            @if (rotation != null)
+                            {
+                                foreach (var item in rotation)
+                                {
+                                <option value="@item.LtSysNos">@item.TempName</option>
+                                }
+                            }
+                        </select>
+                        <select style="width: 140px;" id="IntAngleTwo">
+                            @if (rotationTwo != null)
+                            {
+                                <option value="-1">请选择</option>
+                                foreach (var item in rotationTwo)
+                                {
+                                <option value="@item.ConSysNos">@item.ItemName</option>
+                                }
+                            }
+                        </select>
+                        <input type="text" value="@Model.IntAngle" id="IntAngle" name="IntAngle" style="width: 205px"/>-(用于前台转盘指针的旋转角度，可配置区间：“10-100”)
+                    </td>
+                </tr>
+                <tr>
+                    <td>短信消息:</td>
+                    <td colspan="2">
+                        @Html.TextAreaFor(m => m.VchSendMesg)-(将中奖信息发送到客户手机上)
+                    </td>
+                </tr>
+        </table>
+    </form>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="保存" id="btnSave" />
+    <input type="button" value="开发人员使用" id="btnKF_Click" />
+    <input type="button" value="返回" id="btnDel" onclick="window.close()" />
+</div>
+
+<script type="text/javascript">
+    //旋转角度二级分类
+    function GetIntAngleTwo() {
+        $("#IntAngleTwo").empty();
+        var thisval = $(".Selrotation").val();
+        $.ajax({
+            url: "/WebAward/QueryWebLotteryTemplateConfigure",
+            data: { "ltSysNos": thisval },
+            dataType: 'json',
+            success: function (date) {
+                $("#IntAngleTwo").append("<option value='-1'>请选择</option>");
+                $.each(date, function (i, item) {
+                    $("<option></option>").val(item["ConSysNos"]).text(item["ItemName"]).appendTo($("#IntAngleTwo"));
+                });
+            }
+        });
+    }
+    $(function () {
+        //旋转角度改变重新加载二级分类
+        $(".Selrotation").change(function () {
+            GetIntAngleTwo();
+        });
+        //选择角度点击二级分类 得到对应的Value值
+        $("#IntAngleTwo").change(function () {
+            var thisval = $("#IntAngleTwo").val();
+            //  alert(thisval);
+            $.ajax({
+                url: "/WebAward/QueryWebLotteryTemplateById",
+                data: { "id": thisval },
+                dataType: 'json',
+                success: function (date) {
+                    $("#IntAngle").val(date["ItemValue"]);
+                }
+            });
+        });
+
+        //奖品描述点击二级分类 得到对应的Value值
+        $("#VchPrizeDesTwo").change(function () {
+            var thisval = $("#VchPrizeDesTwo").val();
+            $.ajax({
+                url: "/WebAward/QueryWebLotteryTemplateById",
+                data: { "id": thisval },
+                dataType: 'json',
+                success: function (date) {
+                    $("#VchPrizeDes").val(date["ItemValue"]);
+                }
+            });
+        });
+
+        //验证奖品关联ID
+        $(".checkPrizeCaseId").click(function () {
+            var prizeId = $("#IntPrizeCaseId").val();
+            var prizeType = $("#IntPrizeType").val();
+            if (prizeId == 0) {
+                $(".PrizeCaseName").text("  奖品关联为0，可能奖品不需要此项，无需验证");
+                return false;
+            }
+            else if (prizeId == "" || prizeId == null) {
+                $(".PrizeCaseName").text("请输入奖品关联Id");
+                return false;
+            } else {
+                $.ajax({
+                    url: "/WebAward/CheckPrizeCaseId?prizeId=" + prizeId + "&prizeType=" + prizeType,
+                    success: function (result) {
+                        if (result.DoFlag) {
+                            $(".PrizeCaseName").html(result.DoResult);//返回奖品关联信息
+                        } else {
+                            alert(result.DoResult);
+                        }
+                    }
+                });
+            }
+        });
+
+        //验证商品ID
+        $(".checkIProductId").click(function () {
+            var productId = $("#IntProductId").val();
+            if (productId == 0) {
+                $(".ProductNameLabel").text("商品ID为0，可能奖品不需要此项，无需验证");
+                return false;
+            }
+            else if (productId == "" || productId == null) {
+                $(".ProductNameLabel").text("请输入商品Id");
+                return false;
+            } else {
+                $.ajax({
+                    url: "/WebAward/CheckPdtInfoById?productId=" + productId,
+                    success: function (result) {
+                        if (result.DoFlag) {
+                            $(".ProductNameLabel").html(result.DoResult);//返回商品名称
+                        } else {
+                            alert(result.DoResult);
+                        }
+                    }
+                });
+            }
+        });
+
+        $("#btnKF_Click").click(function () {
+            var model = {};
+            model.VchPrizeNo = $("#VchPrizeNo").val();
+            model.VchPrizeName = $("#VchPrizeName").val();
+            model.DtStartTime = $("#DtStartTime").val();
+            model.DtEndTime = $("#DtEndTime").val();
+            $.ajax({
+                url: '@Url.Action("SavePrizeItem", "WebAward")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("开发人员使用成功");
+                        reloadPage();
+                    } else {
+                        alert("开发人员使用失败");
+                    }
+                }
+            });
+        });
+
+        //保存
+        $("#btnSave").click(function () {
+            var model = {};
+            model.IntPrizeItemId = $("#hidIntPrizeItemId").val();
+            model.IntAwardId = $("#AwardId").val();
+            model.IntPrizeId = $("#IntPrizeId").val();
+            model.IntPrizeType = $("#IntPrizeType").val();
+            model.IntPrizeCaseId = $("#IntPrizeCaseId").val();
+            model.IntProductId = $("#IntProductId").val();
+            model.VchPrizeName = $("#VchPrizeName").val();
+            model.VchPrizeNo = $("#VchPrizeNo").val();
+            model.IntPrizeWeight = $("#IntPrizeWeight").val();
+            model.IntPrizeCount = $("#IntPrizeCount").val();
+            model.IntWillbein = $("#IntWillbein").val();
+            model.IntPrizeActivityCount = $("#IntPrizeActivityCount").val();
+            model.IntBeApart = $("#IntBeApart").val();
+            model.DtStartTime = $("#DtStartTime").val();
+            model.DtEndTime = $("#DtEndTime").val();
+            //是否排他和区间
+            model.IntWillIsExclusive = 0;
+            model.IntIsExclusive = 0;
+            if ($("#IntWillIsExclusive").is(':checked')) {
+                model.IntWillIsExclusive = 1;
+            }
+            if ($("#IntIsExclusive").is(':checked')) {
+                model.IntIsExclusive = 1;
+            }
+            model.IntPrizeCountInter = $('input:radio[name="IntPrizeCountInter"]:checked').val();
+            model.VchPrizeDes = $("#VchPrizeDes").val();
+            model.IntAngle = $("#IntAngle").val();
+            model.VchSendMesg = $("#VchSendMesg").val();
+
+            if (model.VchPrizeName == "" || model.VchPrizeName == null) {
+                alert("请输入奖项名称");
+                return false;
+            } else if (model.VchPrizeNo == "" || model.VchPrizeNo == null) {
+                alert("请输入奖品名称");
+                return false;
+            } else if (model.IntPrizeWeight == "" || model.IntPrizeWeight == null) {
+                alert("请输入权重");
+                return false;
+            } else if (model.IntPrizeCount == "" || model.IntPrizeCount == null) {
+                alert("请输入数量");
+                return false;
+            } else if (model.IntAngle == "" || model.IntAngle == null) {
+                alert("请选择旋转角度");
+                return false;
+            } else if (model.IntPrizeType == 3 && (model.IntProductId == null || model.IntProductId == "")) {
+                alert("当奖品类型为商品时，商品ID必填");
+                return false;
+            }
+            $.ajax({
+                url: '@Url.Action("SavePrizeItem", "WebAward")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert(result.DoResult);
+                        reloadPage();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+
+
+
+
+
+
+
+

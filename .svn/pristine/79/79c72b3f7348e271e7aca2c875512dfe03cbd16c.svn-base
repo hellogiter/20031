@@ -1,0 +1,60 @@
+﻿@using Myzj.OPC.UI.Portal.Models
+@using Myzj.OPC.UI.Model.SearchManagement
+@model IEnumerable<Myzj.OPC.UI.Model.SearchManagement.SearchManagementDetail>
+				  	<style type="text/css">
+				  .showDetailTable tr.menuTool td:nth-child(2n+1) {
+					  width: 8%;
+					  text-align: center;
+				  }
+
+				  .showDetailTable tr.menuTool td:nth-child(2n) {
+					  width: 10%;
+					  text-align: center;
+				  }
+
+				  .showDetailTable .sBtn {
+					  width: 15%;
+					  height: 30px;
+					  margin-top: 10px;
+					  margin-bottom: 10px;
+					  cursor: pointer;
+				  }
+
+				  .resultTable thead tr {
+					  height: 36px;
+				  }
+				      .sBtnb { width: 10%; height: 30px; margin-top: 10px; margin-left: 10px; cursor: pointer; }
+				  	</style>
+	@if (Model != null && Model.Any())
+	{
+		<input type="button" value="新增" class="sBtnb" onclick=" javascript: RedirctToAdd(); "/>
+		<table class="resultTable" style="margin-top: 30px">
+			<thead><tr>
+				<th>
+					<input type="checkbox" id="CheckAll"/>全选
+				</th>
+				<th>商品ID</th>
+				<th>商品名称</th>
+				<th>搜索词</th>
+				<th>创建时间</th>
+			</tr></thead>
+			<tbody>
+			@foreach (var item in Model)
+			{
+				<tr>
+					<td>
+						<input type="checkbox" name="checkitem" value="@item.ProductId"/>
+					</td>
+					<td>@item.ProductId</td>
+					<td>@item.ProductName</td>
+					<td>@item.SearchWord</td>
+					<td>@item.CreateDate</td>
+				</tr>
+			}
+			</tbody>
+		</table>
+	}
+	else
+	{
+		<p style="text-align: center;color:#f00">未找到相关结果</p>
+	}

@@ -1,0 +1,148 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.Comments.CommentsDetail
+@{
+    var isEdit = (Model != null && Model.CommentsRecordId > 0);
+}
+
+@if (isEdit)
+{
+    <h2>编辑评论</h2>
+}
+else
+{
+    <h2>新增评论</h2>
+}
+
+<div id="tableContainer">
+    <form id="detailForm">
+        @Html.HiddenFor(m => m.CommentsRecordId)
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>内容:</td>
+                    <td>
+                        @Html.TextAreaFor(m => m.ReplyContent)
+                    </td>
+                </tr>
+                <tr>
+                    <td>评论人:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.ReplyUserId)
+                    </td>
+                </tr>
+                @* <tr>
+                    <td>被评论人:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.ByReplyUserId)
+                    </td>
+                </tr>*@
+                <tr>
+                    <td>被评论ID:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.ByCommentsRecordId)
+                    </td>
+                </tr>
+                <tr>
+                    <td>主标题ID:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.ProjectId)
+                    </td>
+                </tr>
+                @* <tr>
+                    <td>回复深度:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.ReplyDepth)
+                    </td>
+                </tr>*@
+                <tr>
+                    <td>回复时间:</td>
+                    <td>
+                        <input id="ReplyTime" type="text" class="Wdate"
+                            value="@Model.ReplyTime" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',alwaysUseStartDate:true})"  />
+                    </td>
+                </tr>
+                <tr>
+                    <td>类型:</td>
+                    <td>
+                        @Html.DropDownListFor(m => m.CommentsRecordType, new KvSelectList(typeof(AppEnum.CommentsRecordType).GetEnumList()), false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>状态:</td>
+                    <td>
+                        @Html.DropDownListFor(m => m.CommentsRecordState, new KvSelectList(typeof(AppEnum.CommentsRecordState).GetEnumList()), false)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+<div class="rowButton">
+    <input type="button" value="保存" id="btnSave" />
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $("#btnSave").click(function () {
+            var txtCommentsRecordId = $("#CommentsRecordId").val();
+            var txtProjectId = $("#ProjectId").val();
+            var txtReplyContent = $("#ReplyContent").val();
+            var txtReplyUserId = $("#ReplyUserId").val();
+            // var txtByReplyUserId = $("#ByReplyUserId").val();
+            var txtReplyTime = $("#ReplyTime").val();
+            var txtByCommentsRecordId = $("#ByCommentsRecordId").val();
+            // var txtReplyDepth = $("#ReplyDepth").val();
+            var txtCommentsRecordType = $("#CommentsRecordType").val();
+            var txtCommentsRecordState = $("#CommentsRecordState").val();
+
+            if (txtReplyContent == null || txtReplyContent == "") {
+                alert("请输入评论内容!");
+                return false;
+            }
+            if (txtProjectId == null || txtProjectId == "") {
+                alert("请输入主标题ID!");
+                return false;
+            }
+
+            var fromData = {};
+            fromData.CommentDetail = {};
+            fromData.CommentDetail.CommentsRecordId = txtCommentsRecordId;
+            fromData.CommentDetail.ReplyContent = txtReplyContent;
+            fromData.CommentDetail.ProjectId = txtProjectId;
+            fromData.CommentDetail.ReplyUserId = txtReplyUserId;
+            // fromData.CommentDetail.ByReplyUserId = txtByReplyUserId;
+            fromData.CommentDetail.ReplyTime = txtReplyTime;
+            fromData.CommentDetail.ByCommentsRecordId = txtByCommentsRecordId;
+            //  fromData.CommentDetail.ReplyDepth = txtReplyDepth;
+            fromData.CommentDetail.CommentsRecordType = txtCommentsRecordType;
+            fromData.CommentDetail.CommentsRecordState = txtCommentsRecordState;
+
+            $.ajax({
+                url: '@Url.Action("OperationComment", "MLTCommentsRecord")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(fromData),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("更新成功！");
+                        reloadPage();
+                        //location.href = document.referrer; //document.referrer是获取上一页的url
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+
+        $("#ProjectId").change(function () {
+            var text = $.trim($("#ProjectId").val());
+            var txtProjectId = text.replace(/\s+/g, "");//去掉空格
+            var regex = /^[0-9]*$/;
+            if (!regex.test(txtProjectId)) {
+                alert("主标题ID只能输入数字!");
+                return false;
+            }
+        });
+    });
+</script>

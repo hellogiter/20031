@@ -1,0 +1,86 @@
+﻿@{
+    ViewBag.Title = "运费策略管理";
+}
+<script>
+    window.webroot ='@ViewBag.WindowRoot'  
+</script>
+<div><h2>运费策略管理</h2></div>
+ 
+<div>
+    @Html.DropDownList("Carriage_Strategy", ViewBag.Carriage_Strategy as IEnumerable<SelectListItem>, new {@class="ddl" })
+ 
+ </div>
+  
+<div id="maincontent" >
+@Html.Action("Item", "AdminCarriage", new { strategyId = 1 })
+    </div>
+<script src="../../Scripts/jquery-1.10.2.js"></script>
+<script>
+    
+
+    $("#Carriage_Strategy").change(function () {
+
+        $("#maincontent").html("...Loading...");
+
+        var id = $("#Carriage_Strategy").val();
+        var data = { strategyId: id };
+        
+        $.ajax({
+            url: window.webroot+ '/AdminCarriage/Item',
+            data: data,
+            type: 'GET',
+            dataType: 'html',
+            success: function (result) {
+                if (result && $.trim(result).length > 0) {
+                    $("#maincontent").html(result);
+                }
+            }
+        });
+    });
+
+
+    $.QueryString = {
+        data: {},
+        Initial: function () {
+            var aPairs, aTmp;
+            var queryString = new String(window.location.search);
+            queryString = queryString.substr(1, queryString.length); //remove   "?"    
+            aPairs = queryString.split("&");
+            for (var i = 0; i < aPairs.length; i++) {
+                aTmp = aPairs[i].split("=");
+                this.data[aTmp[0]] = aTmp[1];
+            }
+        },
+        GetValue: function (key) {
+            return this.data[key];
+        }
+    }
+
+    $.QueryString.Initial();
+    var id = parseInt($.QueryString.GetValue('id'));
+
+    if (id) {
+    }
+    else {
+        id = 1;
+    }
+
+    $("#Carriage_Strategy").val(id);
+
+    $("#maincontent").html("...Loading...");
+
+    var id = $("#Carriage_Strategy").val();
+    var data = { strategyId: id };
+
+    $.ajax({
+        url: window.webroot + '/AdminCarriage/Item',
+        data: data,
+        type: 'GET',
+        dataType: 'html',
+        success: function (result) {
+            if (result && $.trim(result).length > 0) {
+                $("#maincontent").html(result);
+            }
+        }
+    });
+</script>

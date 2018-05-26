@@ -1,0 +1,75 @@
+﻿@model IEnumerable<Myzj.OPC.UI.Model.BaseCouponConfig.CouponBabyCoinDetail>
+@{
+    Layout = null;
+}
+<style>
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+</style>
+@{
+    <div class="rowButton">
+        <input type="submit" name="Query" id="Query" value="查询" />
+        <input type="button" name="Query" id="BtnAdd" value="新增" onclick="javascript: window.open('/CouponBabyCoinManager/Detail')" />
+    </div>
+
+    if (Model != null && Model.Any())
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>Id</th>
+                    <th>操作</th>
+                    <th>优惠券Id</th>
+                    <th>宝贝币</th>
+                    <th>创建日期</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>
+                            <a  style="color: #191970" target="_blank" href="@Url.Action("Detail", "CouponBabyCoinManager", new { id = item.Id })" >编辑</a>
+                            &nbsp;
+                            <a style="color: #191970" href="javascript:;" onclick="del(@item.Id)" pvalue="@item.Id" class="delFloorConfig">删除</a>
+                        </td>
+                        <td>@item.CouponId</td>
+                        <td>@item.BabyCoinNum</td>
+                        <td>@item.CreateDate</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+}
+
+<script type="text/javascript">
+
+
+    function del(obj) {
+        if (confirm("你确定删除吗？")) {
+            $.ajax({
+                url: '@Url.Action("SetsetIsDely", "CouponBabyCoinManager")',
+                type: 'get',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: { Id: obj },
+                success: function (result) {
+                    if (result.DoFlag) {
+                        window.location = window.location; //刷新父窗口
+                        alert("保存成功！");
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        }
+    }
+</script>

@@ -1,0 +1,5 @@
+E:\ysx2012\svn\20031\Myzj.OPC.UI.Library\Myzj.OPC.UI.Assembler.dll
+E:\ysx2012\svn\20031\Myzj.OPC.UI.Library\Myzj.OPC.UI.Assembler.pdb
+E:\ysx2012\svn\20031\Myzj.OPC.UI.Assembler\obj\Debug\Myzj.OPC.UI.Assembler.csprojFakesResolveAssemblyReference.cache
+E:\ysx2012\svn\20031\Myzj.OPC.UI.Assembler\obj\Debug\Myzj.OPC.UI.Assembler.dll
+E:\ysx2012\svn\20031\Myzj.OPC.UI.Assembler\obj\Debug\Myzj.OPC.UI.Assembler.pdb

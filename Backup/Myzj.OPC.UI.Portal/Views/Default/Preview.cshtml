@@ -1,0 +1,17 @@
+﻿@{
+    ViewBag.Title = "Preview";
+
+    var url = "";
+    if (Request["url"] != null)
+    {
+        url = Request["url"].ToString();
+    }
+    
+}
+
+<h2>预览界面</h2>
+
+<iframe width="400" height="600" src="@url">
+    
+</iframe>
+

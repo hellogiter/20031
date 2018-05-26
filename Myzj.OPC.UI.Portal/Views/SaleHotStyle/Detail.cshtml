@@ -1,0 +1,257 @@
+﻿@using MYZJ.Framework.ServiceBase.ServiceModel
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.SaleHotStyle
+@using Myzj.OPC.UI.Model.WebIndex
+@model Myzj.OPC.UI.Model.SaleHotStyle.SaleHotStyleDetail
+@{
+    var isEdit = (Model != null && Model.Id > 0);
+    var actionName = isEdit ? "Update" : "Add";
+
+    var hotApp = (List<SaleHotStyleApplyPlaceDetail>)ViewBag.HotStyleApply; //应用位置列表
+
+    var te = ViewBag.temp;
+}
+
+@if (isEdit)
+{
+    <h2>修改爆品商品</h2>
+}
+else
+{
+    <h2>新增爆品商品</h2>
+}
+
+<div id="tableContainer">
+    <form id="detailForm">
+        <input type="hidden" id="hidId" value="@Model.Id"/>
+
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+
+                @if (Model.Id > 0)
+                { <tr>
+                    <td>商品ID(只读):</td>
+                    <td>
+                        <input type="text" value="@Model.ProductId " id="ProductId" name="ProductId" readonly="readonly" style="width:80px;"/>
+                    </td>
+                </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td>商品ID(*):</td>
+                        <td>
+                            <input type="text" value="@Model.ProductId " id="ProductId" name="ProductId" style="width:80px;"/>
+                            <input type="button" value="检测" style="width: 50px;" class="checkProductId" pvalue="@Model.ProductId"/>
+                            <label class="HidLable"></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>商品名称(只读):</td>
+                        <td>
+                            <input type="text" readonly="readonly" value="@ViewBag.ProductName" id="vchProductName"/>
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td>图片地址(*):</td>
+                    <td colspan="17">
+                        <input type="text" value="@Model.PictureUrl" id="PictureUrl" name="PictureUrl"/>
+                        <img src="@Model.PictureUrl" width="32%" id="imgUrl"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>应用位置(*):</td>
+                    <td>
+                        @{
+                            var tempId = 0;
+                            if (Model.ApplyPlace != null)
+                            {
+                                var tempModel = Model.ApplyPlace.Replace("][", ",").Replace("[", "").Replace("]", "").Split(',');
+                                foreach (var item in hotApp)
+                                {
+                                    var select = "";
+                                    foreach (var s in tempModel)
+                                    {
+                                        if (item.ApplyPlaceId.ToString().Equals(s))
+                                        {
+                                            select = "checked='checked'";
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            select = "";
+                                        }
+                                    }
+                            <div class="ApplyPlace" style="width: 30%; margin: 1% 0 0 -9%;">
+                                <input name="ApplyPlace" type="checkbox" @select pvalue="@item.Id" value="@item.ApplyPlaceId"/>
+                                <label style="width: 30%; margin-left: -30%;">@item.ApplyPlaceName</label>
+                            </div>
+                                }
+                            }
+                            else
+                            {
+                                foreach (var item in hotApp)
+                                {
+                            <div class="ApplyPlace" style="width: 30%; margin: 1% 0 0 -9%;">
+                                <input name="ApplyPlace" type="checkbox" pvalue="@item.Id" value="@item.ApplyPlaceId"/>
+                                <label style="width: 30%; margin-left: -30%;">@item.ApplyPlaceName</label>
+                            </div>
+                            
+                                }
+                            }
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>左上角标签(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.HotTag)
+                    </td>
+                </tr>
+                <tr>
+                    <td>开始时间:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.StartTime)
+                    </td>
+                </tr>
+                <tr>
+                    <td>结束时间:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.EndTime)
+                    </td>
+                </tr>
+                <tr>
+                    <td>排序:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.Sort)
+                    </td>
+                </tr>
+                <tr>
+                    <td>国籍:</td>
+                    <td>
+                        @Html.DropDownListFor(m => m.CountryId, new KvSelectList(typeof(AppEnum.CountCity).GetEnumList()), false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>状态:</td>
+                    <td>
+                        <select id="IsEnable">
+                            @if (Model.IsEnable == true)
+                            {
+                                <option value="true" selected="selected">启用</option>
+                                <option value="false">关闭</option>
+                            }
+                            else
+                            {
+                                <option value="true">启用</option>
+                                <option value="false" selected="selected">关闭</option>
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>描述:</td>
+                    <td>
+                        @Html.TextAreaFor(m => m.HotDescription)
+                    </td>
+                </tr>
+        </table>
+    </form>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="保存" id="btnSave" />
+    <input type="button" value="返回" id="btnDel" onclick="window.close()" />
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        //图片预览
+        $("#PictureUrl").bind("keyup propertychange", function (e) {
+            var $this = $(this);
+            var url = $.trim($this.val());
+            if (e.type === "keyup") {
+                $("#imgUrl").attr("src", "" + $("#PictureUrl").val() + "");
+            }
+        });
+
+        //检测商品Id是否有效
+        $(".checkProductId").click(function () {
+            var productId = $(this).parents("tr").children("td:eq(1)").children("input").val().replace(/[ ]/g, "");
+
+            if (productId <= 0 || productId == "" || productId == null) {
+                var result = "<font style='color:red'>请输入商品编号且大于0</font>";
+                $(".HidLable").html(result);
+                return false;
+            }
+            $.ajax({
+                url: "/SaleHotStyle/CheckPdtInfoById?productId=" + productId,
+                success: function (result) {
+                    if (result.DoFlag) {
+                        $("#vchProductName").val(result.DoResult);//返回商品名称
+                    } else {
+                        $(".HidLable").html(result.DoResult);
+                    }
+                }
+            });
+        });
+
+        //保存
+        $("#btnSave").click(function () {
+            var model = {};
+            model.Id = $("#hidId").val();
+            var productName = $("#vchProductName").val();
+            model.ProductId = $("#ProductId").val();
+            model.PictureUrl = $("#PictureUrl").val();
+            model.CountryId = $("#CountryId").val();
+            model.IntWinCount = $("#IntWinCount").val();
+            model.ApplyPlace = "";
+            //循环选择的项
+            $('input:checkbox[name="ApplyPlace"]:checked').each(function (index) {
+                var thisval = $(this).val();
+                model.ApplyPlace += "[" + thisval + "]";
+            });
+            model.HotTag = $("#HotTag").val();
+            model.StartTime = $("#StartTime").val();
+            model.EndTime = $("#EndTime").val();
+            model.Sort = $("#Sort").val();
+            model.IsEnable = $("#IsEnable").val();
+            model.HotDescription = $("#HotDescription").val();
+
+            if (model.ProductId == null || model.ProductId == "" || model.ProductId <= 0) {
+                var result = "<font style='color:red'>请输入商品编号且大于0</font>";
+                $(".HidLable").html(result);
+                return false;
+            } else if (model.Id == "" || model.Id == null || model.Id <= 0) {
+                if (productName == null || productName == "") {
+                    var result = "<font style='color:red'>请检测商品编号是否存在商品表</font>";
+                    $(".HidLable").html(result);
+                    return false;
+                }
+            } else if (model.ApplyPlace == null || model.ApplyPlace == "") {
+                alert("请选择应用位置");
+                return false;
+            } else if (model.HotTag == null || model.HotTag == "") {
+                alert("请填写左上角标签");
+                return false;
+            }
+
+            $.ajax({
+                url: '@Url.Action("SaveSaleHotStyle", "SaleHotStyle")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("保存成功！");
+                        reloadPage();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>

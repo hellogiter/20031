@@ -1,0 +1,90 @@
+﻿@{
+    ViewBag.Title = "AccountStateMentIndex";
+}
+
+<h2>对账单查询</h2>
+
+<style>
+    .input-validation-error {
+        border: 1px solid #c0c0c0;
+        background-color: white;
+    }
+
+    .showDetailTable tbody tr.tk-guanli td {
+        width: 15%;
+    }
+
+        .showDetailTable tbody tr.tk-guanli td.tk-name {
+            width: 5%;
+            text-align: center;
+        }
+
+        .showDetailTable tbody tr.tk-guanli td input {
+            text-align: left;
+            width: 85%;
+        }
+
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+</style>
+@{
+    var d1 = (DateTime)ViewBag.d1;
+  var d2=  (DateTime)ViewBag.d2;
+}
+
+<table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+    <tbody>
+        <tr class="tk-guanli">
+            <td class="tk-name">开始时间:</td>
+            <td>
+                <input id="Search_BeginTime" name="Search.BeginTime" type="text" value="@d1" class="Wdate">
+            </td>
+            <td class="tk-name">结束时间:</td>
+            <td>
+                <input id="Search_EndTime" name="Search.EndTime" type="text" value="@d2" class="Wdate">
+            </td>
+
+        </tr>
+    </tbody>
+</table>
+<div class="rowButton">
+    <input type="submit" value="查询" id="btnSearch" />
+</div>
+
+<div id="showResult"></div>
+
+
+<script type="text/javascript">
+    $("#btnSearch").click(function () {
+        var star = $("#Search_BeginTime").val();
+        var end = $("#Search_EndTime").val();
+        if (star == '') {
+            alert('开始日期必填');
+            return false;
+        }
+        if (end == '') {
+            alert('结束日期必填');
+            return false;
+        }
+        var model = {};
+        model.StartTime = star;
+        model.EndTime = end;
+        $.ajax({
+            url: '@Url.Action("QueryAccountStateMent", "Exec")',
+            type: 'post',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(model),
+            success: function (result) {
+                var str = "对账单，共订阅" + result + "笔，折合人民币" + (result * 0.01).toFixed(2) + "元";
+                $("#showResult").html(str);
+            }
+        });
+    });
+
+
+
+</script>

@@ -1,0 +1,42 @@
+﻿@{
+    Layout = null;
+}
+<title>删除运单</title>
+<script src="@Url.Content("~/Scripts/jquery-1.10.2.js")" type="text/javascript"></script>
+<div>
+    请输入删除原因：
+    <input type="text" id="delReaspon" />
+    <input type="submit" value="删除" onclick="del();" />
+</div>
+<script type="text/javascript">
+    function del() {
+        var reason = $.trim($("#delReaspon").val());
+        if (reason == '') {
+            alert('删除原因必填');
+            return;
+        }
+        if (confirm("你确定删除该运单吗？")) {
+
+            var model = {};
+            model.orderCode = '@ViewBag.OrderCode';
+            model.SysNo = @ViewBag.SysNo;
+            model.reason = reason;
+            $.ajax({
+                url: '@Url.Action("DelExpressInfo","Exec")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("已删除！");
+                        //window.opener.location.href=window.opener.location.href; 
+                        window.close(); 
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        }
+    }
+</script>

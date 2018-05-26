@@ -1,0 +1,136 @@
+﻿// ***********************************************************************
+// Copyright (c) 2016 Administrator,All rights reserved.
+// CLR Version : 4.0.30319.34209
+// Project:
+// Assembly:Myzj.OPC.UI.Common.ExcelExport
+// Author:ysx2012@muyingzhijia.com
+// Created:2016/8/17 16:45:21
+// Description:
+// ***********************************************************************
+// Last Modified By:WIN-F4KN29N0GFG
+// Last Modified On:2016/8/17 16:45:21
+// ***********************************************************************
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using NPOI.SS.UserModel;
+
+namespace Myzj.OPC.UI.Common
+{
+	internal class NPOIExport<T> : ExportBase<T>,  IExport, IWriteFileSet
+	{
+		private ExportSupport exportSupport;
+		private Dictionary<string, PropertyInfo> HeadSupport;
+
+		public event EventHandler<BeginExportEventArgs> BgExport;
+
+		public NPOIExport(IList<T> dataSource, Dictionary<string, string> head)
+		{
+			this.exportSupport = new ExportSupport();
+			base.DataSource = dataSource;
+			base.Head = head;
+		}
+
+		public void Export(string FileUrl, MyFileType FileType)
+		{
+			if ((FileType != MyFileType.EXCEL) && (FileType != MyFileType.EXCEL2003))
+			{
+				throw new ExportException("不能导入类型：" + FileType.ToString());
+			}
+			FileUrl = ExportHelper.GetMatchUrl(FileUrl, FileType);
+			try
+			{
+				byte[] buffer;
+				IWorkbook versionWorkbook = ExportCoreHelper.GetVersionWorkbook(FileType);
+				ExportHelper.CellStyles = new Dictionary<StyleXls, ICellStyle>();
+				ExportHelper.CellStyles.Add(StyleXls.时间, ExportCoreHelper.GetDateTimeCellStyle(versionWorkbook));
+				using (MemoryStream stream = new MemoryStream())
+				{
+					ISheet sheet = versionWorkbook.CreateSheet();
+					IRow headerRow = sheet.CreateRow(this.HeadRowIndex);
+					this.SetListHead(headerRow);
+					if (this.RowStartIndex == 0)
+					{
+						this.RowStartIndex = this.HeadRowIndex + 1;
+					}
+					int rowStartIndex = this.RowStartIndex;
+					foreach (T local in base.DataSource)
+					{
+						IRow row2 = sheet.CreateRow(rowStartIndex);
+						int columnStartIndex = this.ColumnStartIndex;
+						foreach (PropertyInfo info in this.HeadSupport.Values)
+						{
+							ICell exCell = row2.CreateCell(columnStartIndex);
+							if (info == null)
+							{
+								exCell.SetCellValue("");
+							}
+							else
+							{
+								object obj2 = info.GetValue(local, null);
+								ExportHelper.SetCellValue(exCell, obj2, info.PropertyType.Name);
+							}
+							columnStartIndex++;
+						}
+						rowStartIndex++;
+					}
+					//AutoSizeColumns(sheet);
+					versionWorkbook.Write(stream);
+					buffer = stream.ToArray();
+				}
+				using (FileStream stream2 = new FileStream(FileUrl, FileMode.Create, FileAccess.Write))
+				{
+					stream2.Write(buffer, 0, buffer.Length);
+					Console.WriteLine("文件导出成功！" + FileUrl);
+				}
+			}
+			catch (Exception exception)
+			{
+				throw new ExportException(exception.Message);
+			}
+		}
+
+		public byte[] GetFile(MyFileType fileType)
+		{
+			return new byte[0];
+		}
+
+		private void SetListCell(PropertyInfo column, ICell exCell, object cellValue)
+		{
+			ExportHelper.SetCellValue(exCell, cellValue, column.PropertyType.Name);
+		}
+
+		private void SetListHead(IRow headerRow)
+		{
+			Type classType = typeof(T);
+			this.exportSupport.SetMainHead(headerRow, classType, base.Head, this.ColumnStartIndex);
+			this.HeadSupport = this.exportSupport.HeadSupport;
+		}
+
+		public int ColumnStartIndex { get; set; }
+
+		public int HeadRowIndex { get; set; }
+
+		public int RowStartIndex { get; set; }
+
+		/// <summary>
+		/// 自动设置Excel列宽
+		/// </summary>
+		/// <param name="sheet">Excel表</param>
+		private static void AutoSizeColumns(ISheet sheet)
+		{
+			if (sheet.PhysicalNumberOfRows > 0)
+			{
+				IRow headerRow = sheet.GetRow(0);
+
+				for (int i = 0, l = headerRow.LastCellNum; i < l; i++)
+				{
+					sheet.AutoSizeColumn(i);
+				}
+			}
+		}
+	}
+}

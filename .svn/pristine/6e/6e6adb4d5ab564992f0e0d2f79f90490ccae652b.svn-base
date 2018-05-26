@@ -1,0 +1,75 @@
+﻿@{
+    ViewBag.Title = "ServerSiteRelate";
+}
+
+<div><h2>缓存服务配置</h2></div>
+
+<table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+    <tr>
+        <td style="width:20%">站点名称</td>
+          <td style="width:50%"> @Html.DropDownList("ClearCacheSite", ViewBag.SiteList as IEnumerable<SelectListItem>, new {@class="ddl" })</td>
+        <td style="width:30%"><input id="btnNewServer" type="button" value="一键配置服务站点"  class="btn"/></td>
+    </tr>
+</table>
+<div id="ServerContent">
+    @Html.Action("ServerContent", "ClearCache", new { siteId=ViewBag.DefaultSiteId})
+</div>
+<div style="text-align:center;">
+    <input id="btnConfigAll" type="button" value="一键配置全站点服务"  class="btn" style="width:200px"/>
+    <input id="btnSave" type="button" value="保存"  class="btn" style="width:200px"/>
+</div>
+
+<script src="../../Scripts/jquery-1.10.2.js"></script>
+<script>
+    $("#ClearCacheSite").change(function () {
+        $("#ServerContent").html("...Loading...");
+
+        var id = $("#ClearCacheSite").val();
+        var data = { siteId: id };
+
+        $.ajax({
+            url: '/ClearCache/ServerContent',
+            data: data,
+            type: 'GET',
+            dataType: 'html',
+            success: function (result) {
+                if (result && $.trim(result).length > 0) {
+                    $("#ServerContent").html(result);
+                }
+            }
+        });
+    });
+
+    $("#btnSave").click(function () {
+        var site = $("#ClearCacheSite").val();
+
+        var serverArr = new Array();
+        $("[type='checkbox']").each(function (index, element) {
+
+            if (element.checked) {
+
+                serverArr.push(parseInt($(element).attr("value")));
+
+            }
+        });
+
+        var data = {};
+        data.SiteSysNo = site;
+        data.ServerSysNo = serverArr.toString();
+
+        $.ajax({
+            url: '/ClearCache/AddServerSite',
+            data: data,
+            type: 'POST',
+            dataType: 'html',
+            success: function (result) {
+                if (result == "True") {
+                    alert("保存成功");                   
+                } else {
+                    alert("保存失败");
+                }
+            }
+        });
+    });
+  
+</script>

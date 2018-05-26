@@ -1,0 +1,125 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.BaseCarriage
+@using Myzj.OPC.UI.ServiceClient
+@model Myzj.OPC.UI.Model.Base.BaseRefer<BuyAppointGoodsParam>
+<h2>运费配置</h2>
+
+<style>
+    .input-validation-error {
+        border: 1px solid #c0c0c0;
+        background-color: white;
+    }
+
+    .showDetailTable tbody tr.tk-guanli td {
+        width: 15%;
+    }
+
+        .showDetailTable tbody tr.tk-guanli td.tk-name {
+            width: 5%;
+            text-align: center;
+        }
+
+        .showDetailTable tbody tr.tk-guanli td input {
+            text-align: left;
+            width: 85%;
+        }
+
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+    <div style="line-height: 50px; padding: 10px;">
+      <table class="showDetailTableMultiColumnm">
+            <tr>
+                <td>有效状态</td>
+                <td>
+                     @{
+                    var list = new Dictionary<int, string>();
+                    list.Add(-1, "全部");
+                    list.Add(1, "有效");
+                    list.Add(0, "无效");
+                    
+                }
+                    @Html.DropDownListFor(m => m.SearchDetail.IsEnableNum, new KvSelectList(list))
+                   
+                </td>
+                <td>省市</td>
+                <td>@Html.DropDownListFor(m => m.SearchDetail.AreaId, new KvSelectList(BaseCarriageConfigClient.Instance.GetAllArea()))</td>
+                <td>商品id</td>
+                <td> @Html.TextBoxFor(m=>m.SearchDetail.GoodsId)</td>
+            </tr>
+        </table>
+       
+    </div>
+    <div class="rowButton">
+        <input type="submit" name="Query" id="Query" value="查询" />
+        <input type="button" name="Query" id="BtnAdd" value="新增" onclick="window.open('/CarriageManager/EditCarriageRule')" />
+    </div>
+    if (Model.List2 != null && Model.List2.Any())
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>序号</th>
+                    <th>有效状态</th>
+                    <th>省市</th>
+                    <th>包含平台</th>
+                    <th>商品id</th>
+                    <th>促销id</th>
+                    <th>运费金额（元）</th>
+                    <th>起始时间</th>
+                    <th>截止时间</th>
+                    <th>备注</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.List2)
+                {
+                    <tr>
+                        <td>@item.SysNo</td>
+                        <td>@if (item.IsEnable)
+                            {
+                                <span>有效</span>
+                            }
+                            else
+                            {
+                                <span>无效</span>
+                            }
+                        </td>
+                        <td>@BaseCarriageConfigClient.Instance.GetAreaName(item.AreaIds)</td>
+                        <td>@BaseCarriageConfigClient.Instance.GetPlatforms(item.Platforms)</td>
+                        <td>@string.Join(",", item.GoodsIds)</td>
+                        <td>@string.Join(",", item.PromIds)</td>
+                        <td>@item.FullCarriage</td>
+                        <td>@item.StartTime</td>
+                        <td>@item.EndTime</td>
+                        <td>@item.Remark</td>
+
+                        <td>  <a  style="color: #191970" target="_blank" href="@Url.Action("EditCarriageRule", "CarriageManager", new { sysNo = item.SysNo })" >编辑</a></td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+    
+    @Html.Partial("Pager", @Model)
+}
+

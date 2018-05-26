@@ -1,0 +1,182 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using Myzj.OPC.UI.Model.Base;
+using Myzj.OPC.UI.Model.ExpressModel;
+using Myzj.OPC.UI.ServiceClient;
+
+namespace Myzj.OPC.UI.Portal.Controllers.Express
+{
+    public class ExpressController : Controller
+    {
+        //
+        // GET: /Express/
+
+        #region 物流信息管理
+        public ActionResult Index(ExpressInfoRefer refer)
+        {
+            var result = ExpressClient.Instance.QueryExpressInfoPageList(refer);
+            return View(result);
+        }
+        public ActionResult Add()
+        {
+            return View();
+        }
+        public ActionResult Update()
+        {
+            return View();
+        }
+        public ActionResult ShowLog(string orderCode)
+        {
+            var result = ExpressClient.Instance.QueryLogPageList(new ExpressLogRefer()
+            {
+                Search = new ExpressLogModel()
+                    {
+                        OrderCode = orderCode
+                    },
+                PageSize = int.MaxValue
+            });
+
+            var list2 = new List<ExpressLogModel2>();
+
+            if (result.List.Any())
+            {
+                var logTypeArr = typeof(AppEnum.ExpressLogType).GetEnumList();
+                var businessTypeArr = typeof(AppEnum.ExpressBusinessType).GetEnumList();
+
+                foreach (var item in result.List)
+                {
+                    var logType = item.LogType.ToString();
+                    var busType = item.BusinessType.ToString();
+                    if (logTypeArr.Any(c => c.Key == item.LogType))
+                    {
+                        logType = logTypeArr.First(c => c.Key == item.LogType).Value;
+                    }
+                    if (businessTypeArr.Any(c => c.Key == item.BusinessType))
+                    {
+                        busType = businessTypeArr.First(c => c.Key == item.BusinessType).Value;
+                    }
+
+                    list2.Add(new ExpressLogModel2()
+                    {
+                        SysNo = item.SysNo,
+                        OrderCode = item.OrderCode,
+                        LogType = logType,
+                        BusinessType = busType,
+                        CreateDate = Convert.ToDateTime(item.CreateDate).ToString("yyyy-MM-dd hh:mm:ss"),
+                        Remark = item.Remark,
+                        LogContent = item.LogContent
+                    });
+                }
+            }
+
+            return View(list2);
+        }
+
+        public ActionResult UpdateExpressInfo(int sysNo, string orderCode)
+        {
+            var refer = new ExpressCompanyRefer();
+
+            var result = ExpressClient.Instance.QueryExpressInfoEntity(sysNo, orderCode);
+
+            return View(result);
+        }
+
+        #endregion
+
+        #region 国际物流
+        public ActionResult InterNationalIndex(ExpressGuojiRefer refer)
+        {
+            var result = ExpressClient.Instance.QueryGuojiPageList(refer);
+            return View(result);
+        }
+
+        #endregion
+
+        #region 配送商管理
+        public ActionResult CompanyIndex(ExpressCompanyRefer refer)
+        {
+            var result = ExpressClient.Instance.QueryCompanPageList(refer);
+            return View(result);
+        }
+        public ActionResult CompanyUpdate(int sysNo)
+        {
+            var refer = new ExpressCompanyRefer();
+            var gad = new CompanyModel();
+            var result = ExpressClient.Instance.QueryCompanyEntity(sysNo);
+            if (result.LogiscticId != null)
+            {
+                gad = result;
+            }
+            return View(gad);
+        }
+
+        public ActionResult CompanySetFreqIndex(ExpressAcessConfigRefer refer)
+        {
+            var result = ExpressClient.Instance.QueryExpressAccessConfigPageList(refer);
+            return View(result);
+        }
+
+        public ActionResult CompanyAdd()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 对账单查询
+        public ActionResult AccountStateMentIndex()
+        {
+            var now = DateTime.Now;
+            var d1 = new DateTime(now.Year, now.Month, 1);
+            var d2 = d1.AddMonths(1).AddDays(-1);
+            ViewBag.d1 = d1;
+            ViewBag.d2 = d2;
+
+            return View();
+        }
+        #endregion
+
+        #region 查询日志
+        public ActionResult LogIndex(ExpressLogRefer refer)
+        {
+            var result = ExpressClient.Instance.QueryLogPageList(refer);
+            return View(result);
+        }
+
+        #endregion
+
+        #region 订单状态扭转
+
+        public ActionResult OrderStatusIndex(ExpressOrderStatusRefer refer)
+        {
+            var result = ExpressClient.Instance.QueryOrderStatusPageList(refer);
+            return View(result);
+        }
+
+        public ActionResult OrderStatusConfigIndex(ExpressOrderStatusConfigRefer refer)
+        {
+            var result = ExpressClient.Instance.QueryOrderStatusConfigList(refer);
+            return View(result);
+        }
+        public ActionResult OrderStatusConfigUpdate(int sysNo)
+        {
+            var refer = new ExpressOrderStatusConfigRefer();
+            var gad = new OrderStatusConfigModel();
+            var result = ExpressClient.Instance.QueryOrderStatusConfigEntity(sysNo);
+            if (result.SysNo != null)
+            {
+                gad = result;
+            }
+            return View(gad);
+        }
+        public ActionResult OrderStatusConfigAdd()
+        {
+            return View();
+        }
+        #endregion
+
+
+    }
+}

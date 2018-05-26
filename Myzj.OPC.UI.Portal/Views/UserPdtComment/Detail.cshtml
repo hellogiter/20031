@@ -1,0 +1,276 @@
+﻿@using MYZJ.Framework.ServiceBase.ServiceModel
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.SaleHotStyle
+@using Myzj.OPC.UI.Model.UserPdtComment
+@using Myzj.OPC.UI.Model.WebIndex
+
+@model  Myzj.OPC.UI.Model.UserPdtComment.UserPdtCommentDetail
+@{
+    var commentCusReply = (UserPdtCommentCusReplyRefer)ViewBag.CommentCusReply;
+}
+
+<script type="text/javascript">
+    //绑定状态
+    //name 名称
+    //val 值
+    function bingSate(name, val) {
+        $("#" + name).val(val);
+    }
+</script>
+<h2>回复列表详情</h2>
+
+<div id="tableContainer">
+    <form id="detailForm">
+        @if (Model != null)
+        {
+            <table class="showDetailTableMultiColumnm">
+                <tr>
+                    <th colspan="4" style="text-align: left; padding-left: 5px;">评论信息</th>
+                </tr>
+                <tr>
+                    <td>商品名称:</td>
+                    <td colspan="3" style="font-weight: bolder">【@Model.VchPdtName】</td>
+                </tr>
+                <tr>
+                    <td>序号:</td>
+                    <td>@Model.IntCommentID</td>
+                    <td>会员号:</td>
+                    <td>@Model.IntUserID</td>
+                </tr>
+                <tr>
+                    <td>订单号:</td>
+                    <td>@Model.IntOrderNO</td>
+                    <td>商品ID:</td>
+                    <td>@Model.IntProductID</td>
+                </tr>
+                <tr>
+                    <td>商品满意度:</td>
+                    <td>【@Model.IntPackagStart】星</td>
+                    <td>商品包装满意度:</td>
+                    <td>【@Model.IntStart】星</td>
+                </tr>
+                <tr>
+                    <td>送货速度满意度:</td>
+                    <td>【@Model.IntDSpeedStart】星</td>
+                    <td>送货服务满意度:</td>
+                    <td>【@Model.IntDServiceStart】星</td>
+                </tr>
+                <tr>
+                    <td>是否审核:</td>
+                    <td>@(Model.IntAuditState == 0 ? "未审核" : "审核通过")</td>
+                    <td>审核人:</td>
+                    <td>@Model.IntAuditUserID</td>
+                </tr>
+                <tr>
+                    <td>评论时间:</td>
+                    <td>@Model.DtCommentDate</td>
+                    <td>审核时间:</td>
+                    <td>@Model.DtAuditDate</td>
+                </tr>
+                <tr>
+                    <td>评论内容:</td>
+                    <td colspan="3">@Model.VchContent</td>
+                </tr>
+            </table>
+            <table class="showDetailTableMultiColumnm">
+                <tr>
+                    <th colspan="4" style="text-align: left; padding-left: 5px;">回复信息</th>
+                </tr>
+                <tr>
+                    <td>是否显示:</td>
+                    <td>@(Model.IntStart == 1 ? "显示" : "不显示")</td>
+                    <td>是否首页显示:</td>
+                    <td>@(Model.IntIndexVisible == 1 ? "显示" : "不显示 ")</td>
+                </tr>
+                <tr>
+                    <td>是否加精:</td>
+                    <td>@(Model.IntIsHighLight == 1 ? "加精" : "未加精")
+                    </td>
+                    <td>是否申请加精:</td>
+                    <td>@(Model.IntAppHighLight == 1 ? "申请加精" : "未申请加精")</td>
+                </tr>
+                <tr>
+                    <td>是否置顶:</td>
+                    <td>@(Model.IntIsOnTop == 1 ? "置顶" : "不置顶 ")</td>
+                </tr>
+                <tr>
+                    <td>回复人:</td>
+                    <td>@Model.IntReplyUserId</td>
+                    <td>回复时间:</td>
+                    <td>@Model.DtReplyDateTime</td>
+                </tr>
+                <tr>
+                    <td>回复内容:</td>
+                    <td colspan="3">@Model.VchReplyContent</td>
+                </tr>
+            </table>
+        }
+
+        <div>
+            <input type="button" name="Query" id="btnPLUpdate" value="批量操作" />
+        </div>
+        @if (commentCusReply.List != null)
+        {
+            <div class="resultDiv">
+                <table class="resultTable" id="calcTotalAmount">
+                    <thead>
+                        <tr>
+                            <th>全选<input type="checkbox" class="checkAll" id="selectAll" /></th>
+                            <th>操作</th>
+                            <th>订单号</th>
+                            <th>会员号</th>
+                            <th>回复内容</th>
+                            <th>回复时间</th>
+                            <th>是否显示<input type="checkbox" class="checkAll" id="selectIsMask" /></th>
+                            <th>审核人</th>
+                            <th>审核时间</th>
+                            <th>审核状态</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in commentCusReply.List)
+                        {
+                            <tr class="table_tr">
+                                <td>
+                                    <input type="checkbox" name="all" class="All" value="@item.CusReply"/>
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("Detail", "UserPdtComment", new { id = item.CusReply })">修改</a>
+                                </td>
+                                <td>@item.CusReply</td>
+                                <td>@item.OrderNO</td>
+                                <td>@item.UserId</td>
+                                <td>
+                                    <textarea readonly="readonly">@item.CusReplyContent</textarea>
+                                </td>
+                                <td>@item.CusReplyDateTime</td>
+                                <td>
+                                    @{
+                            var isMask = "";
+                            if (item.IsMask == 1)
+                            {
+                                isMask = "checked='checked'";
+                            }
+                            else
+                            {
+                                isMask = "";
+                            }
+                                        <input type="checkbox" value="@item.IsMask" @isMask name="IsMaskAll" id="IsMaskAll"/>
+                                    }
+                                </td>
+                                <td>@item.AuditUserID</td>
+                                <td>@item.AuditDateTime</td>
+                                <td>
+                                    @{
+                            if (item.AuditState == (int)AppEnum.IntAuditState.NoAudit)
+                            {
+                                        <select>
+                                            <option>审核未通过</option>
+                                        </select>
+                            }
+                            else
+                            {
+                                var selectName = "selectSate_" + item.CusReply;
+                                        <select id="@selectName" data-type="@item.AuditState" data-projectid="@item.CusReply" class="selState" pvalue="@item.AuditState" name="paydate" >
+                                            <option value="0">未审核</option>
+                                            <option value="1">审核通过</option>
+                                            <option value="2">审核未通过</option>
+                                        </select>
+                                        <script>
+                                            bingSate('@selectName', '@item.AuditState');
+                                        </script>
+                            }
+                                    }
+                                </td>
+                            </tr>   
+                        }
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                </table>
+            </div>
+        }
+    </form>
+</div>
+<div class="rowButton">
+    <input type="button" value="返回" id="btnDel" onclick="window.close()" />
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        //批量更新操作
+        var search = {};
+        var searchModel = [];
+        $("#btnPLUpdate").click(function () {
+            $('input[type="checkbox"][name="all"]:checked').each(function (index) {
+                var cusReplyId = $(this).parents('tr').children().eq(2).html();//获取选中行的CusReply
+                var isMask = 0;//显示	
+                if ($(this).parents('tr').children().eq(7).find("input[type='checkbox']").is(':checked') == true) {
+                    isMask = 1;
+                }
+                var auditState = $(this).parents('tr').children().eq(10).find("option:selected").val();
+
+                var iObj = {};
+                iObj.CusReply = cusReplyId;
+                iObj.IsMask = isMask;
+                iObj.AuditState = auditState;
+
+                searchModel.push(iObj);
+            });
+            search.CommenDos = searchModel;
+
+            $.ajax({
+                url: "/UserPdtComment/UpdateComment",
+                type: "post",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify(search),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert(result.DoResult);
+                        reloadPage();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+    });
+    //全选和反全选
+    $("#selectAll").click(function () {//当点击全选框时 
+        var flag = $("#selectAll").is(":checked");//判断全选按钮的状态 
+        var checkItems = document.getElementsByName("all");
+        for (var i = 0; i < checkItems.length; i++) {
+            checkItems[i].checked = flag;
+        }
+    });
+    //点击子项
+    $("input:checkbox[name='all']").each(function () {
+        $(this).click(function () {
+            if ($("input:checkbox[name='all']:checked").length == $("input:checkbox[name='all']").length) {
+                document.getElementById("selectAll").checked = true;
+            } else {
+                document.getElementById("selectAll").checked = false;
+            }
+        });
+    });
+
+    //是否显示全选和反全选
+    $("#selectIsMask").click(function () {
+        var flag = $("#selectIsMask").is(":checked");//判断全选按钮的状态 
+        var checkItems = document.getElementsByName("IsMaskAll");
+        for (var i = 0; i < checkItems.length; i++) {
+            checkItems[i].checked = flag;
+        }
+    });
+    //是否显示点击子项
+    $("input:checkbox[name='IsMaskAll']").each(function () {
+        $(this).click(function () {
+            if ($("input:checkbox[name='IsMaskAll']:checked").length == $("input:checkbox[name='IsMaskAll']").length) {
+                document.getElementById("selectIsMask").checked = true;
+            } else {
+                document.getElementById("selectIsMask").checked = false;
+            }
+        });
+    });
+</script>

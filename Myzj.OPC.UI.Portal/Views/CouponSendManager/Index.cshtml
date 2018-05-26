@@ -1,0 +1,111 @@
+﻿<h2>优惠券发送</h2>
+<style type="text/css">
+    .showDetailTableMultiColumnm .manjian textarea {
+        width: 500px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .showDetailTableMultiColumnm .tickename input {
+        width: 200px;
+    }
+</style>
+<div id="tableContainer">
+    <form id="detailForm">
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>会员Id:</td>
+                    <td class="manjian">
+                        <textarea id="memNos" placeholder="必填,请输入会员id,以逗号','分隔"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>优惠券Key:</td>
+                    <td class="manjian">
+                        <input id="CouponKey" type="text" placeholder="必填,请输入优惠券key" style="width: 200px;" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="rowButton">
+            <input type="button" value="发券" id="btnSave" />
+            @*  <a  style="color: #191970" target="_blank" href="@Url.Action("BatchSendCoupon", "CouponSendManager")" > 批量发送优惠券</a>*@
+          
+        </div>
+
+        <table class="showDetailTableMultiColumnm" style="display: none">
+            <tbody>
+                <tr>
+                    <td>成功集合:</td>
+                    <td class="manjian">
+                        <textarea id="txtSuccess"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>失败集合:</td>
+                    <td class="manjian">
+                        <textarea id="txtError"></textarea>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </form>
+    <iframe src="/CouponSendManager/BatchSendCoupon" style="width: 100%;padding: 0;margin: 0;" frameborder="no" border="0" marginwidth="0" marginheight="0" scrolling="no" onload="setIframeHeight(this)"></iframe>
+    <iframe src="/CouponSendManager/QueryBatchSendCoupon" style=" width: 100%; padding: 0;margin: 0;"  frameborder="no" border="0" marginwidth="0" marginheight="0" scrolling="no" onload="setIframeHeight(this)"></iframe>
+
+    <script type="text/javascript">
+        $(function () {
+            $("#btnSave").click(function () {
+                var mem = $("#memNos").val();
+                var key = $("#CouponKey").val();
+                if (mem == null || mem == "") {
+                    alert("请输入会员id！");
+                    return false;
+                }
+                if (key == null || key == "") {
+                    alert("请输入优惠券key！");
+                    return false;
+                }
+
+                if (confirm("你确定发送吗？")) {
+                    $.ajax({
+                        url: '@Url.Action("Save", "CouponSendManager")',
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        data: { "memNos": mem, "couponKey": key },
+                        success: function (result) {
+                            $(".showDetailTableMultiColumnm").css("display", "block");
+                            if (result.DoFlag) {
+                                var doResult = result.DoResult.split(';');
+                                $("#txtSuccess").val(doResult[1]);
+                                $("#txtError").val(doResult[2]);
+                                alert("发送成功！");
+                                //window.opener.location = window.opener.location; //刷新父窗口
+                                //window.close(); //不一定要关闭当前窗口
+                            } else {
+                                var doResult = result.DoResult.split(';');
+                                $("#txtSuccess").val(doResult[1]);
+                                $("#txtError").val(doResult[2]);
+                                alert("发送失败" + doResult[0]);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+        
+        function setIframeHeight(iframe) {
+            if (iframe) {
+                var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
+                if (iframeWin.document.body) {
+                    iframe.height = iframeWin.document.documentElement.scrollHeight || iframeWin.document.body.scrollHeight;
+                }
+            }
+        };
+      
+    </script>
+
+</div>

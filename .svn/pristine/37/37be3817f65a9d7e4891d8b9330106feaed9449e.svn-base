@@ -1,0 +1,78 @@
+﻿<input id="btnNew" type="submit" value="新增" class="btn" />
+<input id="btnReturn" type="submit" value="返回" class="btn" />
+
+<div id="NewAndModify" > </div>
+<div id="Show">@Html.Action("Detail9Show")</div>
+<script src="../../Scripts/jquery-1.10.2.js"></script>
+<script>
+   
+    $("#btnReturn").click(function () {
+        $.QueryString = {
+            data: {},
+            Initial: function () {
+                var aPairs, aTmp;
+                var queryString = new String(window.location.search);
+                queryString = queryString.substr(1, queryString.length); //remove   "?"    
+                aPairs = queryString.split("&");
+                for (var i = 0; i < aPairs.length; i++) {
+                    aTmp = aPairs[i].split("=");
+                    this.data[aTmp[0]] = aTmp[1];
+                }
+            },
+            GetValue: function (key) {
+                return this.data[key];
+            }
+        }
+
+        $.QueryString.Initial();
+        window.location = "/AdminCarriage/Index?id=" + $.QueryString.GetValue('id');
+    });
+
+    $("#btnNew").click(function () {      
+        $.ajax({
+            url: '/AdminCarriage/Detail9Operation',
+            type: 'GET',
+            dataType: 'html',
+            success: function (result) {
+                if (result && $.trim(result).length > 0) {
+                    $("#NewAndModify").html(result);
+                }
+            }
+        });
+
+        $(".xiugai").each(function (index, element) {
+            $(element).parent().parent().css("color", "black");
+            $(element).css("color", "black");
+        });
+    });
+
+    function modify(id) {
+        var data = {rowindex:id};
+        $.ajax({
+            url:  '/AdminCarriage/Detail9Operation',
+            type: 'GET',
+            data: data,
+            dataType: 'html',
+            success: function (result) {
+                if (result && $.trim(result).length > 0) {
+                    $("#NewAndModify").html(result);
+                }
+            }
+        });
+
+        $(".xiugai").each(function (index, element) {
+            if (index == id) {
+                $(element).parent().parent().css("color", "red");
+                $(element).css("color", "red");
+            }
+            else {
+                $(element).parent().parent().css("color", "black");
+                $(element).css("color", "black");
+            }
+        });
+
+
+      
+
+    }
+</script>

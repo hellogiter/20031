@@ -1,0 +1,89 @@
+﻿@{
+    ViewBag.Title = "短信余额列表";
+}
+@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.ShortMessage.SmsBalanceRefer 
+<h2>短信余额列表</h2>
+<style>
+    .input-validation-error {
+        border: 1px solid #c0c0c0;
+        background-color: white;
+    }
+
+    .showDetailTable tbody tr.tk-guanli td {
+        width: 15%;
+    }
+
+        .showDetailTable tbody tr.tk-guanli td.tk-name {
+            width: 5%;
+            text-align: center;
+        }
+
+        .showDetailTable tbody tr.tk-guanli td input {
+            text-align: left;
+            width: 85%;
+        }
+
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+
+        .rowButton input {
+            margin: 2px 15px;
+            height: 30px;
+            width: 11%;
+            text-align: center;
+        }
+
+    textarea {
+        min-height: 41px;
+        min-width: 94%;
+    }
+</style>
+
+
+@using (Html.BeginForm())
+{
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>供应商</th>
+                    <th>短信类型</th>
+                    <th>短信通道(序列号)</th>
+                    <th>短信余额</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.List != null && Model.List.Any())
+                {
+                    foreach (var item in Model.List)
+                    {
+                        <tr class="gl-title">
+
+                            <td>@item.Provider</td>
+                            <td>@item.Mode</td>
+                            <td>@item.Channel</td>
+                            <td>@item.Money</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="3">查无数据...</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    <div>
+        *梦网平台的余额，指的是账户可发送条数<br/>
+        *亿美平台的余额，指的是序列号剩余金额<br/>
+    </div>
+   
+}

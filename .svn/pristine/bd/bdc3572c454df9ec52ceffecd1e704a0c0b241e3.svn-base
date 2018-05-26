@@ -1,0 +1,102 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.WebBulletin.WebBulletinRefer
+<h2>公告管理</h2>
+
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable">
+        <tbody>
+            <tr>
+                <td>公告名称:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.VchBulletinName)
+                </td>
+                <td>是否启用:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.SearchDetail.IntIsEnable, new KvSelectList(typeof(AppEnum.IsEnable).GetEnumList()), true)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    var success = @ViewData["SuccessMsg"];
+    if (null != success)
+    { 
+    <span style="color: green">@success</span>
+    }
+    var notice = @ViewData["ErrorMsg"];
+    if (null != notice)
+    {
+    <span style="color: red">@notice</span>
+    }
+    @Html.Partial("Item", @Model.List)
+    
+    @Html.Partial("Pager", @Model)
+}
+
+<script type="text/javascript">
+    $(function () {
+        //删除
+        $(".delWebBulletin").click(function () {
+            var id = $(this).attr("pvalue");
+            $.ajax({
+                url: "/WebBulletin/Del",
+                data: { "id": id },
+                dataType: 'json',
+                type: 'POST',
+                success: function (result) {
+                    if (result.DoFlag) {
+                        location.reload();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+        //修改排序
+        $(".Sort").change(function () {
+            var id = $(this).attr("pvalue");
+            var sort = $(this).val();
+
+            $.ajax({
+                url: "/WebBulletin/UpdateSort?id=" + id + "&sort=" + sort,
+                type: "Post",
+                success: function (res) {
+                    if (res.DoFlag) {
+                        alert("更新成功");
+                        location.reload();
+                    } else {
+                        alert("修改失败");
+                    }
+                }
+            });
+        });
+    });
+    //修改状态
+    function updateState(obj) {
+        var id = $(obj).data("id");
+        var state = 0;
+        if (obj.checked) {
+            state = 1;
+        }
+        $.ajax({
+            url: "/WebBulletin/UpdateState?id=" + id + "&state=" + state,
+            type: "Post",
+            success: function (res) {
+                if (res.DoFlag) {
+                    alert("更新成功");
+                } else {
+                    alert("修改失败");
+                }
+            }
+        });
+    }
+</script>
+
+
+
+
+
+
+
+

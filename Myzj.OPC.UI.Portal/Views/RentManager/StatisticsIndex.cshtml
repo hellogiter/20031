@@ -1,0 +1,95 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.Base.BaseRefer<Myzj.OPC.UI.Model.RentActivity.BaseRentStatisticsInfo>
+<h2>租赁数据统计</h2>
+<style>
+    .input-validation-error {
+        border: 1px solid #c0c0c0;
+        background-color: white;
+    }
+
+    .showDetailTable tbody tr.tk-guanli td {
+        width: 15%;
+    }
+
+        .showDetailTable tbody tr.tk-guanli td.tk-name {
+            width: 5%;
+            text-align: center;
+        }
+
+        .showDetailTable tbody tr.tk-guanli td input {
+            text-align: left;
+            width: 85%;
+        }
+
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+        <tbody>
+            <tr class="tk-guanli">
+                <td class="tk-name">查询类型：</td>
+                <td>
+                    @Html.DropDownListFor(m => m.SearchDetail.Type, new KvSelectList(typeof(AppEnum.StatisticsType).GetEnumList()), false)
+                </td>
+
+            </tr>
+        </tbody>
+    </table>
+    <div class="rowButton">
+        <input type="submit" value="查询" id="btnSearch" />
+    </div>
+    if (Model.List2 != null && Model.List2.Any())
+    {
+        var model = Model.List2;
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    @if (Model.SearchDetail.Type == 0)
+                    {
+                        <th>商品id</th>
+                    }
+                    else if (Model.SearchDetail.Type == 1)
+                    {
+                        <th>时间</th>
+                    }
+
+                    <th>累计总数</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in model)
+                {
+                    <tr>
+                        @if (Model.SearchDetail.Type == 0)
+                        {
+                            <td>@item.GoodsId</td>
+                            <td>@item.TotalCount</td>
+                            <td><a style="color: #191970; cursor: pointer" target="_blank" href="@Url.Action("StatisticsDetailIndex", "RentManager", new { goodsId=item.GoodsId })">查看数据</a></td>
+                        }
+                        else if (Model.SearchDetail.Type == 1)
+                        {
+                            <td>@string.Format("{0:d}",item.DtTime)</td>
+                            <td>@item.TotalCount</td>
+                            <td><a style="color: #191970; cursor: pointer" target="_blank" href="@Url.Action("StatisticsDetailIndex", "RentManager", new { date = string.Format("{0:d}",item.DtTime) })">查看历史数据</a></td>
+                        }
+                    </tr>
+                }
+
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+
+    }
+    
+    @Html.Partial("Pager", @Model)
+}

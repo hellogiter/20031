@@ -1,0 +1,281 @@
+﻿<h2>添加团商品信息</h2>
+<style type="text/css">
+    .showDetailTableMultiColumnm .manjian textarea {
+        width: 500px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .showDetailTableMultiColumnm .tickename input {
+        width: 200px;
+    }
+</style>
+
+@{
+    var beforePay = (bool)ViewBag.ActBeforePay;
+}
+
+@using (Html.BeginForm())
+{
+    <div id="tableContainer">
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>商品ID</td>
+                    <td colspan="3">
+                        <input id="txtGoodsId" type="text" placeholder="必填" style="width: 200px;" />
+                        <input type="button" value="查询" id="btnSearch" style="width: 50px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>对应活动ID</td>
+                    <td colspan="3">
+                        <input id="txtGroupActivitySysNo" type="text" disabled="disabled"  style="width: 200px;" value="@ViewBag.GroupActivitySysNo" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>商品名</td>
+                    <td colspan="3">
+                        <label id="lblGoodsName" style="text-align: left;"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>商品原价</td>
+                    <td colspan="3">
+                        <label id="lblVipPrice" style="text-align: left;"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>商品描述</td>
+                    <td colspan="3">
+                        <textarea id="txtGoodsDes" placeholder="必填"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>活动图片地址</td>
+                    <td colspan="3">
+                        <input id="txtPicUrl" type="text" placeholder="必填" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>商品单价</td>
+                    <td colspan="3" style="text-align: left">
+                        <input id="txtGroupPrice" type="text" placeholder="必填" style="width: 200px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>设置成团人数</td>
+                    <td colspan="3">
+                        <input id="txtSetCanGroupCount" type="text" placeholder="必填" value="3" style="width: 200px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>设置建团总数</td>
+                    <td colspan="3" style="text-align: left">
+                        <input id="txtSetJianGroupCount" type="text" placeholder="必填" style="width: 200px;" />*建议建团总数控在1000以下
+                    </td>
+                </tr>
+                <tr style="display: none">
+                    <td>禁止用户建团标签</td>
+                    <td colspan="3" style="text-align: left">
+                        <input id="txtNoCreateUserLabel" type="text" style="width: 200px;" />*多个标签以英文逗号','分隔
+                    </td>
+                </tr>
+                <tr>
+                    <td>禁止用户参团标签</td>
+                    <td colspan="3" style="text-align: left">
+                        <input id="txtNoJoinUserLabel" type="text" style="width: 200px;" />*多个标签以英文逗号','分隔
+                    </td>
+                </tr>
+
+                @if (!beforePay)
+                {
+                    <tr>
+                        <td>支持团长一元购用户标签</td>
+                        <td colspan="3" style="text-align: left">
+                            <input id="txtZeroPayUserLabel" type="text" style="width: 200px;" />*多个标签以英文逗号','分隔
+                        </td>
+                    </tr>
+                }
+
+                <tr>
+                    <td>促销ID</td>
+                    <td colspan="3">
+                        <input id="txtPromSysNos" type="text" placeholder="必填" style="width: 200px;" />
+                    </td>
+                </tr>
+                @if (!beforePay)
+                {
+                    <tr>
+                        <td>一元购促销ID</td>
+                        <td colspan="3" style="text-align: left">
+                            <input id="txtPromSysNos2" type="text" style="width: 200px;" />*满足条件一元购使用此促销Id
+                        </td>
+                    </tr>
+                }
+
+                <tr>
+                    <td style="color: red">拼团玩法图片地址</td>
+                    <td colspan="3" style="text-align: left">
+                        <input id="txtPingPlayDesc" type="text" placeholder="必填" style="width: 450px;" />
+                    </td>
+                </tr>
+                @if (beforePay)
+                {
+                    <tr>
+                        <td style="color: red">先支付-支持直接参团(附近的团)</td>
+                        <td colspan="3" id="radList">
+                            <span style="width: 40px; float: left;">
+                                <input type="radio" name="CanNearGroup" value="True" />是</span>
+                            <span style="width: 40px; margin-left: 50px;">
+                                <input type="radio" name="CanNearGroup" checked="checked" value="False" />否</span>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td style="color: red">后支付-团长一元购规则图片地址</td>
+                        <td colspan="3" style="text-align: left">
+                            <input id="txtZeroPayDesc" type="text" placeholder="当商品支持一元购时必填" style="width: 450px;" />
+                        </td>
+                    </tr>
+                }
+
+                @* <tr>
+                    <td>开团流程图地址</td>
+                    <td colspan="3">
+                        <input id="txtGroupProcessPic" type="text" style="width: 450px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>砍价攻略图地址</td>
+                    <td colspan="3">
+                        <input id="txtGroupBargainDesc" type="text" style="width: 450px;" />
+                    </td>
+                </tr>
+                <tr>
+                          <td>砍价团规则图片地址</td>
+                          <td colspan="3">
+                              <input id="txtGroupRuleDescription" type="text"  style="width: 450px;" />
+                          </td>
+                      </tr>
+                *@
+
+                <tr>
+                    <td>排序值</td>
+                    <td colspan="3">
+                        <input id="txtSort" type="text" placeholder="必填" style="width: 200px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>开始时间</td>
+                    <td>
+                        <input id="txtStartTime" type="text" placeholder="必填" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'});" class="Wdate" style="width: 200px;" />
+                    </td>
+                    <td>结束时间</td>
+                    <td>
+                        <input id="txtEndTime" type="text" placeholder="必填" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'});" class="Wdate" style="width: 200px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>是否启用</td>
+                    <td colspan="3" id="radList">
+                        <span style="width: 40px; float: left;">
+                            <input type="radio" name="IsEnable" checked="checked" value="True" />启用</span>
+                        <span style="width: 40px; margin-left: 50px;">
+                            <input type="radio" name="IsEnable" value="False" />禁用</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="rowButton">
+            <input type="button" value="添加" id="btnSave" />
+            <input type="button" value="关闭" id="btnDel" onclick="history.back(-1);" />
+        </div>
+    </div>
+    
+}
+
+<script type="text/javascript">
+    $("#btnSearch").click(function () {
+        $.ajax({
+            url: '@Url.Action("GetGoodsInfoByGoodsId", "BargainGroup")',
+            type: 'post',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: "{\"goodsId\":" + $("#txtGoodsId").val() + "}",
+            success: function (result) {
+                $("#lblGoodsName").text(result.vchProductName);
+                $("#txtGoodsDes").val(result.vchProductStunt);
+                $("#lblVipPrice").text(result.numVipPrice);
+                $("#txtGoodsId").attr("Disabled", "Disabled");
+            }
+
+        });
+
+    });
+
+
+    $("#btnSave").click(function () {
+        var model = {};
+        model.GoodsId = $.trim($("#txtGoodsId").val());
+        model.GoodsName = $.trim($("#lblGoodsName").text());
+        model.VipPrice = $.trim($("#lblVipPrice").text());
+        model.GoodsDes = $.trim($("#txtGoodsDes").val());
+        model.GroupPrice = $.trim($("#txtGroupPrice").val());
+        model.SetCanGroupCount = $.trim($("#txtSetCanGroupCount").val());
+        model.SetJianGroupCount = $.trim($("#txtSetJianGroupCount").val());
+        model.Sort = $.trim($("#txtSort").val());
+        model.StartTime = $.trim($("#txtStartTime").val());
+        model.EndTime = $.trim($("#txtEndTime").val());
+        model.PicUrl = $.trim($("#txtPicUrl").val());
+        model.PromSysNos = $.trim($("#txtPromSysNos").val());
+        model.GroupActivitySysNo = $.trim($("#txtGroupActivitySysNo").val());
+        model.IsEnable = $('#radList input[name="IsEnable"]:checked').val();
+
+        model.GroupProcessPic = $.trim($("#txtGroupProcessPic").val());
+        model.GroupBargainDesc = $.trim($("#txtGroupBargainDesc").val());
+        model.GroupRuleDescription = $.trim($("#txtGroupRuleDescription").val());
+        model.NoCreateUserLabel = $.trim($("#txtNoCreateUserLabel").val());
+        model.NoJoinUserLabel = $.trim($("#txtNoJoinUserLabel").val());
+        model.ZeroPayUserLabel = $.trim($("#txtZeroPayUserLabel").val());
+        model.PromSysNos2 = $.trim($("#txtPromSysNos2").val());
+
+        model.PingPlayDesc = $.trim($("#txtPingPlayDesc").val());//拼团玩法
+        model.ZeroPayDesc = $.trim($("#txtZeroPayDesc").val());//团长一元购说明图片地址
+        model.CanNearGroup = $('#radList input[name="CanNearGroup"]:checked').val();//是否支持参加附近的团
+
+
+        if (model.SetJianGroupCount > 1000) {
+            if (!confirm("你设置的建团数量过大，可能会造成亏损，是否继续")) {
+                return;
+            }
+        }
+
+        if (parseFloat($("#lblVipPrice").text()) > parseFloat(model.GroupPrice)) {
+            if (!confirm("设置的商品价低于成本价，可能会造成亏损，是否继续")) {
+                return;
+            }
+        }
+
+        if (confirm("你确定保存吗？")) {
+            $.ajax({
+                url: '@Url.Action("BargainGroupAdd", "BargainGroup")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("添加成功！");
+                        window.location.href = '@Url.Action("Index", "BargainGroup", new { groupActivitySysNo = ViewBag.GroupActivitySysNo })';
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        }
+    });
+
+</script>

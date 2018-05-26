@@ -1,0 +1,154 @@
+﻿@using MYZJ.Framework.ServiceBase.ServiceModel
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.OrderProductState
+@using Myzj.OPC.UI.Model.SaleHotStyle
+@using Myzj.OPC.UI.Model.WebIndex
+@model Myzj.OPC.UI.Model.OrderProductState.OrderProductStateDetail
+@{
+    var isEdit = (Model != null && Model.ID > 0);
+    var actionName = isEdit ? "Update" : "Add";
+
+    var wareHouse = (List<BaseWarehouseDetail>)ViewBag.ResultWarehouse;
+}
+
+@if (isEdit)
+{
+    <h2>修改订单扭转物流信息配置</h2>
+}
+else
+{
+    <h2>新增订单扭转物流信息配置</h2>
+}
+
+<div id="tableContainer">
+    <form id="detailForm">
+        <input type="hidden" id="hidId" value="@Model.ID"/>
+
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>商城类型(*):</td>
+                    <td>
+                        @Html.DropDownListFor(m => m.MallType, new KvSelectList(typeof(AppEnum.MallType).GetEnumList()), true)
+                    </td>
+                </tr>
+                <tr>
+                    <td>订单状态(*):</td>
+                    <td>
+                        @Html.DropDownListFor(m => m.FlowStatus, new KvSelectList(typeof(AppEnum.FlowStatus).GetEnumList()), true)
+                    </td>
+                </tr>
+                <tr>
+                    <td>仓位标识(*):</td>
+                    <td>
+                        <select id="WareHouse" name="WareHouse">
+                            @{
+                                var select = "";
+                                if (wareHouse != null)
+                                {
+                                    foreach (var item in wareHouse)
+                                    {
+                                        if (item.Id == Model.WareHouse)
+                                        {
+                                            select = "selected='selected'";
+                                        }
+                                        else
+                                        {
+                                            select = "";
+                                        }
+                                <option value="@item.Id" @select >@item.WarehouseName</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>间隔时间(*) :</td>
+                    <td>
+                        <input type="text" value="@Model.DisplayTime" id="DisplayTime"/>-(单位：分钟 **最终显示时间=当前时间+间隔分钟**)
+                    </td>
+                </tr>
+                <tr>
+                    <td>物流描述(*):</td>
+                    <td>
+                        @Html.TextAreaFor(m => m.OrderStatusDesc)
+                    </td>
+                </tr>
+                <tr>
+                    <td>备注 :</td>
+                    <td>
+                        @Html.TextAreaFor(m => m.Remark)-(*海淘直邮备注请谨慎操作)
+                    </td>
+                </tr>
+                <tr>
+                    <td>排序 :</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.Sort)-(数值越大越靠后)
+                    </td>
+                </tr>
+                <tr>
+                    <td>状态(*):</td>
+                    <td>
+                        @Html.DropDownListFor(m => m.IsDeleted, new KvSelectList(typeof(AppEnum.IsVisibleIndex).GetEnumList()), true)
+                    </td>
+                </tr>
+        </table>
+    </form>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="保存" id="btnSave" />
+    <input type="button" value="返回" id="btnDel" onclick="window.close()" />
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $("#btnSave").click(function () {
+            var model = {};
+            model.ID = $("#hidId").val();
+            model.MallType = $("#MallType").val();
+            model.FlowStatus = $("#FlowStatus").val();
+            model.WareHouse = $("#WareHouse").val();
+            model.DisplayTime = $("#DisplayTime").val();
+            model.OrderStatusDesc = $("#OrderStatusDesc").val();
+            model.Remark = $("#Remark").val();
+            model.Sort = $("#Sort").val();
+            model.IsDeleted = $("#IsDeleted").val();
+
+            if (model.MallType == null || model.MallType == "") {
+                alert("请选择商城类型！");
+                return false;
+            } else if (model.FlowStatus == null || model.FlowStatus == "") {
+                alert("请选择订单状态！");
+                return false;
+            } else if (model.DisplayTime == null || model.DisplayTime == "") {
+                alert("请输入间隔时间！");
+                return false;
+            } else if (model.OrderStatusDesc == null || model.OrderStatusDesc == "") {
+                alert("请输入物流描述！");
+                return false;
+            } else if (model.IsDeleted == null || model.IsDeleted == "") {
+                alert("请选择状态！");
+                return false;
+            }
+
+
+            $.ajax({
+                url: '@Url.Action("Save", "OrderProductState")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert(result.DoResult);
+                        reloadPage();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>

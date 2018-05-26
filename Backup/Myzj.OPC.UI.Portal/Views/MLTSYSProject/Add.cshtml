@@ -1,0 +1,236 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.MLTSYSProjectMannger.AddMLTSYSProjectReq
+<h2>新增专题</h2>
+
+<style type="text/css">
+    .showDetailTable tbody tr td .width500 {
+        width: 500px;
+    }
+
+    .showDetailTable tbody tr td .width300 {
+        width: 180px;
+    }
+</style>
+
+
+@using (Html.BeginForm())
+{
+    <div id="promBasicInfoDiv">
+        <table class="showDetailTable">
+            <tbody>
+                <tr>
+                    <th colspan="4" style="text-align: left; padding-left: 5px;">专题基本信息</th>
+                </tr>
+                <tr>
+                    <td>标题:</td>
+                    <td colspan="3">
+                        <input id="projectTitle" class="width500" type="text" maxlength="100" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>内容:</td>
+                    <td colspan="3">
+                        <textarea id="projectContent" class="width500" type="text" cols="20"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>描述:</td>
+                    <td colspan="3">
+                        <textarea id="projectDescribe" class="width500" type="text" cols="20"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>被赞数量:</td>
+                    <td>
+                        <input id="praiseCount" class="width300" type="text" value="0"  disabled="disabled" />
+                    </td>
+                    <td>评论数量:</td>
+                    <td>
+                        <input id="commentsCount" class="width300" type="text" value="0" disabled="disabled" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>反对数量:</td>
+                    <td>
+                        <input id="againstCount" class="width300" type="text" value="0" disabled="disabled" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>排序:</td>
+                    <td>
+                        <input id="sort" class="width300" type="text" value="0" />
+                    </td>
+                    <td>状态:</td>
+                    <td>
+                        <select id="projectState" class="width300">
+                            <option value="1" selected="selected">启用</option>
+                            <option value="0">禁用</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="4" style="text-align: left; padding-left: 5px;">专题图片信息</th>
+                </tr>
+                <tr>
+                    <td>标题:</td>
+                    <td colspan="3">
+                        <input id="imageTitle" class="width500" type="text" maxlength="100" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>图片路径:</td>
+                    <td colspan="3">
+                        <input id="imageUrl" class="width500" type="text" />
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>图片链接:</td>
+                    <td colspan="3">
+                        <input id="imageLink" class="width500" type="text" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>内容:</td>
+                    <td colspan="3">
+                        <textarea id="imageContent" class="width500" type="text" cols="20" ></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>描述:</td>
+                    <td colspan="3">
+                        <textarea id="imageDescribe" class="width500" type="text" cols="20"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>排序:</td>
+                    <td colspan="3">
+                        <input id="imageSort" class="width500" type="text" value="0" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="rowButton">
+        <input type="button" value="保存" id="btnSave" />
+    </div>
+}
+
+
+<script type="text/javascript">
+    $(function () {
+        //保存专题
+        $("#btnSave").click(function () {
+            //专题
+            var projectTitle = $("#projectTitle").val();//标题
+            var projectContent = $("#projectContent").val();//内容
+            var projectDescribe = $("#projectDescribe").val();//描述
+            var praiseCount = $("#praiseCount").val();//被赞数量
+            var commentsCount = $("#commentsCount").val();//评论数量
+            var againstCount = $("#againstCount").val();//反对数量
+            var sort = $("#sort").val();//排序
+            var state = $("#projectState").val();//状态
+
+            //专题图片
+            var imageTitle = $("#imageTitle").val();//标题
+            var imageContent = $("#imageContent").val();//内容
+            var imageDescribe = $("#imageDescribe").val();//描述
+            var imageUrl = $("#imageUrl").val();//图片路径
+            var imageLink = $("#imageLink").val();//图片链接
+            var imageSort = $("#imageSort").val();//图片排序
+
+            //if (imageContent.length > 400) {
+            //    alert("专题主图内容超过长度");
+            //    $("#projectTitle").focus();
+            //    return false;
+            //}
+            //if (imageDescribe.length > 300) {
+            //    alert("专题主图备注超过长度");
+            //    $("#projectTitle").focus();
+            //    return false;
+            //}
+            //if (projectContent.length > 400) {
+            //    alert("专题主图内容超过长度");
+            //    $("#projectTitle").focus();
+            //    return false;
+            //}
+            //if (projectDescribe.length > 300) {
+            //    alert("专题主图备注超过长度");
+            //    $("#projectTitle").focus();
+            //    return false;
+            //}
+
+            if (projectTitle.length <= 0) {
+                alert("请填写专题标题");
+                $("#projectTitle").focus();
+                return false;
+            }
+            //if (projectTitle.length > 100) {
+            //    alert("专题标题过长");
+            //    $("#projectTitle").focus();
+            //    return false;
+            //}
+
+            if (projectContent.length <= 0) {
+                alert("请填写专题内容");
+                $("#projectContent").focus();
+                return false;
+            }
+
+            if (imageUrl.length <= 0) {
+                alert("请填专题主图路径");
+                $("#imageUrl").focus();
+                return false;
+            }
+            //if (imageTitle.length > 100) {
+            //    alert("专题主图标题过长");
+            //    $("#projectTitle").focus();
+            //    return false;
+            //}
+            var model = {};
+
+            //专题
+            model.Project = {};
+            model.Project.ProjectTitle = projectTitle;
+            model.Project.ProjectContent = projectContent;
+            model.Project.ProjectDescribe = projectDescribe;
+            model.Project.PraiseCount = praiseCount;
+            model.Project.CommentsCount = commentsCount;
+            model.Project.AgainstCount = againstCount;
+            model.Project.Sort = sort;
+            model.Project.ProjectState = state;
+
+            //专题图片
+            model.ProjectImage = {};
+            model.ProjectImage.ImageState = 1;
+            model.ProjectImage.ImageTitle = imageTitle;
+            model.ProjectImage.ImageContent = imageContent;
+            model.ProjectImage.ImageDescribe = imageDescribe;
+            model.ProjectImage.ImageUrl = imageUrl;
+            model.ProjectImage.ImageLink = imageLink;
+            model.ProjectImage.ImageType = 1;
+            model.ProjectImage.Sort = imageSort;
+
+            $.ajax({
+                url: "/MLTSYSProject/AddSysProject",
+                type: "post",
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (flag) {
+                    if (flag) {
+                        alert("保存成功");
+                        reloadPage();
+                    } else {
+                        alert("保存失败");
+                    }
+                },
+                error: function () {
+                    alert("服务器异常，请稍后尝试...");
+                    return false;
+                }
+            });
+        });
+    });
+</script>

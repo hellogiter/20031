@@ -1,0 +1,27 @@
+﻿@{
+    Layout = null;
+}
+
+@model Myzj.OPC.UI.Model.ClearCacheSites 
+
+<table class="showDetailTable" >
+    <tr>
+        <td>SysNo</td>
+        <td>站点名称</td>
+        <td>状态</td>
+        <td>操作</td>
+    </tr>
+    
+@foreach (var site in Model.ClearCacheSiteList)
+{
+    <tr>
+    <td>@site.SysNo</td>
+    <td>@site.SiteName</td>
+    <td>@(site.IsEnable=="True"?"启用":"禁用")</td>
+    <td>
+        <a   class="xiugai" href='javascript:modifysite(@site.SysNo,"@site.IsEnable");'>@(site.IsEnable=="True"?"禁用":"启用")</a>
+    </td>
+         </tr>
+}
+       
+    </table>

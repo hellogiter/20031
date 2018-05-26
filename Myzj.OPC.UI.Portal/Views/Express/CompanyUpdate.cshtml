@@ -1,0 +1,154 @@
+﻿@model  Myzj.OPC.UI.Model.ExpressModel.CompanyModel
+<h2>更新配送商</h2>
+<style type="text/css">
+    .showDetailTableMultiColumnm .manjian textarea {
+        width: 500px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .showDetailTableMultiColumnm .tickename input {
+        width: 200px;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+    if (Model != null)
+    {
+    <div id="tableContainer">
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <input id="sysNo" type="hidden" value="@Model.SysNo"  style="width: 200px;" />
+
+                <tr>
+                    <td>配送商ID(内部)</td>
+                    <td colspan="3">
+                        <input id="txtLogiscticId" type="text" value="@Model.LogiscticId" readonly="readonly"  placeholder="必填" style="width: 200px; " />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>配送商代码(用于订阅快递100)</td>
+                    <td colspan="3">
+                        <input id="txtLogiscticCompany" type="text" value="@Model.LogiscticCompany" style="width: 200px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>配送商名称</td>
+                    <td colspan="3">
+                        <input id="txtLogiscticCompanyName" type="text" value="@Model.LogiscticCompanyName" placeholder="必填" style="width: 200px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>设为常用</td>
+                    
+                    @if (Model.OfenFlag > 0)
+                    {
+                        <td colspan="3" id="radList">
+                            <span style="width: 40px; float: left;">
+                                <input type="radio" name="OfenFlag" value="0" />否</span>
+                            <span style="width: 40px; margin-left: 50px;">
+                                <input type="radio" name="OfenFlag" checked="checked"  value="1" />是</span>
+                        </td>
+                    }
+                    else
+                    {
+                        <td colspan="3" id="radList">
+                        <span style="width: 40px; float: left;">
+                            <input type="radio" name="OfenFlag" checked="checked" value="0" />否</span>
+                        <span style="width: 40px; margin-left: 50px;">
+                            <input type="radio" name="OfenFlag" value="1" />是</span>
+                    </td>
+                    }
+                    
+                </tr>
+                <tr>
+                    <td>对接方式</td>
+                   @if (Model.SetAccessMode == 0)
+                   {
+                         <td colspan="3" id="radList">
+                        <span style="width: 40px; float: left;">
+                            <input type="radio" name="SetAccessMode" checked="checked" value="0" />快递100</span>
+                        <span style="width: 40px; margin-left: 50px;">
+                            <input type="radio" name="SetAccessMode" value="1" />自对接</span>
+                        <span style="width: 40px; margin-left: 50px;">
+                            <input type="radio" name="SetAccessMode" value="2" />不对接</span>
+                    </td>
+                   }
+                     @if (Model.SetAccessMode == 1)
+                     {
+                           <td colspan="3" id="radList">
+                        <span style="width: 40px; float: left;">
+                            <input type="radio" name="SetAccessMode"  value="0" />快递100</span>
+                        <span style="width: 40px; margin-left: 50px;">
+                            <input type="radio" name="SetAccessMode" checked="checked" value="1" />自对接</span>
+                        <span style="width: 40px; margin-left: 50px;">
+                            <input type="radio" name="SetAccessMode" value="2" />不对接</span>
+                    </td>
+                     }
+                     @if (Model.SetAccessMode == 2)
+                     {
+                           <td colspan="3" id="radList">
+                        <span style="width: 40px; float: left;">
+                            <input type="radio" name="SetAccessMode" value="0" />快递100</span>
+                        <span style="width: 40px; margin-left: 50px;">
+                            <input type="radio" name="SetAccessMode" value="1" />自对接</span>
+                        <span style="width: 40px; margin-left: 50px;">
+                            <input type="radio" name="SetAccessMode" checked="checked" value="2" />不对接</span>
+                    </td>
+                     }
+                   
+                </tr>
+            </tbody>
+        </table>
+        <div class="rowButton">
+            <input type="button" value="保存" id="btnSave" />
+            <input type="button" value="关闭" id="btnDel" onclick="history.back(-1);" />
+        </div>
+    </div>
+        
+    }
+    else
+    {
+    @Html.Partial("Error");
+    }
+
+
+}
+
+<script type="text/javascript">
+
+
+
+    $("#btnSave").click(function () {
+
+        var model = {};
+        model.SysNo = $.trim($("#sysNo").val());
+        model.LogiscticId = $.trim($("#txtLogiscticId").val());
+        model.LogiscticCompany = $.trim($("#txtLogiscticCompany").val());
+        model.LogiscticCompanyName = $.trim($("#txtLogiscticCompanyName").val());
+        model.OfenFlag = $('#radList input[name="OfenFlag"]:checked').val();
+        model.SetAccessMode = $('#radList input[name="SetAccessMode"]:checked').val();
+
+        if (confirm("你确定保存吗？")) {
+            $.ajax({
+                url: '@Url.Action("UpdExpressCompany", "Exec")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("更新成功！");
+                        window.location.href = '@Url.Action("CompanyIndex", "Express")';
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        }
+    });
+
+
+</script>

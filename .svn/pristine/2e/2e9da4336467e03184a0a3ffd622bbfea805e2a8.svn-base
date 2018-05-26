@@ -1,0 +1,66 @@
+﻿@using System.Collections
+@using Myzj.OPC.UI.Model.Base
+
+@model IEnumerable<Myzj.OPC.UI.Model.WebBulletin.WebBulletinDetail>
+@{
+    Layout = null;
+}
+
+@{
+    <div class="rowButton">
+        <input type="submit" name="Query" id="Query" value="查询" />
+        <input type="button" name="Query" id="BtnAdd" value="新增" onclick="javascript: window.open('/WebBulletin/Detail')" />
+    </div>
+
+    if (Model != null && Model.Any())
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>操作</th>
+                    <th>用户ID</th>
+                    <th>公告名称</th>
+                    <th>公告链接</th>
+                    <th>录入时间</th>
+                    <th>公告排序</th>
+                    <th>公告状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.IntBulletinID</td>
+                        <td>
+                            <a style="color: #191970" target="_blank" href="@Url.Action("Detail", "WebBulletin", new { id = item.IntBulletinID })" >修改</a>
+
+                            <a style="color: #191970"  href="javascript:(0)" pvalue="@item.IntBulletinID" class="delWebBulletin">删除</a>
+                        </td>
+                        <td>@item.IntAddUserID</td>
+                        <td>@item.VchBulletinName</td>
+                        <td>@item.VchBulletinURL</td>
+                        <td>@item.DtAddDate</td>
+                        <td>
+                            <input type="text" value="@item.IntSort" pvalue="@item.IntBulletinID" class="Sort" id="Sort"style="width: 30px"/>
+                        </td>
+                        <td>
+                            @{
+                                var checkStr = "";
+                                if (item.IntIsEnable == 1)
+                                {
+                                    checkStr = "checked='checked'";
+                                }
+                            }
+                            <input id="cbkState-@item.IntBulletinID" type="checkbox" @checkStr data-id="@item.IntBulletinID" onclick="updateState(this)" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+}

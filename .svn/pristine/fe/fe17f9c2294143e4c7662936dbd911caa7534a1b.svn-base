@@ -1,0 +1,85 @@
+﻿@using Myzj.OPC.UI.Common
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.UserRefer
+
+@{
+    var model = (GetUserRefer)ViewBag.UserRefer;
+
+    Layout = null;
+}
+
+@{
+    if (model.List != null && model.List.Count > 0)
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>操作</th>
+                    <th>用户ID</th>
+                    <th>商品ID</th>
+                    <th>商品名称</th>
+                    <th>咨询内容</th>
+                    <th>咨询类型</th>
+                    <th>咨询日期</th>
+                    <th>回复内容</th>
+                    <th>回复人</th>
+                    <th>回复日期</th>
+                    <th>是否可见</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var Item in model.List)
+                {
+                    <tr>
+                        <td>@Item.IntReferID</td>
+                        <td>
+                            @if (Item.VchReplyContent == null || Item.VchReplyContent == "")
+                            {
+                                <a  style="color: #191970" target="_blank" href="@Url.Action("Detail", "UserRefer", new { id = Item.IntReferID })" >回复</a>
+                            }
+                        </td>
+                        <td>@Item.IntUserID</td>
+                        <td>
+                            <a target="_blank"  style="color: #191970" href="@Url.Action("DateilUserRefer", "UserRefer", new { id = Item.IntProductID, type = Item.IntReferType, pageIndex = 1, PageSize = 10 })">@Item.IntProductID [查看所有]</a>
+                        </td>
+                        <td>@Item.VchProductName</td>
+                        <td>
+                            <textarea readonly="readonly">@Item.VchContent</textarea></td>
+
+                        @if (Item.IntReferType < 0 || Item.IntReferType > 5)
+                        {
+                            <td>其他</td>
+                        }
+                        else
+                        {
+                            <td>@(typeof(AppEnum.ReferType).GetEnumDescription(Item.IntReferType))</td>
+                        }
+                        <td>@Item.DtDatetime</td>
+                        <td>
+                            <textarea readonly="readonly">@Item.VchReplyContent</textarea></td>
+                        <td>@Item.VchReplyPerson</td>
+                        <td>@Item.DtReplyDatetime</td>
+                        <td>
+                            @{
+                        var checkStr = "";
+                        if (Item.IntOtherIsVisible == 1)
+                        {
+                            checkStr = "checked='checked'";
+                        }
+                            }
+                            <input id="cbkState-@Item.IntReferID" type="checkbox" @checkStr data-id="@Item.IntReferID" onclick="updateState(this)" />
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+}
+
+@Html.Partial("Pager", @model)

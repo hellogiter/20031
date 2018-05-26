@@ -1,0 +1,124 @@
+﻿@using Myzj.OPC.UI.Model.MotherShow
+@using Myzj.OPC.UI.ServiceClient
+
+@{
+    ViewBag.Title = "妈妈秀关联";
+
+    var topicId = 0;
+
+    if (Request["topicId"] != null)
+    {
+        int.TryParse(Request["topicId"].ToString(), out topicId);
+    }
+
+
+    var list = (List<MotherShowTopic>)ViewBag.List;
+    if (list == null)
+    {
+        list = new List<MotherShowTopic>();
+    }
+}
+
+<div class="rowButton">
+
+    @{
+        var url = @"'/MotherShow?TopicId=" + topicId + "'";
+    }
+
+    <input type="button" id="Add" value="添加关联" onclick="window.open(@url)" />
+</div>
+
+<h2>话题关联妈妈秀</h2>
+
+<div class="resultDiv">
+    <table class="resultTable" id="calcTotalAmount">
+        <thead>
+            <tr>
+                <th>操作</th>
+                <th>妈妈秀ID</th>
+                <th>图片</th>
+                <th>妈妈秀标题</th>
+                <th>内容</th>
+                <th>关联时间</th>
+                <th>排序</th>
+                <th>状态</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in list)
+            {
+                var stateNanme = "未审核";
+                if (item.MTopicState == 1)
+                {
+                    stateNanme = "审核通过";
+                }
+                else if (item.MTopicState == 2)
+                {
+                    stateNanme = "审核未通过";
+                }
+                else if (item.MTopicState == 3)
+                {
+                    stateNanme = "审核待发布";
+                }
+                
+                <tr>
+                    <td>
+                        <a  onclick="del('@item.MTopicId')" href="javascript:;">删除</a>
+                    </td>
+                    <td>@item.MShowId</td>
+                    <td><a href="@(UrlFactory.FormatImgUrl(item.ImageUrl))" target="_blank">
+                        <img src="@(UrlFactory.FormatImgUrl(item.ImageUrl))" width="40"/></a></td>
+                    <td>@item.MShowTitle</td>
+                    <td>@item.Content</td>
+                    <td>@item.CreateTime</td>
+                    <td>
+                        <input id="sort" type="text" value="@item.Sort" data-id="@item.MTopicId" class="sort"  style="width: 30px" /></td>
+                    <td>@stateNanme</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+<script type="text/javascript">
+
+    //删除
+    function del(id) {
+        
+        $.ajax({
+            url: "/MotherShow/DelMotherShowTopic?mTopicId=" + id,
+            type: 'post',
+            dataType: "json",
+            success: function (result) {
+                if (result.DoFlag) {
+                    reloadPage();;
+                } else {
+                    alert("删除失败");
+                }
+            }
+        });
+    }
+    
+    //排序
+    $(".sort").unbind().bind("change", function () {
+        var obj = $(this);
+
+        var id = obj.data("id");
+        var sort = obj.val();
+
+        $.ajax({
+            url: "/MotherShow/UpMotherShowTopicSort?mTopicId=" + id+"&sort="+sort,
+            type: 'post',
+            dataType: "json",
+            success: function (result) {
+                if (result.DoFlag) {
+                    reloadPage();;
+                } else {
+                    alert("排序失败");
+                }
+            }
+        });
+
+    });
+</script>

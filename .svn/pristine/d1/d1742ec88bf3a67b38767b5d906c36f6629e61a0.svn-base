@@ -1,0 +1,32 @@
+﻿@{
+    ViewBag.Title = "BargainGroupDetail";
+}
+
+<h2>BargainGroupDetail</h2>
+<style>
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+</style>
+@using (Html.BeginForm())
+{
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>日期</th>
+                    <th>建团数</th>
+                    <th>参团人数</th>
+                    <th>成团人数</th>
+                    <th>预测预算金额</th>
+                </tr>
+            </thead>
+            <tbody>
+             
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+}

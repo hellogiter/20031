@@ -1,0 +1,10 @@
+E:\ysx2012\svn\20031\Myzj.OPC.UI.Library\Myzj.OPC.UI.Common.dll
+E:\ysx2012\svn\20031\Myzj.OPC.UI.Library\Myzj.OPC.UI.Common.pdb
+E:\ysx2012\svn\20031\Myzj.OPC.UI.Common\obj\Debug\Myzj.OPC.UI.Common.dll
+E:\ysx2012\svn\20031\Myzj.OPC.UI.Common\obj\Debug\Myzj.OPC.UI.Common.pdb
+E:\ysx2012\svn\20031\Myzj.OPC.UI.Common\obj\Debug\Myzj.OPC.UI.Common.csprojResolveAssemblyReference.cache
+F:\工作项目篇\母婴之家网络科技\Web-20031(opc.holyca.com)\20031\Myzj.OPC.UI.Library\Myzj.OPC.UI.Common.dll
+F:\工作项目篇\母婴之家网络科技\Web-20031(opc.holyca.com)\20031\Myzj.OPC.UI.Library\Myzj.OPC.UI.Common.pdb
+F:\工作项目篇\母婴之家网络科技\Web-20031(opc.holyca.com)\20031\Myzj.OPC.UI.Common\obj\Debug\Myzj.OPC.UI.Common.csprojResolveAssemblyReference.cache
+F:\工作项目篇\母婴之家网络科技\Web-20031(opc.holyca.com)\20031\Myzj.OPC.UI.Common\obj\Debug\Myzj.OPC.UI.Common.dll
+F:\工作项目篇\母婴之家网络科技\Web-20031(opc.holyca.com)\20031\Myzj.OPC.UI.Common\obj\Debug\Myzj.OPC.UI.Common.pdb

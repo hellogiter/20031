@@ -1,0 +1,205 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.UserRefer.UserReferDetail
+@{
+    var isEdit = (Model != null && Model.IntReferID > 0);
+    var actionName = isEdit ? "Update" : "Add";
+}
+
+@if (isEdit)
+{
+    <h2>回复咨询</h2>
+    //判断 
+}
+else
+{
+    <h2>新增咨询</h2>
+}
+<div id="tableContainer">
+
+    @if (Model.IntProductID > 0)
+    {
+        if (Model != null)
+        {
+        <div class="resultDiv">
+            <table class="resultTable" id="calcTotalAmount">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>用户ID</th>
+                        <th>商品编号</th>
+                        <th>商品名称</th>
+                        <th>咨询内容</th>
+                        <th>咨询类型</th>
+                        <th>咨询日期</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>@Model.IntReferID</td>
+                        <td>@Model.IntUserID</td>
+                        <td>@Model.IntProductID</td>
+                        <td>@Model.VchProductName</td>
+                        <td>@Model.VchContent</td>
+                        <td>@(typeof(AppEnum.ReferType).GetEnumDescription(Model.IntReferType))</td>
+                        <td>@Model.DtDatetime</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        }
+    }
+
+    <form id="detailForm">
+        <input type="hidden" id="hidIntReferID" value="@Model.IntReferID"/>
+        @if (Model.IntReferID > 0)
+        {
+            <table class="showDetailTableMultiColumnm">
+                <tbody>
+                    <tr>
+                        <td>回复内容(*):</td>
+                        <td>
+                            @Html.TextAreaFor(m => m.VchReplyContent)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>回复时间(*):</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.DtReplyDatetime)
+                        </td>
+                    </tr>
+            </table>
+        }
+        else
+        {
+            <table class="showDetailTableMultiColumnm">
+                <tbody>
+                    <tr>
+                        <td>商品ID:</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.IntProductID)
+                            <input type="button" value="检测" style="width: 50px;" class="checkProductId" />
+                            <label class="txtLable"></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>商品名称(*):</td>
+                        <td>
+                            <input type="text" value="@Model.VchProductName" id="VchProductName" name="VchProductName" readonly="readonly"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>用户邮箱:</td>
+                        <td>@Html.TextBoxFor(m => m.VchEmail)</td>
+                    </tr>
+                    <tr>
+                        <td>商品分类标识(*):</td>
+                        <td>@Html.TextBoxFor(m => m.IntCateID)</td>
+                    </tr>
+
+                    <tr>
+                        <td>咨询时间:</td>
+                        <td>@Html.TextBoxFor(m => m.DtDatetime)</td>
+                    </tr>
+                    <tr>
+                        <td>咨询类型:</td>
+                        <td>
+                            @Html.DropDownListFor(m => m.IntReferType, new KvSelectList(typeof(AppEnum.ReferType).GetEnumList()), false)
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>是否满意:</td>
+                        <td>
+                            <select id="IntIsPleased">
+                                <option value="1">满意</option>
+                                <option value="0">不满意</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>是否可见:</td>
+                        <td>
+                            <select id="IntOtherIsVisible">
+                                <option value="=1">可见</option>
+                                <option value="0">不可见</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>咨询内容(*):</td>
+                        <td colspan="4">@Html.TextAreaFor(m => m.VchContent)</td>
+                    </tr>
+                </tbody>
+            </table>
+        }
+    </form>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="保存" id="btnSave" />
+    <input type="button" value="取消" id="btnDel" onclick="window.location.href = window.close()" />
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        //回复
+        $("#btnSave").click(function () {
+            var formModel = {};
+            formModel.UserRefer = {};
+            formModel.UserRefer.IntReferID = $("#hidIntReferID").val();
+            formModel.UserRefer.VchReplyContent = $("#VchReplyContent").val();
+            formModel.UserRefer.DtReplyDatetime = $("#DtReplyDatetime").val();
+            formModel.UserRefer.IntProductID = $("#IntProductID").val();
+            formModel.UserRefer.VchEmail = $("#VchEmail").val();
+            formModel.UserRefer.VchProductName = $("#VchProductName").val();
+            formModel.UserRefer.VchContent = $("#VchContent").val();
+            formModel.UserRefer.DtDatetime = $("#DtDatetime").val();
+            formModel.UserRefer.IntIsPleased = $("#IntIsPleased").val();
+            formModel.UserRefer.IntReferType = $("#IntReferType").val();
+            formModel.UserRefer.IntIsPleased = $("#IntOtherIsVisible").val();
+            formModel.UserRefer.IntReferType = $("#IntCateID").val();
+
+            if (formModel.UserRefer.IntReferID < 0) {
+                if (formModel.UserRefer.IntProductID == null || formModel.UserRefer.IntProductID == "" || formModel.UserRefer.VchProductName == null || formModel.UserRefer.VchProductName == "") {
+                    alert("请检测商品Id... ...");
+                    return false;
+                }
+            }
+            $.ajax({
+                url: '@Url.Action("UpdateUserRefer", "UserRefer")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(formModel),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("保存成功！");
+                        reloadPage();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+
+        //检测商品Id是否存在商品表中
+        $(".checkProductId").click(function () {
+            var pid = $("#IntProductID").val();
+            if (pid == "" || pid == null) {
+                alert("请输入商品Id");
+            } else {
+                $.ajax({
+                    url: "/UserRefer/CheckPdtInfoById?id=" + pid,
+                    type: "Post",
+                    success: function (res) {
+                        if (res.DoFlag) {
+                            $("#VchProductName").val(res.DoResult);
+                        } else {
+                            alert("商品Id不存在商品表中");
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>

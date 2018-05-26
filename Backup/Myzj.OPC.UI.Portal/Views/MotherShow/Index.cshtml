@@ -1,0 +1,243 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.MotherShow
+<h2>妈妈秀管理</h2>
+
+@{
+    var motherShows = (GetMotherShow)ViewBag.GetMotherShow;
+    motherShows.State = -1;
+    motherShows.Fun = "loadItem";
+
+    var stateList = new KvSelectList(typeof(AppEnum.SpecialStates).GetEnumList());
+    
+}
+
+
+<script type="text/javascript">
+    //绑定状态
+    //name 名称
+    //val 值
+    function bingSate(name, val) {
+        $("#" + name).val(val);
+    }
+</script>
+
+<table class="showDetailTable">
+    <tbody>
+        <tr>
+            <td>ID:</td>
+            <td>
+                <input id="showId" type="text" /></td>
+            <td>标题:</td>
+            <td>
+                <input id="title" type="text" /></td>
+        </tr>
+        <tr>
+            <td>状态:</td>
+            <td colspan="3">
+                <select id="state">
+                    <option value="-1">--请选择--</option>
+                    @foreach (var item in stateList)
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="rowButton">
+    <input id="butState" type="button" value="更新状态" onclick="upState()" />
+
+    <input type="button" id="Add" value="新增" onclick=" window.open('/MotherShow/Detail')" />
+    <input type="button" name="Query" id="Query" value="查询" onclick="loadItem(1)" />
+
+    @if (motherShows.TopicId > 0)
+    {
+        <input type="button" id="addMotherShowTopic" value="关联妈妈秀" onclick="addRelevance()" />
+    }
+</div>
+
+<div id="item">
+    @Html.Action("Item", "MotherShow", new { motherShow = @motherShows })
+</div>
+
+@if (motherShows.TopicId > 0)
+{
+    <script type="text/javascript">
+        //$("#calcTotalAmount select").attr("disabled", true);
+        $(".update").hide();
+    </script>
+}
+
+<script type="text/javascript">
+
+    $(function () {
+        load();
+    });
+
+
+    //加载列表
+    function loadItem(index) {
+        var model = {};
+        model.Id = $("#showId").val();
+        model.State = $("#state").val();
+        model.Title = $("#title").val();
+        model.TopicId = '@motherShows.TopicId';
+
+        model.PageIndex = index;
+        model.PageSize = '@motherShows.PageSize';
+        model.Fun = "loadItem";
+
+        $.ajax({
+            url: '@Url.Action("Item", "MotherShow")',
+            type: 'post',
+            dataType: 'html',
+            contentType: 'application/json',
+            data: JSON.stringify(model),
+            success: function (result) {
+                $("#item").html(result);
+                load();
+            }
+        });
+
+    }
+
+    //批量更新状态
+    function upState() {
+        var list = [];
+        var state = $("#SearchDetail_MShowState").val();
+
+        if (state.length <= 0) {
+            alert("请选择状态");
+            return false;
+        }
+
+
+        $(".cbkState").each(function () {
+            if (this.checked) {
+                var obj = $(this);
+
+                var showId = obj.data("showid");
+
+                var originalState = obj.data("state");
+                var userId = obj.data("userid");
+
+                var model = {};
+                model.UserId = userId;
+                model.ShowId = showId;
+                model.State = state;
+                model.OriginalState = originalState;
+                list.push(model);
+            }
+        });
+
+        $.ajax({
+            url: '/MotherShow/BatchUpdateCheck',
+            type: 'post',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(list),
+            success: function (result) {
+                if (result.DoFlag) {
+                    alert("修改成功");
+                    loadItem();
+                } else {
+                    alert(result.DoResult);
+                }
+            }
+        });
+    }
+
+    //妈妈秀关联
+    function addRelevance() {
+        $(".cbkState").each(function () {
+            var obj = $(this);
+            var showid = obj.data("showid");//妈妈秀ID
+            var topicId = '@motherShows.TopicId';//话题ID
+            var mtopicid = obj.data("mtopicid");//关联ID
+            var state = obj.data("state");//状态
+
+            if (this.checked && mtopicid <= 0) {
+
+                //添加关联$
+                $.ajax({
+                    url: '/MotherShow/AddMotherShowTopic',
+                    data: { "topicId": topicId, "mShowId": showid, "isTopic": 1, "state": state },
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.DoFlag) {
+                            obj.data("mtopicid", result.DoResult);
+                        } else {
+                            alert("保存失败");
+                        }
+                    }
+                });
+            } else if (this.checked == false && mtopicid > 0) {
+                //删除关联
+                $.ajax({
+                    url: '/MotherShow/DelMotherShowTopic?mTopicId=' + mtopicid,
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.DoFlag) {
+                            obj.data("mtopicid", "0");
+                        } else {
+                            alert("保存失败");
+                        }
+                    }
+                });
+            }
+        });
+        alert("关联成功");
+    }
+
+    //加载
+    function load() {
+        //全选
+        $("#ckbSelect").click(function () {
+            var flag = false;
+
+            if ($(this).prop("checked") == true) {
+                flag = true;
+            }
+
+            $(".cbkState").each(function () {
+                $(this).prop("checked", flag);
+            });
+        });
+
+        //状态修改
+        $("#calcTotalAmount select").change(function () {
+            var obj = $(this);
+
+            var state = obj.val();//状态ID
+            var showId = obj.data("showid");//妈妈秀ID
+            var originalState = obj.data("originalstate");//原始状态ID
+            var userId = obj.data("userid");//用户ID
+
+            var thisRow = obj.parents("tr");
+            if (state == 1) {
+                thisRow.css({ color: '#000' });
+            } else {
+                thisRow.css({ color: '#f00' });
+            }
+
+            $.ajax({
+                url: '/MotherShow/UpdateCheck',
+                data: { "userId": userId, "showId": showId, "state": state, "originalState": originalState },
+                type: 'POST',
+                dataType: 'jsonp',
+                success: function (result) {
+                    if (result.DoFlag) {
+                        loadItem();
+                    } else {
+                        alert("保存失败");
+                    }
+                }
+            });
+
+        });
+    }
+</script>

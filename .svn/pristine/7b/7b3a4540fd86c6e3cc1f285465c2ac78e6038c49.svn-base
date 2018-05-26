@@ -1,0 +1,152 @@
+﻿@using System.Collections
+@using System.Web.Script.Serialization
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.SpreadInfo
+@model IEnumerable<Myzj.OPC.UI.Model.SpreadInfo.SpreadActivity>
+@{
+    var roleInfo = Session["S_RoleInfo"] as SpreadUserRoleDetail;
+    var userInfo = Session["S_UserInfo"] as UserInfoDetail;
+}
+
+@{
+    <div>
+        @if (roleInfo != null)
+        {
+            if (roleInfo.RoleLevel != null)
+            {
+                if (roleInfo.RoleLevel == AppEnum.RoleLevel.Administrator || roleInfo.RoleLevel == AppEnum.RoleLevel.Manager || roleInfo.RoleLevel == AppEnum.RoleLevel.Attribution)
+                {
+@* <input type="submit" name="Query" id="Query" value="查询" />*@
+            <input type="button" name="Query" id="BtnAdd" value="创建活动" onclick=" javascript: window.open('/SpreadInfo/ActivityDetail'); " />
+                }
+            }
+        }
+    </div>
+   
+    if (Model != null && Model.Any())
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    @if (roleInfo != null)
+                    {
+                        if (roleInfo.RoleLevel != null)
+                        {
+                            if (roleInfo.RoleLevel == AppEnum.RoleLevel.Administrator || roleInfo.RoleLevel == AppEnum.RoleLevel.Manager || roleInfo.RoleLevel == AppEnum.RoleLevel.Attribution)
+                            {
+                        <th>操作</th>
+                            }
+                        }
+                    }
+                    <th>活动名称</th>
+                    <th>活动图片</th>
+                    <th>背景图片</th>
+                    <th>底部图片</th>
+                    <th>老用户参加与否</th>
+                    <th>限制人数</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                    <th>活动备注</th>
+                    @if (roleInfo != null)
+                    {
+                        if (roleInfo.RoleLevel != null)
+                        {
+                            if (roleInfo.RoleLevel == AppEnum.RoleLevel.Administrator || roleInfo.RoleLevel == AppEnum.RoleLevel.Manager || roleInfo.RoleLevel == AppEnum.RoleLevel.Attribution)
+                            {
+                        <th>活动状态</th>
+                            }
+                        }
+                    }
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.ActivityId</td>
+                        @if (roleInfo != null)
+                        {
+                            if (roleInfo.RoleLevel != null)
+                            {
+                                if (roleInfo.RoleLevel == AppEnum.RoleLevel.Administrator || roleInfo.RoleLevel == AppEnum.RoleLevel.Manager || roleInfo.RoleLevel == AppEnum.RoleLevel.Attribution)
+                                {
+                            <td>
+                                <a href="@Url.Action("ActivityDetail", "SpreadInfo", new { id = item.ActivityId })" target="_blak"  style="color: #000080">修改</a>
+                                <a href="javascript:(0)" pvalue="@item.ActivityId" class="delActivity" style="color: #000080">删除</a>
+                            </td>
+                                }
+                            }
+                        }
+                        <td>@item.ActivityName</td>
+                        <td>
+                            <a href="@item.ActivityPic" target="_blank">
+                                <img src="@item.ActivityPic" width="75px;"/>
+                            </a>
+                        </td>
+                        <td>
+                            @{
+                        var strNecessary = HttpUtility.HtmlDecode(item.BackGroundPhotoUrl);
+                        JavaScriptSerializer json = new JavaScriptSerializer();
+                        BackGroundData list = json.Deserialize<BackGroundData>(strNecessary);
+                        
+                                <a href="@list.BackImg" target="_blank">
+                                    <img src="@list.BackImg" width="75px;"/>
+                                </a>
+                            }
+                        </td>
+                        <td>
+                            <a href="@list.FootImg" target="_blank">
+                                <img src="@list.FootImg" width="75px;"/>
+                            </a>
+                        </td>
+                        <td>
+                            @{
+                        if (item.EnableOldUser)
+                        {
+                                <p><font style="color: blue">允许</font></p>
+                        }
+                        else
+                        {
+                                <p><font style="color: red">不允许</font></p>
+                        }
+                            }
+                        </td>
+                        <td>@item.LimitNumber</td>
+                        <td>@item.StartTime</td>
+                        <td>@item.EndTime</td>
+                        <td>@item.Remark</td>
+                        @if (roleInfo != null)
+                        {
+                            if (roleInfo.RoleLevel != null)
+                            {
+                                if (roleInfo.RoleLevel == AppEnum.RoleLevel.Administrator || roleInfo.RoleLevel == AppEnum.RoleLevel.Manager || roleInfo.RoleLevel == AppEnum.RoleLevel.Attribution)
+                                {
+                            <td>
+                                @{
+                                    var checkStr = "";
+                                    if (item.Status == AppEnum.ActivityStatus.Enable)
+                                    {
+                                        checkStr = "checked='checked'";
+                                    }
+                                    else
+                                    {
+                                        checkStr = "";
+                                    }
+                                }
+                                <input id="cbkState-@item.ActivityId" type="checkbox" @checkStr data-id="@item.ActivityId" onclick=" updateState(this) " />
+                            </td>
+                                }
+                            }
+                        }
+                    </tr>   
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+}

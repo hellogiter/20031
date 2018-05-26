@@ -1,0 +1,52 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.SaleHotStyle.SaleHotStyleDetail
+@{
+    var isEdit = (Model != null && Model.Id > 0);
+    var actionName = isEdit ? "Update" : "Add";
+}
+
+@if (isEdit)
+{
+    <h2>修改爆品置顶商品信息</h2>
+}
+else
+{
+    <h2>新增爆品置顶商品信息</h2>
+}
+
+<div id="tableContainer">
+    <form id="detailForm">
+        <input type="hidden" id="hidId" value="@Model.Id"/>
+
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>开始时间:</td>
+                    <td>
+                        <input type="text" id="ExpirationFrom" name="ExpirationFrom" value="@Model.TopBeginTime" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" style="width: 60%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>结束时间:</td>
+                    <td>
+                        <input type="text" id="ExpirationFrom" name="ExpirationFrom" value="@Model.TopEndTime" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" style="width: 60%" />
+                    </td>
+                </tr>
+        </table>
+    </form>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="保存" id="btnSave" />
+    <input type="button" value="返回" id="btnDel" onclick="window.close()" />
+</div>
+<script type="text/javascript">
+    $(function () {
+        //保存
+        $("#btnSave").click(function() {
+
+        });
+    });
+
+
+</script>

@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{99A52B10-2986-4129-BD5B-33FDD5323DE1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Myzj.OPC.UI.Model</RootNamespace>
+    <AssemblyName>Myzj.OPC.UI.Model</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Myzj.OPC.UI.Library\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AdminCarriage\BuyAppointGoods.cs" />
+    <Compile Include="AdminCarriage\Carriage_Plug.cs" />
+    <Compile Include="AdminCarriage\Carriage_Strategy.cs" />
+    <Compile Include="BargainGroup\CountGoodsInfo.cs" />
+    <Compile Include="BargainGroup\CountGoodsRefer.cs" />
+    <Compile Include="BargainGroup\GoodsInfo.cs" />
+    <Compile Include="BargainGroup\GroupActivityDetail.cs" />
+    <Compile Include="BargainGroup\GroupActivityRefer.cs" />
+    <Compile Include="BargainGroup\GroupGoodsDetail.cs" />
+    <Compile Include="BargainGroup\GroupGoodsRefer.cs" />
+    <Compile Include="BargainGroup\GroupRecordDetail.cs" />
+    <Compile Include="BargainGroup\GroupRecordRefer.cs" />
+    <Compile Include="BaseCouponConfig\AuditRoleConfigDetail.cs" />
+    <Compile Include="BaseCouponConfig\AuditRuleDetail.cs" />
+    <Compile Include="BargainGroup\GroupStructureListDetail.cs" />
+    <Compile Include="BargainGroup\GroupStructureListRefer.cs" />
+    <Compile Include="ClearCache.cs" />
+    <Compile Include="CouponActivity\CouponActivityConfigureDetail.cs" />
+    <Compile Include="CouponActivity\CouponActivityConfigureRefer.cs" />
+    <Compile Include="CouponActivity\CouponActivityDetail.cs" />
+    <Compile Include="CouponActivity\CouponActivityRefer.cs" />
+    <Compile Include="BaseCouponConfig\CouponAuditDetail.cs" />
+    <Compile Include="BaseCouponConfig\CouponAuditRefer.cs" />
+    <Compile Include="BaseCouponConfig\AuditRoleDetail.cs" />
+    <Compile Include="BaseCouponConfig\CouponBabyCoinDetail.cs" />
+    <Compile Include="BaseCouponConfig\CouponBabyCoinRefer.cs" />
+    <Compile Include="BaseCouponConfig\CouponBatchSendDetail.cs" />
+    <Compile Include="BaseCouponConfig\CouponLogDetail.cs" />
+    <Compile Include="BaseCouponConfig\CouponSendDetail.cs" />
+    <Compile Include="BaseCouponConfig\M_CouponInfoExt.cs" />
+    <Compile Include="BaseCouponConfig\CouponInfoDetail.cs" />
+    <Compile Include="BaseCouponConfig\CouponInfoDtailRefer.cs" />
+    <Compile Include="BaseCouponConfig\SendCouponRecordDetail.cs" />
+    <Compile Include="BaseCouponConfig\SendCouponRecordRefer.cs" />
+    <Compile Include="BaseCouponConfig\WareHouseDetail.cs" />
+    <Compile Include="BaseDiscountCodeConfig\DiscountActivityInfo.cs" />
+    <Compile Include="BaseDiscountCodeConfig\DiscountCodeBatchInfo.cs" />
+    <Compile Include="BaseDiscountCodeConfig\DiscountCodeUserInfo.cs" />
+    <Compile Include="Base\AmountExt.cs" />
+    <Compile Include="Base\AppEnum.cs" />
+    <Compile Include="Base\BaseRefer.cs" />
+    <Compile Include="Base\BaseResponse.cs" />
+    <Compile Include="Base\BaseSearchRequest.cs" />
+    <Compile Include="Base\BaseSearchResponse.cs" />
+    <Compile Include="Base\JsonpResult.cs" />
+    <Compile Include="Base\KvSelectList.cs" />
+    <Compile Include="Base\Pager.cs" />
+    <Compile Include="ExpressModel\ExpressAcessConfigRefer.cs" />
+    <Compile Include="ExpressModel\ExpressCompanyRefer.cs" />
+    <Compile Include="ExpressModel\ExpressGuojiRefer.cs" />
+    <Compile Include="ExpressModel\ExpressInfoRefer.cs" />
+    <Compile Include="ExpressModel\ExpressLogRefer.cs" />
+    <Compile Include="ExpressModel\ExpressModel.cs" />
+    <Compile Include="ExpressModel\ExpressOrderStatusConfigRefer.cs" />
+    <Compile Include="ExpressModel\ExpressSelfAccessRefer.cs" />
+    <Compile Include="ExpressModel\ExpressOrderStatusRefer.cs" />
+    <Compile Include="FloorConfig\FloorConfigDetail.cs" />
+    <Compile Include="FloorConfig\FloorConfigRefer.cs" />
+    <Compile Include="FloorConfig\FloorDetailDetail.cs" />
+    <Compile Include="FloorConfig\FloorDetailRefer.cs" />
+    <Compile Include="FloorConfig\FloorItemsConfigDetail.cs" />
+    <Compile Include="FloorConfig\FloorLabelDetail.cs" />
+    <Compile Include="FloorConfig\FloorLabelRefer.cs" />
+    <Compile Include="KeyWord\SearchEngineDetail.cs" />
+    <Compile Include="KeyWord\SortProductRefer.cs" />
+    <Compile Include="OrderProductState\BaseWarehouseDetail.cs" />
+    <Compile Include="OrderProductState\OrderProductStateDetail.cs" />
+    <Compile Include="OrderProductState\OrderProductStateRefer.cs" />
+    <Compile Include="PdtBaseInfo\PdtBaseInfoDetail.cs" />
+    <Compile Include="PdtUser\PdtUserDetail.cs" />
+    <Compile Include="ProductLabel\ProductLabelDetail.cs" />
+    <Compile Include="ProductLabel\ProductLabelRefer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RentActivity\BaseRentActivityInfo.cs" />
+    <Compile Include="RentActivity\BaseRentAgreementInfo.cs" />
+    <Compile Include="RentActivity\BaseRentGoodsInfo.cs" />
+    <Compile Include="RentActivity\BaseRentStatisticsInfo.cs" />
+    <Compile Include="SaleHotStyleSpecialSubject\SaleHotStyleSpecialSubjectDetail.cs" />
+    <Compile Include="SaleHotStyleSpecialSubject\SaleHotStyleSpecialSubjectRefer.cs" />
+    <Compile Include="SaleHotStyle\SaleHotStyleApplyPlaceDetail.cs" />
+    <Compile Include="SaleHotStyle\SaleHotStyleDetail.cs" />
+    <Compile Include="SaleHotStyle\SaleHotStyleRefer.cs" />
+    <Compile Include="SearchManagement\SearchManagementBody.cs" />
+    <Compile Include="SearchManagement\SearchManagementDetail.cs" />
+    <Compile Include="SearchManagement\SearchManagementItemDetail.cs" />
+    <Compile Include="SearchManagement\SearchManagementItemRefer.cs" />
+    <Compile Include="SearchManagement\SearchManagementRefer.cs" />
+    <Compile Include="SpreadInfo\SpreadInfoDetail.cs" />
+    <Compile Include="SpreadInfo\SpreadInfoRefer.cs" />
+    <Compile Include="UserPdtComment\UserPdtCommentBody.cs" />
+    <Compile Include="UserPdtComment\UserPdtCommentCusReplyBody.cs" />
+    <Compile Include="UserPdtComment\UserPdtCommentCusReplyDetail.cs" />
+    <Compile Include="UserPdtComment\UserPdtCommentCusReplyRefer.cs" />
+    <Compile Include="UserPdtComment\UserPdtCommentDetail.cs" />
+    <Compile Include="UserPdtComment\UserPdtCommentRefer.cs" />
+    <Compile Include="UserRefer\UserRefer.cs" />
+    <Compile Include="UserRefer\UserReferDetail.cs" />
+    <Compile Include="UserRefer\UserReferBody.cs" />
+    <Compile Include="WebAward\CouponActivityDetail.cs" />
+    <Compile Include="WebAward\CouponPromotionsDetail.cs" />
+    <Compile Include="WebAward\CouponsInfoDetail.cs" />
+    <Compile Include="WebAward\PromInfoDetail.cs" />
+    <Compile Include="WebAward\WebAwardRecordDetail.cs" />
+    <Compile Include="WebAward\WebAwardRecordRefer.cs" />
+    <Compile Include="WebAward\WebAwardUserTagsDetail.cs" />
+    <Compile Include="WebAward\WebAwardUserTagsRefer.cs" />
+    <Compile Include="WebAward\WebLotteryNumberDetail.cs" />
+    <Compile Include="WebAward\WebLotteryNumberRefer.cs" />
+    <Compile Include="WebAward\WebLotteryTempConDetail.cs" />
+    <Compile Include="WebAward\WebLotteryTemplateDetail.cs" />
+    <Compile Include="WebAward\WebPrizeBundleDetail.cs" />
+    <Compile Include="WebAward\WebPrizeBundleRefer.cs" />
+    <Compile Include="WebAward\WebPrizeDetail.cs" />
+    <Compile Include="WebAward\WebPrizeItemDetail.cs" />
+    <Compile Include="WebAward\WebPrizeItemRefer.cs" />
+    <Compile Include="WebAward\WebPrizeModelDetail.cs" />
+    <Compile Include="WebAward\WebPrizeModelRefer.cs" />
+    <Compile Include="WebAward\WebPrizeRefer.cs" />
+    <Compile Include="WebBulletin\WebBulletinDetail.cs" />
+    <Compile Include="WebBulletin\WebBulletinRefer.cs" />
+    <Compile Include="WebIndex\WebActivityDetail.cs" />
+    <Compile Include="WebIndex\WebActivityRefer.cs" />
+    <Compile Include="WebIndex\WebIndexDetail.cs" />
+    <Compile Include="WebIndex\WebIndexRefer.cs" />
+    <Compile Include="WebUserBe\UserBehaviorDetail.cs" />
+    <Compile Include="WebUserBe\UserBehaviorRefer.cs" />
+    <Compile Include="WebAward\WebAwardDetail.cs" />
+    <Compile Include="WebAward\WebAwardRefer.cs" />
+    <Compile Include="WordLibManage\ForbiddenTypeDetail.cs" />
+    <Compile Include="WordLibManage\WordLibManageDetail.cs" />
+    <Compile Include="WordLibManage\WordLibManageRefer.cs" />
+    <Compile Include="WordMsg\WordMsgDetail.cs" />
+    <Compile Include="WordMsg\WordMsgRefer.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

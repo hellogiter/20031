@@ -1,0 +1,47 @@
+﻿@{
+    ViewBag.Title = "哈哈";
+}
+
+<h2>@ViewBag.Title</h2>
+<style>
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+</style>
+@using (Html.BeginForm())
+{
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>商品ID</th>
+                    <th>商品名</th>
+                    <th>单价</th>
+                    <th>成团人数</th>
+                    <th>团总数</th>
+                    <th>活动时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+             <tr class="gl-title">
+                    <td>商品ID</td>
+                    <td>商品名</td>
+                    <td>单价</td>
+                    <td>成团人数</td>
+                    <td>团总数</td>
+                    <td>活动时间</td>
+                 <td>
+                     <a  style="color: #191970" target="_blank" href="@Url.Action("BargainGroupEdit", "BargainGroup", new { id = 1 })" >编辑</a> 
+                      /
+                      <a  style="color: #191970" target="_blank" href="@Url.Action("BargainGroupEdit", "BargainGroup", new { id = 2 })" >查看</a>
+                 </td>
+                </tr>
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+}
+

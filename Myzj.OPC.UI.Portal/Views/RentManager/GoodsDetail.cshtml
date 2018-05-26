@@ -1,0 +1,328 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.RentActivity
+@using Myzj.OPC.UI.ServiceClient
+@model Myzj.OPC.UI.Model.RentActivity.BaseRentGoodsInfo
+<h2>@ViewBag.Title</h2>
+
+<div>
+    <input type="hidden" id="hd_SysNo" value="@Model.SysNo"/>
+    <table class="showDetailTable">
+        <tr>
+            <td>商品id</td>
+            <td>
+                <input type="text" id="txtGoodsId" value="@Model.GoodsId" placeholder="必填"/>
+            </td>
+            <td>活动Key</td>
+            <td>
+                @* <input type="text" id="txtActivityKey" value="@Model.ActivityKey" placeholder="必填"/>*@
+                @{
+                    var act = RentActivityClient.Instance.QueryRentActivityList(new BaseRefer<BaseRentActivityInfo>());
+                    SortedList<string, string> actlist = new SortedList<string, string>();
+                    if (act.List2.Count > 0)
+                    {
+                        var list = act.List2.Where(m => m.IsEnable == true);
+                        foreach (var item in list)
+                        {
+                            actlist.Add(item.ActivityKey, item.ActivityName);
+                        }
+                    }
+                }
+                @Html.DropDownListFor(m => m.ActivityKey, new KvSelectList(actlist), false)
+            </td>
+        </tr>
+        <tr>
+            <td>开始时间</td>
+            <td>
+                <input type="text" name="dateTime" id="txtStartTime" onfocus="dateFmt(this,1)" value="@Model.StartTime" placeholder="必填" />
+            </td>
+            <td>结束时间</td>
+            <td>
+                <input type="text" name="dateTime" id="txtEndTime" onfocus="dateFmt(this,2)" value="@Model.EndTime" placeholder="必填" />
+            </td>
+        </tr>
+        <tr>
+            <td>商品描述备注</td>
+
+            <td colspan="3">
+                <textarea id="txtRemark">@Model.Remark</textarea></td>
+
+        </tr>
+        <tr>
+            <td>押金</td>
+            <td>
+                <input type="text" id="txtGoodsDeCash" value="@Model.GoodsDeCash" placeholder="必填"/></td>
+            <td>租期</td>
+            <td>
+                <input type="text" id="txtRentTimeYear" value="@Model.RentTimeYear" placeholder="必填"/></td>
+        </tr>
+        <tr>
+            <td>排序号</td>
+            <td>
+                <input type="text" id="txtSort" value="@Model.Sort" /></td>
+            <td>促销id</td>
+            <td>
+                <input type="text" id="txtPromotionId" value="@Model.PromotionId" placeholder="必填"/></td>
+        </tr>
+        <tr>
+            <td>用户协议</td>
+            <td>
+                @{
+                    var result = RentActivityClient.Instance.QueryRentAgreementList(new BaseRefer<BaseRentAgreementInfo>());
+                    SortedList<int, string> datalist = new SortedList<int, string>();
+                    if (result.List2.Count > 0)
+                    {
+                        var list = result.List2.Where(m => m.IsEnable == true);
+                        foreach (var item in list)
+                        {
+                            datalist.Add(item.SysNo.Value, item.AgreementName);
+                        }
+                    }
+                   
+                }
+                @Html.DropDownListFor(m => m.RentAgreementId, new KvSelectList(datalist), false)
+            </td>
+            <td>是否启用:</td>
+            <td>@Html.DropDownListFor(m => m.IsEnable, new KvSelectList(typeof(AppEnum.IsEnable).GetEnumStringList(), AppEnum.IsEnable.True), false)</td>
+            @*<td>分享地址</td>
+            <td>
+                <input type="text" id="txtGoodsShare" value="@Model.GoodsShare" /></td>*@
+        </tr>
+        @*<tr>
+            <td>是否启用:</td>
+            <td>
+                @Html.DropDownListFor(m => m.IsEnable, new KvSelectList(typeof(AppEnum.IsEnable).GetEnumStringList(), AppEnum.IsEnable.True), false)
+            </td>
+            <td>退租设置图地址</td>
+            <td>
+                <input type="text" id="txtGoodsFeeSet" value="@Model.GoodsFeeSet" /></td>
+        </tr>*@
+        <tr>
+            <td>商品类型：</td>
+            <td>
+                @{
+                    var typeList = new Dictionary<int, string>();
+                    typeList.Add(0, "请选择商品类型");
+                    typeList.Add(2, "母婴之家租赁");
+                    typeList.Add(3, "供应商租赁");
+                    typeList.Add(1, "母婴之家礼品卡");
+                }
+                @Html.DropDownListFor(m => m.GoodsType, new KvSelectList(typeList))
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>退租设置</td>
+            <td colspan="3">
+                <table style="width: 100%; margin: 0; padding: 0" class="showDetailTable" cellpadding="0" cellspacing="0">
+                    @if (Model.HireSet != null && Model.HireSet.Count > 0)
+                    {
+                        var count = 0;
+
+                        foreach (var item in Model.HireSet)
+                        {
+                            count++;
+                            var id = "level" + count;
+                        <tr style="width: 100%;">
+                            <td style="width: 40%;">@RentActivityClient.Instance.GetLevelName(int.Parse(item.Level))</td>
+                            <td style="width: 40%;">
+                                <input type="text" id="@id" value="@item.Amount" /></td>
+                        </tr>
+                        }
+                        if (count < 6)
+                        {
+                        <tr style="width: 100%;">
+                            <td style="width: 40%;">@RentActivityClient.Instance.GetLevelName(6)</td>
+                            <td style="width: 40%;">
+                                <input type="text" id="level6" value="" /></td>
+                        </tr>
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 1; i <= 6; i++)
+                        {
+                               var id2 = "level" + i;
+                        <tr style="width: 100%;">
+                            <td style="width: 40%;">@RentActivityClient.Instance.GetLevelName(i)</td>
+                            <td style="width: 40%;">
+                                <input type="text" id="@id2" value="" /></td>
+                        </tr>
+                        }
+                        @*<tr style="width: 100%;">
+                            <td style="width: 40%;">普通会员</td>
+                            <td style="width: 40%;">
+                                <input type="text" id="level1" value="" /></td>
+                        </tr>
+                        <tr style="width: 100%;">
+                            <td style="width: 40%;">银卡会员</td>
+                            <td style="width: 40%;">
+                                <input type="text" id="level2" value="" /></td>
+                        </tr>
+                        <tr style="width: 100%;">
+                            <td style="width: 40%;">金卡会员</td>
+                            <td style="width: 40%;">
+                                <input type="text" id="level3" value="" /></td>
+                        </tr>
+                        <tr style="width: 100%;">
+                            <td style="width: 40%;">白金卡会员</td>
+                            <td style="width: 40%;">
+                                <input type="text" id="level4" value="" /></td>
+                        </tr>
+                        <tr style="width: 100%;">
+                            <td style="width: 40%;">至尊会员</td>
+                            <td style="width: 40%;">
+                                <input type="text" id="level5" value="" /></td>
+                        </tr>
+                        <tr style="width: 100%;">
+                            <td style="width: 40%;">违约</td>
+                            <td style="width: 40%;">
+                                <input type="text" id="level6" value="" /></td>
+                        </tr>*@
+                    }
+
+
+                </table>
+            </td>
+        </tr>
+
+    </table>
+    <div class="rowButton">
+        <input type="button" value="保存" id="btnSave" onclick="SaveGoods();" />
+        @* <input type="button" value="取消" id="btnDel" onclick="window.location.href = window.close()" />*@
+
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    function dateFmt(obj, type) {
+        if (type == 1) {
+            if (obj.value == "") {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd 00:00:00' });
+            } else {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' });
+            }
+        } else {
+            if (obj.value == "") {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd 23:59:59' });
+            } else {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' });
+            }
+        }
+
+    }
+
+    $("#txtGoodsId").keyup(function () {
+        var tmptxt = $(this).val();
+        $(this).val(tmptxt.replace(/\D|^0/g, ''));
+    }).bind("paste", function () {
+        var tmptxt = $(this).val();
+        $(this).val(tmptxt.replace(/\D|^0/g, ''));
+    }).css("ime-mode", "disabled");
+
+    $("#txtSort").keyup(function () {
+        var tmptxt = $(this).val();
+        $(this).val(tmptxt.replace(/\D|^0/g, ''));
+    }).bind("paste", function () {
+        var tmptxt = $(this).val();
+        $(this).val(tmptxt.replace(/\D|^0/g, ''));
+    }).css("ime-mode", "disabled");
+
+    $("#txtRentTimeYear").keyup(function () {
+        var tmptxt = $(this).val();
+        $(this).val(tmptxt.replace(/\D|^0/g, ''));
+    }).bind("paste", function () {
+        var tmptxt = $(this).val();
+        $(this).val(tmptxt.replace(/\D|^0/g, ''));
+    }).css("ime-mode", "disabled");
+
+    var exp = /^[0-9]*(\.[0-9]{1,2})?$/;
+
+    function SaveGoods() {
+        if ($.trim($("#txtGoodsId").val()) == "") {
+            alert("请输入商品id");
+            return;
+        }
+
+        if ($.trim($("#ActivityKey").val()) == "") {
+            alert("请选择活动");
+            return;
+        }
+
+        if ($.trim($("#txtStartTime").val()) == "") {
+            alert("请输入开始时间");
+            return;
+        }
+        if ($.trim($("#txtEndTime").val()) == "") {
+            alert("请输入结束时间");
+            return;
+        }
+
+        if ($.trim($("#txtGoodsDeCash").val()) == "") {
+            alert("请输入押金");
+            return;
+        }
+        if (!exp.test($.trim($("#txtGoodsDeCash").val()))) {
+            alert("请输入正确的押金");
+            return;
+        }
+        if ($.trim($("#txtRentTimeYear").val()) == "") {
+            alert("请输入租期");
+            return;
+        }
+        if ($.trim($("#txtPromotionId").val()) == "") {
+            alert("请输入促销id");
+            return;
+        }
+        if (parseInt($("#GoodsType").val()) < 1) {
+            alert("请选择商品类型");
+            return;
+        }
+
+        var model = {};
+        model.SysNo = $.trim($("#hd_SysNo").val());
+        model.GoodsId = $.trim($("#txtGoodsId").val());
+        model.ActivityKey = $.trim($("#ActivityKey").val());
+        model.StartTime = $.trim($("#txtStartTime").val());
+        model.EndTime = $.trim($("#txtEndTime").val());
+        model.GoodsDeCash = $.trim($("#txtGoodsDeCash").val());
+        model.RentTimeYear = $.trim($("#txtRentTimeYear").val());
+        model.Sort = $.trim($("#txtSort").val());
+        model.PromotionId = $.trim($("#txtPromotionId").val());
+        model.RentAgreementId = $("#RentAgreementId").val();
+        model.GoodsShare = $.trim($("#txtGoodsShare").val());
+        model.Remark = $.trim($("#txtRemark").val());
+        model.IsEnable = $("#IsEnable").val();
+        model.GoodsFeeSet = $.trim($("#txtGoodsFeeSet").val());
+        model.GoodsType = $("#GoodsType").val();
+        model.HireSet = [];
+        for (var i = 0; i < 6; i++) {
+            var LevelSet = {};
+            LevelSet.Level = (i + 1);
+            LevelSet.Amount = $("#level" + (i + 1)).val();
+            if (!exp.test(LevelSet.Amount)) {
+                alert("请输入正确的退租金额");
+                return;
+            }
+            model.HireSet.push(LevelSet);
+        }
+        if (confirm("确定保存 ?")) {
+            $.ajax({
+                url: '@Url.Action("SaveGoodsInfo", "RentManager")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("保存成功");
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        }
+    }
+</script>

@@ -1,0 +1,197 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.SaleHotStyle
+@model Myzj.OPC.UI.Model.SaleHotStyleSpecialSubject.SaleHotStyleSpecialSubjectDetail
+@{
+    var isEdit = (Model != null && Model.Id > 0);
+    var actionName = isEdit ? "Update" : "Add";
+
+    var hotApp = (List<SaleHotStyleApplyPlaceDetail>)ViewBag.HotStyleApply; //应用位置列表
+
+    var te = ViewBag.temp;
+}
+
+@if (isEdit)
+{
+    <h2>修改专题活动</h2>
+}
+else
+{
+    <h2>新增专题活动</h2>
+}
+
+<div id="tableContainer">
+    <form id="detailForm">
+        <input type="hidden" id="hidId" value="@Model.Id"/>
+
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>活动专题名称(*):</td>
+                    <td colspan="17">
+                        @Html.TextBoxFor(m => m.SubjectName)
+                    </td>
+                </tr>
+                <tr>
+                    <td>图片地址(*):</td>
+                    <td colspan="17">
+                        <input type="text" value="@Model.PictureUrl" id="PictureUrl" name="PictureUrl"/>
+                        <img src="@Model.PictureUrl" width="32%" id="imgUrl"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>应用位置(*):</td>
+                    <td>
+                        @{
+                            var tempId = 0;
+                            if (Model.ApplyPlace != null)
+                            {
+                                var tempModel = Model.ApplyPlace.Replace("][", ",").Replace("[", "").Replace("]", "").Split(',');
+                                foreach (var item in hotApp)
+                                {
+                                    var select = "";
+                                    foreach (var s in tempModel)
+                                    {
+                                        if (item.ApplyPlaceId.ToString().Equals(s))
+                                        {
+                                            select = "checked='checked'";
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            select = "";
+                                        }
+                                    }
+                            <div class="ApplyPlace" style="width: 30%; margin: 1% 0 0 -9%;">
+                                <input name="ApplyPlace" type="checkbox" @select pvalue="@item.Id" value="@item.ApplyPlaceId"/>
+                                <label style="width: 30%; margin-left: -30%;">@item.ApplyPlaceName</label>
+                            </div>
+                                }
+                            }
+                            else
+                            {
+                                foreach (var item in hotApp)
+                                {
+                            <div class="ApplyPlace" style="width: 30%; margin: 1% 0 0 -9%;">
+                                <input name="ApplyPlace" type="checkbox" pvalue="@item.Id" value="@item.ApplyPlaceId"/>
+                                <label style="width: 30%; margin-left: -30%;">@item.ApplyPlaceName</label>
+                            </div>
+                            
+                                }
+                            }
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>价格/折扣力度:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.SetDiscount)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Web—跳转链接:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.ClickUrl)
+                    </td>
+                </tr>
+                <tr>
+                    <td>App-跳转链接:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.AppClickUrl)
+                    </td>
+                </tr>
+                <tr>
+                    <td>活动时间区(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.StartTime, new { @style = "width:200px" })
+                        <label style="width: 10px;">至:</label>
+                        @Html.TextBoxFor(m => m.EndTime, new { @style = "width:200px" })
+                    </td>
+                </tr>
+              
+                <tr>
+                    <td>排序:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.Sort, new { @value = "0" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>描述(*):</td>
+                    <td>
+                        @Html.TextAreaFor(m => m.SujectDesc)
+                    </td>
+                </tr>
+        </table>
+    </form>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="保存" id="btnSave" />
+    <input type="button" value="返回" id="btnDel" onclick="window.close()" />
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        //图片预览
+        $("#PictureUrl").bind("keyup propertychange", function (e) {
+            var $this = $(this);
+            var url = $.trim($this.val());
+            if (e.type === "keyup") {
+                $("#imgUrl").attr("src", "" + $("#PictureUrl").val() + "");
+            }
+        });
+
+        //保存
+        $("#btnSave").click(function () {
+            var model = {};
+            model.Id = $("#hidId").val();
+            model.SubjectName = $("#SubjectName").val();
+            model.PictureUrl = $("#PictureUrl").val();
+            model.SetDiscount = $("#SetDiscount").val();
+            model.ClickUrl = $("#ClickUrl").val();
+            model.AppClickUrl = $("#AppClickUrl").val();
+            model.StartTime = $("#StartTime").val();
+            model.EndTime = $("#EndTime").val();
+        
+            model.Sort = $("#Sort").val();
+            model.SujectDesc = $("#SujectDesc").val();
+            model.ApplyPlace = "";
+            //循环选择的项
+            $('input:checkbox[name="ApplyPlace"]:checked').each(function (index) {
+                var thisval = $(this).val();
+                model.ApplyPlace += "[" + thisval + "]";
+            });
+            if (model.SubjectName == null || model.SubjectName == "") {
+                alert("请输入活动专题名称");
+                return false;
+            }
+            if (model.PictureUrl == null || model.PictureUrl == "") {
+                alert("请输入图片地址");
+                return false;
+            }
+            if (model.ApplyPlace == null || model.ApplyPlace == "") {
+                alert("请选择应用位置");
+                return false;
+            }
+            if (model.StartTime == null || model.StartTime == "" || model.EndTime == null || model.EndTime == "") {
+                alert("请输入活动开始时间区");
+                return false;
+            }
+
+            $.ajax({
+                url: '@Url.Action("Save", "SaleHotStyleSpecialSubject")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert(result.DoResult);
+                        reloadPage();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>

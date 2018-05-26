@@ -1,0 +1,64 @@
+﻿@model IEnumerable<Myzj.OPC.UI.Model.FloorConfig.FloorConfigDetail>
+@{
+    Layout = null;
+}
+
+@{
+    <div class="rowButton">
+        <input type="submit" name="Query" id="Query" value="查询" />
+        <input type="button" name="Query" id="BtnAdd" value="新增" onclick="javascript: window.open('/FloorConfig/Detail')" />
+    </div>
+
+    if (Model != null && Model.Any())
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>操作</th>
+                    <th>楼层类型</th>
+                    <th>楼层名称</th>
+                    <th>楼层关键字</th>
+                    <th>楼层关键值</th>
+                    <th>楼层描述</th>
+                    <th>楼层链接</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                    <th>楼层序号</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.SysNo</td>
+                        <td>
+                            <a  style="color: #191970" target="_blank" href="@Url.Action("Detail", "FloorConfig", new { id = item.SysNo })" >编辑</a>
+                            &nbsp;
+                            <a style="color: #191970" target="_blank" href="@Url.Action("FloorItem", "FloorConfig", new { id = item.SysNo,name=item.FloorName })" >编辑详情</a>
+                            &nbsp;
+                            <a style="color: #191970" href="javascript:(0)" pvalue="@item.SysNo" class="delFloorConfig">删除</a>
+                        </td>
+                        <td>@item.FloorTypeName</td>
+                        <td>@item.FloorName</td>
+                        <td>@item.FloorKeyName</td>
+                        <td>@item.FloorKeyValue</td>
+                        <td>
+                            <textarea readonly="readonly">@item.FloorDiscription</textarea></td>
+                        <td>@item.FloorLink</td>
+                        <td>@item.ExpirationFrom</td>
+                        <td>@item.ExpirationEnd</td>
+                        <td>
+                            <input type="text" value="@item.Sequence" pvalue="@item.SysNo" class="Sequence" id="Sequence"style="width: 30px"/>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+}
+

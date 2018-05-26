@@ -1,0 +1,77 @@
+﻿
+@model Myzj.OPC.UI.Model.BargainGroup.GroupGoodsRefer
+@{
+    var beforeypay = (bool)ViewBag.GroupActivityBeforePay;
+    var beforePayStr = "后支付的活动";
+    if (beforeypay)
+    {
+        beforePayStr = "先支付的活动";
+    }
+}           
+
+<h2>商品列表-@beforePayStr</h2>
+<style>
+    .input-validation-error {
+        border: 1px solid #c0c0c0;
+        background-color: white;
+    }
+
+    .showDetailTable tbody tr.tk-guanli td {
+        width: 15%;
+    }
+
+        .showDetailTable tbody tr.tk-guanli td.tk-name {
+            width: 5%;
+            text-align: center;
+        }
+
+        .showDetailTable tbody tr.tk-guanli td input {
+            text-align: left;
+            width: 85%;
+        }
+
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+</style>
+
+@using (Html.BeginForm("Index", "BargainGroup", new { groupActivitySysNo = ViewBag.GroupActivitySysNo }))
+{
+    <table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+        <tbody>
+            <tr class="tk-guanli">
+                <td class="tk-name">商品ID:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.GoodsId)
+                </td>
+               <td class="tk-name">商品名:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.GoodsName)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="rowButton">
+        <input type="button" value="创建" id="btnAdd" onclick="window.location.href = '/BargainGroup/BargainGroupCreate?groupActivitySysNo='+@ViewBag.GroupActivitySysNo;" />
+        <input type="submit" value="查询" id="btnSearch" />
+        
+       @*  <a  style="color: #191970" target="_blank" href="@Url.Action("GroupRecordIndex", "BargainGroup",new {groupActivitySysNo=ViewBag.GroupActivitySysNo})" >查看参团记录</a>*@
+    </div>
+    @Html.Partial("Item", @Model.List2)
+    
+    @Html.Partial("Pager", @Model)
+}
+
+<script type="text/javascript">
+    
+    $("#SearchDetail_GoodsId").keyup(function () {
+              var tmptxt=$(this).val();     
+              $(this).val(tmptxt.replace(/\D|^0/g,''));     
+          }).bind("paste",function(){     
+                   var tmptxt=$(this).val();     
+                   $(this).val(tmptxt.replace(/\D|^0/g,''));     
+               }).css("ime-mode", "disabled");    
+
+</script>

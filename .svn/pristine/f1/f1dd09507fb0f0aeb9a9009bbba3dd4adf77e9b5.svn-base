@@ -1,0 +1,1149 @@
+﻿using System.ComponentModel;
+
+namespace Myzj.OPC.UI.Model.Base
+{
+    public class AppEnum
+    {
+        #region 咨询类型
+        public enum ReferType
+        {
+            /// <summary>
+            /// 商品咨询
+            /// </summary>
+            [Description("商品咨询")]
+            Consul = 0,
+            /// <summary>
+            /// 库存及配送
+            /// </summary>
+            [Description("库存及配送")]
+            Distri = 1,
+            /// <summary>
+            /// 支付问题
+            /// </summary>
+            [Description("支付问题")]
+            Pay = 2,
+            /// <summary>
+            /// 发票及保修
+            /// </summary>
+            [Description("发票及保修")]
+            Invoice = 3,
+            /// <summary>
+            /// 促销及赠品
+            /// </summary>
+            [Description("促销及赠品")]
+            Promotion = 4
+        }
+        #endregion
+
+        #region 禁词类型
+        public enum WordType
+        {
+            /// <summary>
+            /// 手机短信
+            /// </summary>
+            [Description("手机短信")]
+            Mobile = 1,
+            /// <summary>
+            /// 网站评论
+            /// </summary>
+            [Description("网站评论")]
+            Web = 2,
+        }
+        #endregion
+
+        #region 所属
+        public enum SystemType
+        {
+            /// <summary>
+            /// 电脑端
+            /// </summary>
+            [Description("电脑端")]
+            Mobile = 1,
+            /// <summary>
+            /// 手机端
+            /// </summary>
+            [Description("手机端")]
+            Web = 2,
+        }
+        #endregion
+
+        #region 是否启用
+        public enum IsVisibleIndex
+        {
+            /// <summary>
+            /// 否
+            /// </summary>
+            [Description("启用")]
+            Yes = 0,
+            /// <summary>
+            /// 是
+            /// </summary>
+            [Description("关闭")]
+            No = 1,
+        }
+        #endregion
+
+        #region 是否验证
+        public enum NewUserVerify
+        {
+            /// <summary>
+            /// 未验证
+            /// </summary>
+            [Description("未验证")]
+            Yes = 0,
+            /// <summary>
+            /// 验证
+            /// </summary>
+            [Description("验证")]
+            No = 1,
+        }
+        #endregion
+
+        #region 用户行为类型
+        public enum ObjectType
+        {
+            //限制类型，如：-1 全部限制 注册=1,登录=2,创建交易=3,支付=4,评论=5
+            /// <summary>
+            /// 全部限制
+            /// </summary>
+            [Description("全部限制")]
+            All = -1,
+            /// <summary>
+            /// 注册
+            /// </summary>
+            [Description("注册")]
+            Registered = 1,
+            /// <summary>
+            /// 登录
+            /// </summary>
+            [Description("登录")]
+            Sign = 2,
+            /// <summary>
+            /// 创建交易
+            /// </summary>
+            [Description("创建交易")]
+            Createtrade = 3,
+            /// <summary>
+            /// 支付
+            /// </summary>
+            [Description("支付")]
+            Payment = 4,
+            /// <summary>
+            /// 评论
+            /// </summary>
+            [Description("评论")]
+            Comment = 5
+        }
+        #endregion
+
+        #region 奖品编号类型
+        public enum IntPrizeNo
+        {
+            /// <summary>
+            /// 无奖
+            /// </summary>
+            [Description("无奖")]
+            Noprize = 0,
+            /// <summary>
+            /// 1元现金券（全场满1元使用）
+            /// </summary>
+            [Description("1元现金券（全场满1元使用）")]
+            Onecoupon = 1,
+            /// <summary>
+            ///5元现金券（全场满5元使用）
+            /// </summary>
+            [Description("5元现金券（全场满5元使用）")]
+            Twocoupon = 2,
+            /// <summary>
+            /// 10元现金券（全场满10元使用）
+            /// </summary>
+            [Description("10元现金券（全场满10元使用）")]
+            Threecoupon = 3,
+            /// <summary>
+            ///20元满减券（全场满300元使用，奶粉纸尿裤除外）（全场满5元使用）
+            /// </summary>
+            [Description("20元满减券（全场满300元使用，奶粉纸尿裤除外）")]
+            Fourcoupon = 4,/// <summary>
+            /// 30元满减券（全场满400元使用，奶粉纸尿裤除外）（全场满1元使用）
+            /// </summary>
+            [Description("30元满减券（全场满400元使用，奶粉纸尿裤除外）")]
+            Fivecoupon = 5,
+            /// <summary>
+            ///5元现金券（全场满5元使用）
+            /// </summary>
+            [Description("50元满减券（全场满800元使用，奶粉纸尿裤除外）")]
+            Sixcoupon = 6,
+        }
+        #endregion
+
+        #region 爆品商品是否置顶
+        public enum IsTop
+        {
+            /// <summary>
+            /// 已置顶
+            /// </summary>
+            [Description("已置顶")]
+            Yes = 1,
+            /// <summary>
+            /// 未置顶
+            /// </summary>
+            [Description("未置顶")]
+            No = 0
+        }
+        #endregion
+
+        #region 优惠券审核状态
+        public enum CouponAuditState
+        {
+            [Description("编辑保存")]
+            Edit = -1,
+            /// <summary>
+            /// 待审核
+            /// </summary>
+            [Description("待审核")]
+            Wait = 0,
+            /// <summary>
+            /// 驳回
+            /// </summary>
+            [Description("已驳回")]
+            Refuse = 1,
+            /// <summary>
+            /// 审核通过
+            /// </summary>
+            [Description("审核通过")]
+            Through = 2
+        }
+        #endregion
+
+
+
+        #region 优惠券启用状态
+        public enum CouponEnableState
+        {
+            /// <summary>
+            /// 启用
+            /// </summary>
+            [Description("启用")]
+            True = 1,
+            /// <summary>
+            /// 已禁用
+            /// </summary>
+            [Description("已禁用")]
+            False = 0
+        }
+        #endregion
+        #region 优惠券删除状态
+        public enum CouponDelState
+        {
+            /// <summary>
+            /// 有效
+            /// </summary>
+            [Description("有效")]
+            False = 0,
+            /// <summary>
+            /// 删除
+            /// </summary>
+            [Description("已删除")]
+            True = 1
+        }
+        #endregion
+
+
+        #region 爆品管理是否启用
+        public enum IsEnable
+        {
+            /// <summary>
+            /// 启用
+            /// </summary>
+            [Description("启用")]
+            True = 1,
+            /// <summary>
+            /// 关闭
+            /// </summary>
+            [Description("关闭")]
+            False = 0
+        }
+        #endregion
+
+        #region 爆品管理是否过期
+        public enum IsExpire
+        {
+            /// <summary>
+            /// 未过期
+            /// </summary>
+            [Description("未过期")]
+            Notdate = 0,
+            /// <summary>
+            /// 已过期
+            /// </summary>
+            [Description("已过期")]
+            Expired = 1,
+            /// <summary>
+            /// 活动未开始
+            /// </summary>
+            [Description("活动未开始")]
+            NotActivity = 2,
+        }
+        #endregion
+
+        #region 爆品商品来源国籍
+        public enum CountCity
+        {
+            /// <summary>
+            /// 美国
+            /// </summary>
+            [Description("美国")]
+            Usa = 1,
+            /// <summary>
+            /// 德国
+            /// </summary>
+            [Description("德国")]
+            Germany = 2,
+            /// <summary>
+            /// 日本
+            /// </summary>
+            [Description("日本")]
+            Japan = 3,
+            /// <summary>
+            /// 澳洲
+            /// </summary>
+            [Description("澳洲")]
+            Australia = 4,
+            /// <summary>
+            /// 新西兰
+            /// </summary>
+            [Description("新西兰")]
+            NewZealand = 5,
+            /// <summary>
+            /// 荷兰
+            /// </summary>
+            [Description("荷兰")]
+            Holland = 6,
+            /// <summary>
+            /// 意大利
+            /// </summary>
+            [Description("意大利")]
+            Ltaly = 7,
+            /// <summary>
+            /// 英国
+            /// </summary>
+            [Description("英国")]
+            Britain = 8
+        }
+        #endregion
+
+        #region 评论是否加精
+        public enum IsHighLight
+        {
+            /// <summary>
+            /// 加精
+            /// </summary>
+            [Description("加精")]
+            Yes = 1,
+            /// <summary>
+            /// 不加精
+            /// </summary>
+            [Description("不加精")]
+            No = 0
+        }
+        #endregion
+
+        #region 是否申请评论加精
+        public enum IntAppHighLight
+        {
+            /// <summary>
+            /// 申请加精
+            /// </summary>
+            [Description("申请加精")]
+            Yes = 1,
+            /// <summary>
+            /// 不加精
+            /// </summary>
+            [Description("未申请加精")]
+            No = 0
+        }
+        #endregion
+
+        #region 是否首页显示
+        public enum IndexVisible
+        {
+            /// <summary>
+            /// 显示
+            /// </summary>
+            [Description("显示")]
+            Yes = 1,
+            /// <summary>
+            /// 不显示
+            /// </summary>
+            [Description("不显示")]
+            No = 0
+        }
+        #endregion
+
+        #region 是否显示
+        public enum IsMask
+        {
+            /// <summary>
+            /// 显示
+            /// </summary>
+            [Description("显示")]
+            Yes = 1,
+            /// <summary>
+            /// 不显示
+            /// </summary>
+            [Description("不显示")]
+            No = 0
+        }
+        #endregion
+
+        #region 评论审核状态
+        public enum IntAuditState
+        {
+            /// <summary>
+            /// 未审核
+            /// </summary>
+            [Description("未审核")]
+            NotAudit = 0,
+            /// <summary>
+            /// 审核通过
+            /// </summary>
+            [Description("审核通过")]
+            PassAudit = 1,
+            /// <summary>
+            /// 审核未通过
+            /// </summary>
+            [Description("审核未通过")]
+            NoAudit = 2,
+        }
+        #endregion
+
+        #region 扭转订单商城类型
+        public enum MallType
+        {//订单商城类型：1母婴之家商城 2，海淘杭州保税区 3，除杭州保税区的海淘  4,海淘直邮  5,新特卖
+            /// <summary>
+            /// 母婴之家商城
+            /// </summary>
+            [Description("母婴之家商城")]
+            MyzjSc = 1,
+            /// <summary>
+            /// 海淘杭州保税区
+            /// </summary>
+            [Description("海淘杭州保税区")]
+            Hthzbsq = 2,
+            /// <summary>
+            /// 除杭州保税区的海淘
+            /// </summary>
+            [Description("除杭州保税区的海淘")]
+            Chzbsqht = 3,
+            /// <summary>
+            /// 海淘直邮
+            /// </summary>
+            [Description("海淘直邮")]
+            Htzy = 4,
+            /// <summary>
+            /// 新特卖
+            /// </summary>
+            [Description("新特卖")]
+            Xtm = 5,
+        }
+        #endregion
+
+        #region 扭转订单状态
+        public enum FlowStatus
+        {
+            /// <summary>
+            /// 取消订单
+            /// </summary>
+            [Description("取消订单")]
+            CancelOrder = -1,
+            /// <summary>
+            /// 新建
+            /// </summary>
+            [Description("新建")]
+            New = 1,
+            /// <summary>
+            /// 已审核
+            /// </summary>
+            [Description("已审核")]
+            Audit = 4,
+            /// <summary>
+            /// 已出库
+            /// </summary>
+            [Description("已出库")]
+            Outlibrary = 7,
+            /// <summary>
+            /// 已完成
+            /// </summary>
+            [Description("已完成")]
+            Complete = 20
+        }
+
+        #endregion
+
+        #region 活动专题状态
+        public enum WebAwardState
+        {
+            /// <summary>
+            /// 禁用
+            /// </summary>
+            [Description("禁用")]
+            Yes = 0,
+            /// <summary>
+            /// 启用
+            /// </summary>
+            [Description("启用")]
+            No = 1,
+        }
+        #endregion
+
+        #region 中奖类型
+        public enum IntPrizeType
+        {
+            /// <summary>
+            /// 现金劵
+            /// </summary>
+            [Description("现金劵")]
+            CashCoupon = 1,
+            /// <summary>
+            /// 满减劵
+            /// </summary>
+            [Description("满减劵")]
+            FullJianjuan = 2,
+            /// <summary>
+            /// 商品(码)
+            /// </summary>
+            [Description("商品(码)")]
+            CommodityCode = 3,
+            /// <summary>
+            ///商品
+            /// </summary>
+            [Description("商品")]
+            Commodity = 4,
+            /// <summary>
+            ///礼券
+            /// </summary>
+            [Description("礼券")]
+            Coupon = 5,
+            /// <summary>
+            ///参与奖
+            /// </summary>
+            [Description("参与奖")]
+            Participation = 99,
+        }
+        #endregion
+
+        #region 商品搜索词状态
+        public enum SearchState
+        {
+			/// <summary>
+			/// 全部
+			/// </summary>
+			[Description("全部")]
+			NoChoose=-1,
+			/// <summary>
+			/// 待审核
+			/// </summary>
+			[Description("待审核")]
+			NotAudit = 0,
+			/// <summary>
+			/// 已审核
+			/// </summary>
+			[Description("已审核")]
+			PassAudit = 1,
+			/// <summary>
+			/// 驳回
+			/// </summary>
+			[Description("拒绝")]
+			NoAudit = 2,
+
+        }
+        #endregion
+
+        #region 专题活动是否启用
+        public enum SubjectIsEnable
+        {
+            /// <summary>
+            /// 启用
+            /// </summary>
+            [Description("启用")]
+            True,
+            /// <summary>
+            /// 关闭
+            /// </summary>
+            [Description("关闭")]
+            False
+        }
+        #endregion
+
+        #region 推广类型
+        public enum SpreadType
+        {
+            /// <summary>
+            /// 线上推广
+            /// </summary>
+            [Description("线上推广")]
+            Online = 1,
+            /// <summary>
+            /// 地面推广
+            /// </summary>
+            [Description("地面推广")]
+            GroundSpread = 2,
+        }
+        #endregion
+
+        #region 推广站点
+        public enum SpreadSite
+        {
+            WebSite = 1,
+            Wap = 2,
+            App = 3,
+        }
+        #endregion
+
+        #region 活动推广站点
+        public enum ActivitySite
+        {
+
+            /// <summary>
+            /// 微信
+            /// </summary>
+            [Description("网站")]
+            WebSite = 1,
+            /// <summary>
+            /// 网站
+            /// </summary>
+            [Description("WAP")]
+            Wap = 2,
+            /// <summary>
+            /// App
+            /// </summary>
+            [Description("安卓")]
+            Andriod = 4,
+            /// <summary>
+            /// IOS
+            /// </summary>
+            [Description("IOS")]
+            Ios = 8,
+            /// <summary>
+            /// Ipad
+            /// </summary>
+            [Description("Ipad")]
+            Ipad = 16
+        }
+        #endregion
+
+        #region 推广信息（Key）状态
+        public enum SpreadState
+        {
+            /// <summary>
+            /// 正常
+            /// </summary>
+            [Description("正常")]
+            Normal = 1,
+
+            /// <summary>
+            /// 禁用
+            /// </summary>
+            [Description("禁用")]
+            Disable = 2,
+
+            /// <summary>
+            /// 报废
+            /// </summary>
+            [Description("报废")]
+            Scrap = 3,
+        }
+        #endregion
+
+        #region 活动状态
+        /// <summary>
+        /// 活动状态
+        /// </summary>
+        public enum ActivityStatus
+        {
+            /// <summary>
+            /// 启用
+            /// </summary>
+            [Description("启用")]
+            Enable = 1,
+            /// <summary>
+            /// 关闭
+            /// </summary>
+            [Description("关闭")]
+            Close = 2
+        }
+        #endregion
+
+        #region 推广用户状态
+
+        public enum UserStatus
+        {
+            /// <summary>
+            /// 正常
+            /// </summary>
+            [Description("正常")]
+            Normal = 0,
+            /// <summary>
+            /// 禁用
+            /// </summary>
+            [Description("禁用")]
+            Disable = 1,
+            /// <summary>
+            /// 报废
+            /// </summary>
+            [Description("报废")]
+            Scrap = 2
+        }
+
+        #endregion
+
+        #region 用户等级
+        public enum RoleLevel
+        {
+            /// <summary>
+            /// 超级管理员
+            /// </summary>
+            [Description("超级管理员")]
+            Administrator = 1,
+            /// <summary>
+            /// 经理
+            /// </summary>
+            [Description("经理")]
+            Manager = 2,
+            /// <summary>
+            /// 归属地
+            /// </summary>
+            [Description("归属地")]
+            Attribution = 3,
+            /// <summary>
+            /// 推广人员
+            /// </summary>
+            [Description("推广人员")]
+            Extension = 4
+        }
+        #endregion
+
+        #region 第三方关系标识类型
+        public enum SpreadUnionIdentityType
+        {
+            MyzkBackStageUser = 1,
+            MyzkUser = 2
+        }
+        #endregion
+
+        #region 奖品类型
+        public enum PrizeType
+        {
+            /// <summary>
+            /// 优惠码
+            /// </summary>
+            [Description("优惠码")]
+            Code = 1,
+            /// <summary>
+            /// 优惠劵
+            /// </summary>
+            [Description("优惠劵")]
+            Coupon = 2,
+            /// <summary>
+            /// 其他
+            /// </summary>
+            [Description("其他")]
+            Cush = 3,
+        }
+        #endregion
+
+        #region 活动模块
+        public enum Modular
+        {
+            /// <summary>
+            /// 推广模块
+            /// </summary>
+            Promote = 1,
+            /// <summary>
+            /// 基金模块
+            /// </summary>
+            PromoteJjh = 2,
+        }
+        #endregion
+
+        #region 砍价团状态
+        public enum GroupState
+        {
+
+            /// <summary>
+            /// 待审核
+            /// </summary>
+            [Description("未成团")]
+            No = 1,
+            /// <summary>
+            /// 驳回
+            /// </summary>
+            [Description("已成团")]
+            Ok = 2,
+            /// <summary>
+            /// 审核通过
+            /// </summary>
+            [Description("已关闭")]
+            Cancel = 3
+        }
+        #endregion
+
+
+
+        #region 砍价团是否支持有线付款
+        public enum GroupBeforePayEnum
+        {
+            /// <summary>
+            /// 优先付款先付款
+            /// </summary>
+            [Description("是")]
+            Refuse = 1,
+            /// <summary>
+            /// 优先付款后付款
+            /// </summary>
+            [Description("否")]
+            Through = 2
+        }
+        #endregion
+
+
+
+        public enum StatisticsType
+        {
+            [Description("按SKU销量查询")]
+            SkuSale = 0,
+            [Description("按每日销量查询")]
+            DateSale = 1
+        }
+
+
+        #region 物流信息管理枚举
+        public enum ExpressOrderTypeEnum
+        {
+            [Description("销售订单")]
+            SaleOrder = 1,
+
+            [Description("医务订单")]
+            YiWu = 5,
+            [Description("代理商订单")]
+            DaiLiShang = 6,
+            [Description("客服批发订单")]
+            KeFuPiFa = 11,
+            [Description("特殊")]
+            TeShu = 12,
+            [Description("淘宝订单")]
+            TaoBao = 14,
+            [Description("特卖订单")]
+            TeMai = 15,
+            [Description("网盟订单")]
+            WangMeng = 16,
+            [Description("团购订单")]
+            TuanGou = 17,
+            [Description("宝优网订单")]
+            BaoYouWang = 18,
+            [Description("淘宝C店订单")]
+            TaoBao_C = 19,
+            [Description("直销订单")]
+            ZhiXiao = 20,
+            [Description("合生元兑换订单")]
+            HeShengYuan = 21,
+            [Description("闪购预售")]
+            ShanGouYuShou = 22,
+            [Description("闪购入仓")]
+            ShanGouRuCang = 23,
+            [Description("闪购供应商发货")]
+            ShanGouGongYingShang = 24,
+            [Description("闪购预售（直销）")]
+            SGYS_ZhiXiao = 25,
+            [Description("闪购入仓（直销）")]
+            SGRC_ZhiXiao = 26,
+            [Description("闪购供应商发货（直销）")]
+            SGGYS_ZhiXiao = 27,
+            [Description("WebApp")]
+            WebApp = 28,
+            [Description("Android订单")]
+            AndroidApp = 29,
+            [Description("IOS订单")]
+            IOSApp = 30,
+            [Description("平安银行订单")]
+            PingAn_Bank = 31,
+            [Description("丽婴房O2O订单")]
+            LiYingFang_O2O = 32,
+            [Description("WebApp订单-海淘")]
+            WebApp_HaiTao = 33,
+            [Description("Android订单-海淘")]
+            Android_HaiTao = 34,
+            [Description("IOS订单-海淘")]
+            IOS_HaiTao = 35,
+            [Description("VIP订单")]
+            Vip = 36,
+
+
+            [Description("新特卖")]
+            NewFlashBuy = 2,
+            [Description("海淘直邮")]
+            UnKnow1 = 4,
+            [Description("海淘自贸")]
+            UnKnow2 = 8,
+            [Description("礼品卡订单")]
+            GiftCard = 64,
+            [Description("门店订单")]
+            Store = 65,
+            [Description("批发订单(海淘)")]
+            HTPiFa = 66,
+            [Description("童车租赁")]
+            BabyCar = 68,
+            [Description("供应商代发货")]
+            VendorPro = 69,
+            [Description("月结订单")]
+            MonthOrder = 70,
+            [Description("租赁代发货")]
+            RentPro = 71
+
+        }
+
+        public enum ExpressLastStatusEnum
+        {
+            [Description("空")]
+            IsNull = -1,
+            [Description("在途中")]
+            Tuzhong = 0,
+            [Description("已揽收")]
+            Lanshou = 1,
+            [Description("疑难")]
+            Yinan = 2,
+            [Description("已签收")]
+            Qianshou = 3
+        }
+
+        public enum ExpressSubscribeStatusEnum
+        {
+            [Description("不订阅")]
+            None = -1,
+            [Description("未订阅")]
+            No = 0,
+            [Description("已订阅")]
+            Yes = 1,
+            [Description("订阅失败")]
+            Failed = 2,
+        }
+        public enum ExpressGuiDangEnum
+        {
+            //[Description("归档数据")]
+            //No = 0,
+            [Description("新数据")]
+            Yes = 1,
+            [Description("全部")]
+            All = 3,
+        }
+
+        public enum ExpressHandleStatusEnum
+        {
+            [Description("已处理")]
+            Yes = 1,
+            [Description("未处理")]
+            No = 2,
+        }
+
+        public enum ExpressContentEnum
+        {
+            [Description("无物流信息")]
+            Yes = 0,
+            [Description("有物流信息")]
+            Have = 1,
+            [Description("大于2天无数据")]
+            Two = 2,
+            [Description("大于3天无数据")]
+            Three = 3,
+            [Description("大于4天无数据")]
+            Four = 4,
+            [Description("大于5天无数据")]
+            Five = 5,
+            [Description("大于6天无数据")]
+            Six = 6,
+            [Description("大于7天无数据")]
+            Seven = 7,
+            [Description("大于10天无数据")]
+            Ten = 10,
+            [Description("大于20天无数据")]
+            Twenty = 20, 
+            [Description("大于30天无数据")]
+            ThirTy = 30,
+        }
+
+        public enum ExpresCompanyOfenEnum
+        {
+            [Description("否")]
+            No = 0,
+            [Description("是")]
+            Yes = 1
+        }
+
+        /// <summary>
+        /// 物流表callType
+        /// </summary>
+        public enum ExpressCallTypeModeEnum
+        {
+            [Description("自对接")]
+            Self = 1,
+            [Description("快递100")]
+            Third = 2,
+            [Description("不对接")]
+            NoCall = 3,
+        }
+        public enum ExpressDelEnum
+        {
+            [Description("有效")]
+            Yes = 0,
+            [Description("作废")]
+            No = 1,
+        }
+
+
+        /// <summary>
+        /// 配送商设置对接模式开关
+        /// </summary>
+        public enum ExpressCompanyModeEnum
+        {
+            [Description("快递100")]
+            Third = 0,
+            [Description("自对接")]
+            Self = 1,
+            [Description("不对接")]
+            NoCall = 2
+        }
+        public enum ExpressCompanyEnableEnum
+        {
+            [Description("是")]
+            Yes = 0,
+            [Description("否")]
+            No = 1
+        }
+
+        /// <summary>
+        /// 日志类型1正常2错误
+        /// </summary>
+        public enum ExpressLogType
+        {
+            [Description("正常")]
+            Normal = 1,
+            [Description("错误")]
+            Error = 2
+        }
+
+        /// <summary>
+        /// 业务点类型
+        /// </summary>
+        public enum ExpressBusinessType
+        {
+            [Description("推送订单状态")]
+            PushOrderStatus = 1,
+            [Description("保存运单")]
+            SaveWayBill = 2,
+            [Description("订阅")]
+            Subscribe = 3,
+            [Description("自接请求")]
+            SelfAccess = 4,
+            [Description("快递100推送数据处理")]
+            HandlePushInfo = 5,
+            [Description("查询")]
+            Query = 6,
+            [Description("在线查询")]
+            QueryOnline = 7,
+            [Description("数据修改")]
+            UpdateData = 8,
+            [Description("数据归档")]
+            Archive = 9
+        }
+
+        /// <summary>
+        /// 订单扭转，商城类型
+        /// </summary>
+        public enum ExpressOrderStatusMallType
+        {
+            [Description("其他")]
+            UnKnown = 0,
+            [Description("商城类型-自营")]
+            MyzjSelf = 1,
+            [Description("商城类型-非自营")]
+            MyzjNoSelf = 2,
+            [Description("海淘 自贸")]
+            FreeMall = 3,
+            [Description("海淘 直邮")]
+            MailMall = 4,
+            [Description("新特卖")]
+            Tm = 5
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public enum ExpressOrderStatusType
+        {
+            [Description("已取消")]
+            Abandon = -1,
+            [Description("新建")]
+            Init = 0,
+            [Description("待手动审核")]
+            ForManual = 1,
+            [Description("已手动审核")]
+            ManualAudited = 2,
+            [Description("已自动审核")]
+            AutoAudited = 4,
+            [Description("已分单")]
+            Distributed = 8,
+            [Description("配货中")]
+            Producing = 16,
+            [Description("打包待出库")]
+            Packed = 32,
+            [Description("已出库")]
+            OutStocked = 64,
+            [Description("已完成")]
+            Completed = 128
+
+        }
+        #endregion
+
+        public enum SmsEnableState
+        {
+            /// <summary>
+            /// 禁用
+            /// </summary>
+            [Description("禁用")]
+            True,
+            /// <summary>
+            /// 启用
+            /// </summary>
+            [Description("启用")]
+            False,
+        }
+
+
+        //短信供应商
+        public enum SmsProvider
+        {
+            [Description("梦网")]
+            MengWang = 1,
+            [Description("亿美")]
+            YiMei = 2
+        }
+        //短信发送方式
+        public enum SmsSendMode
+        {
+            [Description("触发类")]
+            Trigger = 1,
+            [Description("营销类")]
+            Market = 2,
+            [Description("触发类批量")]
+            TriggerBatch = 3
+        }
+        //短信通道
+        public enum SmsChannel
+        {
+            [Description("主通道")]
+            Main = 1,
+            [Description("备用通道")]
+            Spare = 2,
+        }
+    }
+}

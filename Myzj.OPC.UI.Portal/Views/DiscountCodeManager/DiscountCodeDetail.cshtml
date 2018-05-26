@@ -1,0 +1,266 @@
+﻿@{
+    ViewBag.Title = "DiscountCodeDetail";
+}
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.BaseDiscountCodeConfig
+@using Myzj.OPC.UI.ServiceClient
+@model BaseRefer<DiscountCodeBatchReq, DiscountCodeBatchRes>
+<h2>码管理</h2>
+<style>
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+</style>
+<div>
+
+    <input type="hidden" id="hd_ActivitySysNo" value="@ViewBag.SysNo"/>
+    <input type="hidden" id="hd_SetCodeCount" value="@(ViewBag.SetCodeCount - ViewBag.CreateCodeCount)"/>
+    <input type="hidden" id="hd_CodeCount" value="@ViewBag.SetCodeCount"/>
+    <table class="showDetailTable">
+        <tr>
+            <td>活动名称</td>
+            <td style="text-align: center">@ViewBag.ActivityName</td>
+
+            <td>存在码数量</td>
+            <td style="text-align: center">@ViewBag.CreateCodeCount</td>
+        </tr>
+        <tr>
+            <td>操作类型</td>
+            <td style="text-align: left">
+                <span style="width: 100px; line-height: 20px;">
+                    <input name="OperationType" type="radio" value="0" checked="checked">新增
+                </span>
+                <span style="width: 100px; margin-left: 20px; line-height: 20px;">
+                    <input name="OperationType" type="radio" value="1">覆盖
+                </span>
+            </td>
+            <td>码上限</td>
+            <td style="text-align: center">@ViewBag.SetCodeCount</td>
+            
+        </tr>
+        <tr>
+           <td>码长度</td>
+            <td>
+                <input type="text" id="txtSetCodeLength" placeholder="必填，介于4—10之间" />
+            </td>
+            <td>生成数量</td>
+            <td>
+                <input type="text" id="txtCreateCodeNum" style="width: 400px;" placeholder="必填,生成数量加上已存在码数量不能超过码上限" />
+            </td>
+        </tr>
+        <tr>
+            <td>预约执行时间</td>
+            <td>
+                <input type="text" name="dateTime" id="txtAdvanceTime" onfocus="dateFmt(this,2)" placeholder="必填" />
+            </td>
+            <td></td>
+            <td>
+               
+               
+            </td>
+        </tr>
+    </table>
+    <div class="rowButton">
+        <input type="button" value="保存" id="btnSave" onclick="SaveBatch();" />
+        @* <input type="button" value="关闭" id="btnColse" onclick="window.location.href = '/DiscountCodeManager/Index'" />*@
+         <input type="button" value="关闭" id="btnColse" onclick="window.close();" />
+    </div>
+</div>
+
+@using (Html.BeginForm())
+{
+    <div>
+        <table class="showDetailTable">
+            @if (ViewBag.SysNo==null)
+            {
+           
+                <tr>
+                    <td>活动名称
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.SearchDetail.ActivityName)
+                    </td>
+                    <td>活动Key</td>
+                    <td>@Html.TextBoxFor(m => m.SearchDetail.ActivityKey)</td>
+                </tr>
+            }
+            <tr>
+                <td>申请人</td>
+                <td>@Html.TextBoxFor(m => m.SearchDetail.ApplyUserName)</td>
+                <td>执行状态</td>
+                <td>
+                    @{
+            var list = new Dictionary<int, string>();
+            list.Add(0, "新建");
+            list.Add(1, "执行中");
+            list.Add(2, "完成");
+            list.Add(3, "失败");
+            list.Add(4, "取消");
+                    }
+                    @Html.DropDownListFor(m => m.SearchDetail.ExeStatus, new KvSelectList(list), true)
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="rowButton">
+        <input type="submit" id="btnSearch" value="查询" />
+    </div>
+            if (Model.List2 != null && Model.List2.Any())
+            {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>批次号</th>
+                    <th>活动Key</th>
+                    <th>活动名称</th>
+                    <th>码长度</th>
+                    <th>设置数量</th>
+                    <th>批次信息</th>
+                    <th>剩余生成数量</th>
+                    <th>生成进度</th>
+                    <th>执行描述</th>
+                    <th>操作类型</th>
+                    <th>申请人</th>
+                    <th>创建时间</th>
+                    <th>预约执行时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.List2)
+                {
+                    <tr>
+                        <td>@item.SysNo</td>
+                        <td>@item.ActivityKey</td>
+                        <td>@item.ActivityName</td>
+                        <td>@item.SetCodeLength</td>
+                        <td>@item.SetCodeCount</td>
+                        <td>@item.BatchFileName</td>
+                        <td>@item.CreateCodeNum</td>
+                        <td>@BaseDiscountCodeConfigClient.Instance.GetExeStatusStr(item.ExeStatus)</td>
+                        <td>@item.ExeDescription</td>
+                        @if (item.OperationType == 0)
+                        {
+                            <td>新增</td>
+                        }
+                        else
+                        {
+                            <td>覆盖</td>
+                        }
+                        <td>@item.ApplyUserName</td>
+                        <td>@item.RowCreateDate</td>
+                        <td>@item.AdvanceTime</td>
+                        <td>
+                           @if (item.ExeStatus == 0 || item.ExeStatus == 1)
+                            {
+                                <a style="color: #191970; cursor: pointer" target="_blank" onclick="cancelExecute(@item.SysNo);">取消执行</a>
+                            }
+                           @* @if (item.ExeStatus != 4)
+                            {
+                                *@<a style="color: #191970; cursor: pointer" target="_blank" onclick=" window.location.href = '@Url.Action("DiscountCodeExport", "DiscountCodeManager", new { BatchSysNo = item.SysNo })' ">导出码</a>
+                                <a style="color: #191970; cursor: pointer" target="_blank" href="@Url.Action("QueryDiscountCode", "DiscountCodeManager", new { BatchSysNo = item.SysNo })">查看</a>
+                            @*}
+
+                            else
+                            {
+                                <a style="color: #808080; cursor: pointer" target="_blank">导出码</a>
+                                <a style="color: #808080; cursor: pointer" target="_blank">查看</a>
+                            }*@
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    @Html.Partial("Pager", @Model)
+            }
+}
+
+<script type="text/javascript">
+    $("#txtSetCodeLength").keyup(function () {
+        var tmptxt = $(this).val();
+        $(this).val(tmptxt.replace(/\D|^0/g, ''));
+    }).bind("paste", function () {
+        var tmptxt = $(this).val();
+        $(this).val(tmptxt.replace(/\D|^0/g, ''));
+    }).css("ime-mode", "disabled");
+
+    $("#txtCreateCodeNum").keyup(function () {
+        var tmptxt = $(this).val();
+        $(this).val(tmptxt.replace(/\D|^0/g, ''));
+    }).bind("paste", function () {
+        var tmptxt = $(this).val();
+        $(this).val(tmptxt.replace(/\D|^0/g, ''));
+    }).css("ime-mode", "disabled");
+
+    function SaveBatch() {
+        if (parseInt($("#txtSetCodeLength").val()) <4 || $("#txtSetCodeLength").val().length < 1 || parseInt($("#txtSetCodeLength").val())>10) {
+            alert("请输入正确的码长度,限4-10位");
+            return;
+        }
+       
+        if ($("input[name='OperationType']:checked").val() == 0 && parseInt($("#hd_SetCodeCount").val()) < parseInt($("#txtCreateCodeNum").val())) {
+            alert("请输入正确的生成数量，不能超过上限");
+            return;
+        } else if ($("input[name='OperationType']:checked").val() == 1 && parseInt($("#hd_CodeCount").val()) < parseInt($("#txtCreateCodeNum").val())) {
+            alert("请输入正确的生成数量，不能超过上限");
+            return;
+        }
+
+        if ($.trim($("#txtAdvanceTime").val()) == "") {
+            alert("请输入预约执行时间");
+            return;
+        }
+
+        if (confirm("确定保存 ?")) {
+
+            var model = {};
+            model.ActivitySysNo = $.trim($("#hd_ActivitySysNo").val());
+            model.SetCodeLength = $.trim($("#txtSetCodeLength").val());
+            model.CreateCodeNum = $.trim($("#txtCreateCodeNum").val());
+            model.AdvanceTime = $.trim($("#txtAdvanceTime").val());
+            model.OperationType = $("input[name='OperationType']:checked").val();
+            $.ajax({
+                url: '@Url.Action("AddDiscountCodeBatch", "DiscountCodeManager")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    alert(result.DoResult);
+                }
+            });
+        }
+    }
+
+
+    function cancelExecute(sysNo) {
+        if (confirm("确定操作?")) {
+            $.ajax({
+                url: '/DiscountCodeManager/CancelExecute',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: "{\"sysNo\":" + sysNo + "}",
+                success: function (result) {
+                    alert(result.DoResult);
+                    if (result.DoFlag) {
+                        //  window.location.href = '/DiscountCodeManager/QueryDiscountCodeBatch';
+                        location.reload();
+                    }
+                }
+            });
+        }
+    }
+</script>

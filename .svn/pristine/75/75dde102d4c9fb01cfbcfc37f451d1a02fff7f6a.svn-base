@@ -1,0 +1,157 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.WebIndex
+@model Myzj.OPC.UI.Model.WebIndex.WebIndexDetail
+@{
+    var isEdit = (Model != null && Model.IntRapidInID > 0);
+    var actionName = isEdit ? "Update" : "Add";
+}
+
+@if (isEdit)
+{
+    <h2>修改快速入口</h2>
+}
+else
+{
+    <h2>新增快速入口</h2>
+}
+
+<div id="tableContainer">
+    <form id="detailForm">
+        <input type="hidden" id="hidIntRapidInID" value="@Model.IntRapidInID"/>
+
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>名称(*):</td>
+                    <td>
+                        <input type="text" value="@Model.VchName" id="VchName",maxlength="12"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>入口连接(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.VchLink)
+                    </td>
+                </tr>
+                <tr>
+                    <td>排序:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.IntSort)
+                    </td>
+                </tr>
+                <tr>
+                    <td>关联的活动:</td>
+                    <td>
+                        @{
+                            var res = (WebActivityRefer)ViewBag.WebActivity;
+
+                            if (res != null)
+                            {
+                            <select id="IntActivityId">
+                                @foreach (var activity in res.List)
+                                {
+                                    var id = Model.IntActivityId;//原本的活动类型
+                                    var checkStr = "";
+                                    if (activity.IntActivityId == id)
+                                    {
+                                        checkStr = "selected='selected'";
+                                    }
+                                    else
+                                    {
+                                        checkStr = "";
+                                    }
+                                    <option @checkStr value="@activity.IntActivityId">@activity.VchActivityName</option>
+                                }
+                            </select>
+                            }
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>开始时间:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.DtStratDate)
+                    </td>
+                </tr>
+                <tr>
+                    <td>结束时间:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.DtEndDate)
+                    </td>
+                </tr>
+                <tr>
+                    <td>所属:</td>
+                    <td>
+                        @Html.DropDownListFor(m => m.IntSystemType, new KvSelectList(typeof(AppEnum.SystemType).GetEnumList()), false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>是否验证:</td>
+                    <td>
+                        @Html.DropDownListFor(m => m.IntNewUserVerify, new KvSelectList(typeof(AppEnum.NewUserVerify).GetEnumList()), false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>是否启用:</td>
+                    <td>
+                        @Html.DropDownListFor(m => m.IntIsVisibleIndex, new KvSelectList(typeof(AppEnum.IsVisibleIndex).GetEnumList()), false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>备注:</td>
+                    <td>@Html.TextAreaFor(m => m.VchMemo)</td>
+                </tr>
+        </table>
+    </form>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="保存" id="btnSave" />
+    <input type="button" value="取消" id="btnDel" onclick="window.location.href = window.close()" />
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $("#btnSave").click(function () {
+            var model = {};
+            model.IntRapidInID = $("#hidIntRapidInID").val();
+            model.VchName = $("#VchName").val();
+            model.VchLink = $("#VchLink").val();
+            model.IntSort = $("#IntSort").val();
+            model.IntIsVisibleIndex = $("#IntIsVisibleIndex").val();
+            model.VchMemo = $("#VchMemo").val();
+            model.IntNewUserVerify = $("#IntNewUserVerify").val();
+            model.IntActivityId = $("#IntActivityId").val();
+            model.IntSystemType = $("#IntSystemType").val();
+            model.DtStratDate = $("#DtStratDate").val();
+            model.DtEndDate = $("#DtEndDate").val();
+
+            if (model.VchName == null || model.VchName == "") {
+                alert("请输入名称!");
+                return false;
+            } else if (model.VchLink == null || model.VchLink == "") {
+                alert("请输入入口连接！");
+                return false;
+            }
+            $.ajax({
+                url: '@Url.Action("Save", "WebIndexRapidIn")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("更新成功！");
+                        reloadPage();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+
+
+

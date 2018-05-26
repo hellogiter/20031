@@ -1,0 +1,1519 @@
+﻿@using System.Collections.Specialized
+@using System.Web.Configuration
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.WebIndex
+@using Myzj.OPC.UI.ServiceClient
+@model Myzj.OPC.UI.Model.BaseCouponConfig.CouponInfoDetailExt
+@{
+    var isEdit = (Model != null && Model.SysNo > 0);
+
+    var floorItem = (IEnumerable<Myzj.OPC.UI.Model.BaseCouponConfig.WareHouseDetail>)ViewBag.ItemModel;
+    var isDisabled = "";
+    var isCopy = (!string.IsNullOrEmpty(Request.QueryString["copyId"]));
+}
+
+<script src="@Url.Content("~/Scripts/jquery.validate.js")"></script>
+
+<style>
+    .showDetailTableMultiColumnm tbody tr td {
+        text-align: left;
+        padding: 6px 8px;
+        float: none;
+    }
+
+    .showDetailTableMultiColumnm .mjsz input {
+        width: 60px;
+        /*padding: 0px 6px;*/
+        float: none;
+        margin-right: 10px;
+    }
+
+    .showDetailTableMultiColumnm .mjsz span {
+        /*padding-left: 10px;*/
+        text-align: left;
+        color: #000;
+    }
+
+    .showDetailTableMultiColumnm .sendfs {
+        text-align: left;
+    }
+
+        .showDetailTableMultiColumnm .sendfs input {
+            width: 12px;
+            float: none;
+            margin-left: 20px;
+            margin-right: 15px;
+        }
+
+            .showDetailTableMultiColumnm .sendfs input.text-con {
+                width: 200px;
+                margin-left: 10px;
+            }
+
+            .showDetailTableMultiColumnm .sendfs input.text-con500 {
+                width: 500px;
+                margin-left: 10px;
+            }
+
+    .showDetailTableMultiColumnm .manjian textarea {
+        width: 500px;
+        margin-right: 15px;
+    }
+
+    .showDetailTableMultiColumnm .tickename input {
+        width: 300px;
+        margin-right: 15px;
+    }
+
+    #dataStr tr {
+        width: 100%;
+        padding: 5px 0;
+        margin-left: 0;
+    }
+
+    #dataStr td {
+        width: 100%;
+        border: 0px;
+        margin: 0px;
+        text-align: left;
+        /*white-space: normal;*/
+        height: auto;
+    }
+
+    #dataStr {
+        width: 100%;
+        margin-left: 10px;
+    }
+
+    .showDetailTableMultiColumnm table#dataStr td input {
+        width: 123px;
+        padding: 3px 5px;
+        margin: 0 25px 0 6px;
+    }
+
+    .showDetailTableMultiColumnm table#dataStr tbody {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .showDetailTableMultiColumnm .onefirstTd {
+        width: 195px;
+    }
+
+    .showDetailTableMultiColumnm {
+        width: 99%;
+        margin: 5px auto;
+    }
+
+    span.error {
+        color: #C00;
+        padding: 0 6px;
+    }
+
+    .showDetailTableMultiColumnm tbody tr td label.error {
+        float: none;
+        width: inherit;
+        color: red;
+        margin: 0 20px 0 0;
+    }
+</style>
+
+
+@if (isCopy)
+{
+    <h2>复制优惠券</h2>
+    Model.SysNo = 0;
+}
+else
+{
+    if (isEdit)
+    {
+        isDisabled = "disabled='disabled'";
+    <h2>修改优惠券</h2>
+    }
+    else
+    {
+    <h2>新增优惠券</h2>
+    }
+}
+
+
+<div id="tableContainer">
+    <form id="detailForm">
+        <input type="hidden" id="IntSysNo" value="@Model.SysNo"/>
+        <input type="hidden" id="StrCouponKey" value="@Model.CouponKey"/>
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+
+                <tr>
+                    <td class="onefirstTd">优惠券名称(*):</td>
+                    <td class="tickename">
+                        <input id="CouponName" name="CouponName" type="text" value="@Model.CouponName" placeholder="必填,长度不要超过60个字符" required data-msg-required="不能为空"/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>优惠券发送方:</td>
+                    <td class="sendfs">
+                        @{
+                            var rdBelog1 = "";
+                            var rdBelog2 = "";
+                            if (Model.Belonging != null && Model.Belonging.Equals("1"))
+                            {
+                                rdBelog1 = "checked='checked'";
+                                rdBelog2 = "";
+                            }
+                            else
+                            {
+                                rdBelog1 = "";
+                                rdBelog2 = "checked='checked'";
+                            }
+                        }
+                        <input type="radio" @rdBelog1 name="Belonging" @isDisabled value="1" />母婴之家
+                        <input type="radio" @rdBelog2 name="Belonging" @isDisabled value="2" />第三方 
+                    </td>
+                </tr>
+                <tr>
+                    <td>是否码转券：</td>
+                    <td class="sendfs">
+                        @{
+                            var IsCodeToCoupon1 = "";
+                            var IsCodeToCoupon2 = "";
+                            if (Model.IsCodeToCoupon.HasValue && Model.IsCodeToCoupon == 1)
+                            {
+                                IsCodeToCoupon1 = "checked='checked'";
+                                IsCodeToCoupon2 = "";
+                            }
+                            else
+                            {
+                                IsCodeToCoupon1 = "";
+                                IsCodeToCoupon2 = "checked='checked'";
+                            }
+                        }
+                        <input type="radio" @IsCodeToCoupon1 name="IsCodeToCoupon" @isDisabled value="1" />是
+                        <input type="radio" @IsCodeToCoupon2 name="IsCodeToCoupon" @isDisabled value="0" />否 
+                    </td>
+                </tr>
+                <tr>
+                    <td>优惠券类型：</td>
+                    <td class="sendfs">
+                        @{
+                            var couponType1 = "";
+                            var couponType2 = "";
+                            if (Model.CouponType.HasValue && Model.CouponType == 2)
+                            {
+                                couponType1 = "";
+                                couponType2 = "checked='checked'";
+                            }
+                            else
+                            {
+                                couponType1 = "checked='checked'";
+                                couponType2 = "";
+                            }
+                        }
+                        <input type="radio" @couponType1 name="CouponType" @isDisabled value="0" />满减券
+                        <input type="radio" @couponType2 name="CouponType" @isDisabled value="2" />折扣券 
+                    </td>
+                </tr>
+
+                <tr class="mjsz">
+                    <td>设置(*):</td>
+                    <td>
+                        @if (isCopy)
+                        {
+                            <span style="width: 100px;">满：<input value="@Model.FillMoney.ToString().TrimEnd('0').TrimEnd('.')" required data-msg-required="满金额不能为空" data-rule-gt="true" data-gt="0"  id="FillMoney" name="FillMoney" placeholder="必填" type="text">
+                            </span>
+                            <span id="spSub" style="width: 100px;">返：<input value="@Model.SubtractMoney.ToString().TrimEnd('0').TrimEnd('.')" required data-msg-required="减金额不能为空" data-rule-gt="true" data-gt="0"  id="SubtractMoney" name="SubtractMoney" placeholder="必填" type="text">
+                            </span>
+                            <span id="spDis" style="width: 100px;">折扣：<input value="@Model.Discount.ToString().TrimEnd('0').TrimEnd('.')" required data-msg-required="折扣不能为空" data-rule-gt="true" data-gt="0"  id="Discount" name="Discount" placeholder="必填" type="text">
+                                折扣金额上限：<input value="@Model.DiscountUpperLimit" required data-msg-required="折扣上限金额不能为空" data-rule-gt="true" data-gt="0"  id="DiscountUpperLimit" name="DiscountUpperLimit" placeholder="必填" type="text">
+                            </span>
+                        }
+                        else
+                        {
+                            if (isEdit)
+                            {
+                            <span style="width: 100px;">满：<input value="@Model.FillMoney.ToString().TrimEnd('0').TrimEnd('.')" required data-msg-required="满金额不能为空" data-rule-gt="true" data-gt="0"  id="FillMoney" name="FillMoney" placeholder="必填" disabled="disabled" type="text" class="valid">
+                            </span>    
+                            <span id="spSub" style="width: 100px;">返：<input value="@Model.SubtractMoney.ToString().TrimEnd('0').TrimEnd('.')" required data-msg-required="减金额不能为空" data-rule-gt="true" data-gt="0"  id="SubtractMoney" disabled = "disabled" name="SubtractMoney" placeholder="必填" type="text" class="valid">
+                            </span>   
+                            <span id="spDis" style="width: 100px;">折扣：<input value="@Model.Discount.ToString().TrimEnd('0').TrimEnd('.')" required data-msg-required="折扣不能为空" data-rule-gt="true" data-gt="0"  id="Discount" name="Discount" placeholder="必填" disabled = "disabled" type="text">
+                                折扣金额上限：<input value="@Model.DiscountUpperLimit" required data-msg-required="折扣上限金额不能为空" data-rule-gt="true" data-gt="0"  id="DiscountUpperLimit" name="DiscountUpperLimit" placeholder="必填" disabled = "disabled" type="text">
+                            </span>
+                            }
+                            else
+                            {
+                            <span style="width: 100px;">满：<input value="@Model.FillMoney.ToString().TrimEnd('0').TrimEnd('.')" required data-msg-required="满金额不能为空" data-rule-gt="true" data-gt="0"  id="FillMoney" name="FillMoney" placeholder="必填" type="text">
+                            </span>
+                            <span id="spSub" style="width: 100px;">返：<input value="@Model.SubtractMoney.ToString().TrimEnd('0').TrimEnd('.')" required data-msg-required="减金额不能为空" data-rule-gt="true" data-gt="0"  id="SubtractMoney" name="SubtractMoney" placeholder="必填" type="text">
+                            </span> 
+                            <span id="spDis" style="width: 100px;">折扣：<input value="@Model.Discount.ToString().TrimEnd('0').TrimEnd('.')" required data-msg-required="折扣不能为空" data-rule-gt="true" data-gt="0"  id="Discount" name="Discount" placeholder="必填" type="text">
+                                折扣金额上限：<input value="@Model.DiscountUpperLimit" required data-msg-required="折扣上限金额不能为空" data-rule-gt="true" data-gt="0"  id="DiscountUpperLimit" name="DiscountUpperLimit" placeholder="必填" type="text">
+                            </span>
+                            }
+                        }
+
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>开始时间(*):</td>
+                    <td class="sendfs">
+                        <input class="text-con" type="text" id="StartTime"  placeholder="必填" name="StartTime" required data-msg-required="开始时间不能为空"  value="@Model.StartTime" onfocus="dateFmt(this,1);" class="Wdate"  />
+                    </td>
+                </tr>
+                <tr>
+                    <td>结束时间(*):</td>
+                    <td class="sendfs">
+                        <input class="text-con" type="text" id="EndTime"  placeholder="必填" name="EndTime" required data-msg-required="结束时间不能为空"  value="@Model.EndTime" onfocus="dateFmt(this,2);" class="Wdate"  />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>是否启用:</td>
+                    <td class="sendfs">
+                        @{
+                            var selectTrue = "checked='checked'";
+                            var selectFalse = "";
+                            if (Model.IsEnable != null)
+                            {
+                                if (Model.IsEnable == true)
+                                {
+                                    selectTrue = "checked='checked'";
+                                    selectFalse = "";
+                                }
+                                else
+                                {
+                                    selectTrue = "";
+                                    selectFalse = "checked='checked'";
+                                }
+
+                            }
+                           
+                        }
+                        <input @selectTrue   name="IsEnable" type="radio" value="true">是
+                        <input @selectFalse  name="IsEnable" type="radio" value="false">否
+                    </td>
+                </tr>
+                <tr style="display: none">
+                    <td>审核级别:</td>
+                    <td class="sendfs">
+                        <input id="AuditLevel" type="checkbox" disabled="disabled" checked="checked" name="AuditLevel" value="2" />组长</td>
+                </tr>
+
+                <tr>
+                    <td>满减券描述(*):</td>
+                    <td class="manjian">
+                        <textarea cols="20" id="CouponDescription" required data-msg-required="优惠券描述不能为空" name="CouponDescription" placeholder="必填,长度不要超过512个字符" rows="2">@Model.CouponDescription</textarea>
+                        @*@Html.TextAreaFor(m => m.CouponDescription, htmlAttributes: new { placeholder = "必填" })*@
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>备注信息:</td>
+                    <td class="manjian">
+                        @Html.TextAreaFor(m => m.Remarks, htmlAttributes: new { placeholder = "长度不要超过512个字符" })
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+        <span style="margin-left: 20px;">∨基础扩展字段</span>
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr style="display: none">
+                    <td>基础扩展字段(Json)</td>
+                    <td>
+                        <div style="margin: 10px 0; vertical-align: bottom;">
+                            @Html.TextAreaFor(m => m.BasicsExt)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>需求部门(*):</td>
+                    <td>
+                        @{
+                            var list = BaseCouponConfigClient.Instance.GetDeptList();
+                        }
+                        <div style="width: 340px; padding: 0; margin: 0">
+                            @Html.DropDownListFor(m => m.DeptId, new KvSelectList(list))
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="onefirstTd">每个会员限制发送张数 默认为 1(*):</td>
+                    <td class="tickename limit">
+                        <input type="text" id="SendLimitUserCount" name="SendLimitUserCount"  style="width: 200px"  value="@Model.SendLimitUserCount" class="fn-tinput" placeholder="大于0" required data-msg-required="每个会员限制发送张数不能为空" data-rule-gt="true" data-gt="-1"/></td>
+                </tr>
+                <tr>
+                    <td>限制发送张数(*):</td>
+                    <td class="sendfs limit">
+                        <input type="text" id="SendLimitCount" name="SendLimitCount" class="text-con" placeholder="大于0" required data-msg-required="限制发送张数不能为空" data-rule-gt="true" data-gt="-1" value="@Model.SendLimitCount" /></td>
+                </tr>
+                <tr>
+                    <td>将要达到限制数量报警值(%):</td>
+                    <td class="sendfs limit">
+                        <input type="text" id="WillReachWarning" name="WillReachWarning" class="text-con" placeholder="大于等于0" value="@Model.WillReachWarning" /><label class="error">默认0不报警，如设置80 则发送数量达到总限制数量的80%时预警，数字建议大于50%</label></td>
+                </tr>
+                <tr>
+                    <td>设置天数(0不设置)(*):</td>
+                    <td class="sendfs limit">
+                        <input type="text" id="UseSetDays" class="text-con"  placeholder="大于等于0" required data-msg-required="设置天数不能为空" data-rule-gt="true" data-gt="-1" value="@Model.UseSetDays" />
+                    </td>
+
+                </tr>
+
+                <tr>
+                    <td>批次使用条件:</td>
+                    <td class="sendfs">
+                        <table id="dataStr">
+                            @{
+                                var html = "";
+                                var useBatch = Model.BatchUses;
+                                if (useBatch != null)
+                                {
+                                    foreach (var item in useBatch)
+                                    {
+                                        html += "<tr>";
+                                        html += "<td>开始时间：<input id='BatchStartTime' placeholder='必填'  value=\"" + @item.BatchStartTime + "\" onfocus=\"" + "dateFmt(this,1);" + "\" type='text'>";
+                                        html += " 结束时间：<input id='BatchEndTime' placeholder='必填'   value=\"" + @item.BatchEndTime + "\" onfocus=\"" + "dateFmt(this,2);" + "\" type='text'>";
+                                        html += " 单个领取数量：<input id='BatchSendUserCount'  placeholder='必填' value=\"" + @item.BatchSendUserCount + "\" type='text'>";
+                                        html += " 总数量：<input id='BatchSendCount'  placeholder='必填' value=\"" + @item.BatchSendCount + "\" type='text'>   <input type='button' value='移除' onclick='removeCondition(this)'/>";
+                                        if (!isCopy)
+                                        {
+                                            html += " &nbsp;&nbsp;    已领取：" + @BaseCouponConfigClient.Instance.CountCoupon(Model.CouponKey, item.BatchStartTime, item.BatchEndTime, false);
+                                            html += " &nbsp;&nbsp;    已使用：" + @BaseCouponConfigClient.Instance.CountCoupon(Model.CouponKey, item.BatchStartTime, item.BatchEndTime, true);
+                                        }
+
+                                        html += "</td></tr>";
+                                    }
+                                }
+                            }
+                            @Html.Raw(html)
+                        </table>
+                        <input id="Button2" style="float: left; width: 65px; margin: 9px 1px 12px 20px;" type="button" value="添加" onclick="addDataCondition()">
+                    </td>
+                </tr>
+                <tr>
+                    <td>是否启用领券：</td>
+                    <td class="sendfs">
+                        @{
+                            var isGetCoupon1 = "";
+                            var isGetCoupon2 = "";
+                            if (Model.IsGetCoupon)
+                            {
+                                isGetCoupon1 = "checked='checked'";
+                                isGetCoupon2 = "";
+                            }
+                            else
+                            {
+                                isGetCoupon1 = "";
+                                isGetCoupon2 = "checked='checked'";
+                            }
+                        }
+                        <input type="radio" @isGetCoupon1 name="IsGetCoupon" value="true" />是
+                        <input type="radio" @isGetCoupon2 name="IsGetCoupon" value="false" />否 
+                    </td>
+                </tr>
+                <tr>
+                    <td>是否在详情页显示：</td>
+                    <td class="sendfs">
+                        @{
+                            var isShowOnDetail1 = "";
+                            var isShowOnDetail2 = "";
+                            if (Model.IsShowOnDetail)
+                            {
+                                isShowOnDetail1 = "checked='checked'";
+                                isShowOnDetail2 = "";
+                            }
+                            else
+                            {
+                                isShowOnDetail1 = "";
+                                isShowOnDetail2 = "checked='checked'";
+                            }
+                        }
+                        <input type="radio" @isShowOnDetail1 name="IsShowOnDetail"  value="true" />是
+                        <input type="radio" @isShowOnDetail2 name="IsShowOnDetail" value="false" />否 
+                    </td>
+                </tr>
+                <tr>
+                    <td>券的分类来源:</td>
+                    <td>
+                         @{
+                             var source = BaseCouponConfigClient.Instance.GetCouponCategorySource();
+                        }
+                        <div style="width: 340px; padding: 0; margin: 0">
+                            @Html.DropDownListFor(m => m.CouponCategorySource, new KvSelectList(source))
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <span style="margin-left: 20px;">∨使用规则扩展</span>
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr style="display: none">
+                    <td>规则扩展字段(Json)</td>
+                    <td>
+                        <div style="margin: 10px 0; vertical-align: bottom;">
+                            @Html.TextAreaFor(m => m.CouponRule)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="onefirstTd">应用平台(*):</td>
+                    <td class="sendfs">
+                        @{
+                            var plat0 = "";
+                            var plat1 = "";
+                            var plat2 = "";
+                            var plat4 = "";
+                            var plat5 = "";
+                            var plat8 = "";
+
+                            if (Model.Platform != null && !string.IsNullOrEmpty(string.Join(",", Model.Platform)))
+                            {
+                                var platlist = string.Join(",", Model.Platform).Replace("][", ",").Replace("[", "").Replace("]", "").Split(',');
+
+                                foreach (var v in platlist)
+                                {
+                                    switch (v)
+                                    {
+                                        case "0":
+                                            plat0 = "checked='checked'";
+                                            break;
+                                        case "1":
+                                            plat1 = "checked='checked'";
+                                            break;
+                                        case "2":
+                                            plat2 = "checked='checked'";
+                                            break;
+                                        case "4":
+                                            plat4 = "checked='checked'";
+                                            break;
+                                        case "5":
+                                            plat5 = "checked='checked'";
+                                            break;
+                                        case "8":
+                                            plat8 = "checked='checked'";
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+                        <input type="checkbox" @plat0 name="chkPlatform" id="chkPlat_0" value="0">
+                        全部
+                        <input type="checkbox" @plat1 name="chkPlatform" id="chkPlat_1" value="1">
+                        PC网站
+                        <input type="checkbox" @plat2 name="chkPlatform" id="chkPlat_2" value="2">
+                        Wap网站
+                        <input type="checkbox" @plat4 name="chkPlatform" id="chkPlat_4" value="4">
+                        安卓APP
+                        <input type="checkbox" @plat5 name="chkPlatform" id="chkPlat_5" value="5">
+                        苹果APP
+                        <input type="checkbox" @plat8 name="chkPlatform" id="chkPlat_8" value="8">
+                        Ipad
+                    </td>
+                </tr>
+                <tr>
+                    <td>可使用一级分类:</td>
+                    <td class="sendfs">
+                        @if (Model.ApplicableFirstCategory != null && Model.ApplicableFirstCategory[0] != null)
+                        {
+                            <input type="text" style="display:none " id="ApplicableFirstCategory"  name="ApplicableFirstCategory" value="@string.Join(",", Model.ApplicableFirstCategory)" />
+                        }
+                        else
+                        {
+                            <input type="text" style="display: none" id="ApplicableFirstCategory" name="ApplicableFirstCategory" value="" />
+                        }
+                        <input type="text" disabled="disabled" class="text-con500" id="C_ApplicableFirstCategory"  value="@Model.C_ApplicableFirstCategory" />
+                        <input type="button" value="选择" style="width: 60px;" onclick="openwin(1)" /><input type="button" id="qingkong_ApplicableFirstCategory" value="清空" class="qingkong" style="width: 60px; margin-left: 10px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>可使用二级分类:</td>
+                    <td class="sendfs">
+                        @if (Model.ApplicableSecondCategory != null && Model.ApplicableSecondCategory[0] != null)
+                        {
+                            <input type="text" style="display:none " id="ApplicableSecondCategory" name="ApplicableSecondCategory" value="@string.Join(",", Model.ApplicableSecondCategory)" />
+                        }
+                        else
+                        {
+                            <input type="text" style="display: none" id="ApplicableSecondCategory" name="ApplicableSecondCategory" value="" />
+                        }
+
+                        <input type="text"  disabled="disabled" class="text-con500" id="C_ApplicableSecondCategory" value="@Model.C_ApplicableSecondCategory" />
+                        <input type="button" value="选择" style="width: 60px;" onclick="openwin(2)" /><input type="button" id="qingkong_ApplicableSecondCategory" value="清空" class="qingkong" style="width: 60px; margin-left: 10px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>可使用三级分类:</td>
+                    <td class="sendfs">
+                        @if (Model.ApplicableThreeCategory != null && Model.ApplicableThreeCategory[0] != null)
+                        {
+                            <input type="text" style="display:none " id="ApplicableThreeCategory" name="ApplicableThreeCategory" value="@string.Join(",", Model.ApplicableThreeCategory)" />
+                        }
+                        else
+                        {
+                            <input type="text" style="display: none" id="ApplicableThreeCategory" name="ApplicableThreeCategory" value="" />
+                        }
+
+                        <input type="text"  disabled="disabled" class="text-con500" id="C_ApplicableThreeCategory"  value="@Model.C_ApplicableThreeCategory" />
+                        <input type="button" value="选择" style="width: 60px;" onclick="openwin(3)" /><input type="button" id="qingkong_ApplicableThreeCategory" value="清空" class="qingkong" style="width: 60px; margin-left: 10px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>排除一级分类:</td>
+                    <td class="sendfs">
+                        @if (Model.ExcludeFirstCategory != null && Model.ExcludeFirstCategory[0] != null)
+                        {
+                            <input type="text" style="display:none " id="ExcludeFirstCategory" name="ExcludeFirstCategory" value="@string.Join(",", Model.ExcludeFirstCategory)" />
+                        }
+                        else
+                        {
+                            <input type="text" style="display: none" id="ExcludeFirstCategory" name="ExcludeFirstCategory" value="" />
+                        }
+                        <input type="text"  disabled="disabled" class="text-con500" id="C_ExcludeFirstCategory" value="@Model.C_ExcludeFirstCategory" />
+                        <input type="button" value="选择" style="width: 60px;" onclick="openwin(4)" /><input type="button" id="qingkong_ExcludeFirstCategory" value="清空" class="qingkong" style="width: 60px; margin-left: 10px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>排除二级分类:</td>
+                    <td class="sendfs">
+                        @if (Model.ExcludeSecondCategory != null && Model.ExcludeSecondCategory[0] != null)
+                        {
+                            <input type="text" style="display:none " id="ExcludeSecondCategory" name="ExcludeSecondCategory" value="@string.Join(",", Model.ExcludeSecondCategory)" />
+                        }
+                        else
+                        {
+                            <input type="text" style="display: none" id="ExcludeSecondCategory" name="ExcludeSecondCategory" value="" />
+                        }
+
+                        <input type="text"  disabled="disabled" class="text-con500" id="C_ExcludeSecondCategory" value="@Model.C_ExcludeSecondCategory" />
+                        <input type="button" value="选择" style="width: 60px;" onclick="openwin(5)" /><input type="button" id="qingkong_ExcludeSecondCategory" value="清空" class="qingkong" style="width: 60px; margin-left: 10px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>排除三级分类:</td>
+                    <td class="sendfs">
+                        @if (Model.ExcludeThreeCategory != null && Model.ExcludeThreeCategory[0] != null)
+                        {
+                            <input type="text" style="display:none " id="ExcludeThreeCategory" name="ExcludeThreeCategory" value="@string.Join(",", Model.ExcludeThreeCategory)" />
+                        }
+                        else
+                        {
+                            <input type="text" style="display: none" id="ExcludeThreeCategory" name="ExcludeThreeCategory" value="" />
+                        }
+
+                        <input type="text"  disabled="disabled" class="text-con500" id="C_ExcludeThreeCategory" value="@Model.C_ExcludeThreeCategory" />
+                        <input type="button" value="选择" style="width: 60px;" onclick="openwin(6)" /><input type="button" id="qingkong_ExcludeThreeCategory" value="清空" class="qingkong" style="width: 60px; margin-left: 10px;" />
+                    </td>
+                </tr>
+                <script type="text/javascript">
+                    function openwin(id) {
+                        var ct = "";
+                        var ct2 = "";
+                        switch (id) {
+                            case 2:
+                                ct = $("#ApplicableFirstCategory").val();
+                                break;
+                            case 3:
+                                ct = $("#ApplicableFirstCategory").val();
+                                ct2 = $("#ApplicableSecondCategory").val();
+                                break;
+                            case 5:
+                                ct = $("#ExcludeFirstCategory").val();
+                                break;
+                            case 6:
+                                ct = $("#ExcludeFirstCategory").val();
+                                ct2 = $("#ExcludeSecondCategory").val();
+                                break;
+                            default:
+                                ct = "";
+                        }
+                        window.open("/CouponManage/Cate?ct=" + ct + "&ct2=" + ct2 + "&id=" + id, " newwindow", "height=500, width=500, top=0, left=600,top=200,toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no");
+                    }
+                </script>
+
+                <tr>
+                    <td>可使用商品Id:</td>
+                    <td class="sendfs">
+                        @if (Model.ApplicableGoodsId != null && Model.ApplicableGoodsId[0] != null)
+                        {
+                            <input type="text" class="text-con500" id="ApplicableGoodsId" name="ApplicableGoodsId" value="@string.Join(",", Model.ApplicableGoodsId)" />
+                            
+                        }
+                        else
+                        {
+                            <input type="text" class="text-con500" id="ApplicableGoodsId" name="ApplicableGoodsId" value="" />
+                        }( 多个ID以","逗号分割)
+                        
+                        
+                    </td>
+                </tr>
+                <tr>
+                    <td>排除商品Id:</td>
+                    <td class="sendfs">
+                        @if (Model.ExcludeGoodsId != null && Model.ExcludeGoodsId[0] != null)
+                        {
+                            <input type="text" class="text-con500" id="ExcludeGoodsId" name="ExcludeGoodsId" value="@string.Join(",", Model.ExcludeGoodsId)" />
+                        }
+                        else
+                        {
+                            <input type="text" class="text-con500" id="ExcludeGoodsId" name="ExcludeGoodsId" value="" />
+                        }( 多个ID以","逗号分割)
+                        
+                    </td>
+                </tr>
+                <tr>
+                    <td>可使用促销Id:</td>
+                    <td class="sendfs">
+                        @if (Model.ApplicablePromotion != null && Model.ApplicablePromotion[0] != null)
+                        {
+                            <input type="text" class="text-con500" id="ApplicablePromotion" name="ApplicablePromotion" value="@string.Join(",", Model.ApplicablePromotion)" />
+
+                        }
+                        else
+                        {
+                            <input type="text" class="text-con500" id="ApplicablePromotion" name="ApplicablePromotion" value="" />
+
+                        }( 多个ID以","逗号分割)
+                    </td>
+                </tr>
+                <tr>
+                    <td>排除促销Id:</td>
+                    <td class="sendfs">
+                        @if (Model.ExcludePromotion != null && Model.ExcludePromotion[0] != null)
+                        {
+                            <input type="text" class="text-con500" id="ExcludePromotion" name="ExcludePromotion" value="@string.Join(",", Model.ExcludePromotion)" />
+
+                        }
+                        else
+                        {
+                            <input type="text" class="text-con500" id="ExcludePromotion" name="ExcludePromotion" value="" />
+
+                        }( 多个ID以","逗号分割)
+                    </td>
+                </tr>
+                <tr>
+                    <td>会员等级(*):</td>
+                    <td class="sendfs">
+                        @{
+                            var lev0 = "";
+                            var lev1 = "";
+                            var lev2 = "";
+                            var lev3 = "";
+                            var lev4 = "";
+                            var lev5 = "";
+
+                            if (Model.ApplicableMemberLevel != null && !string.IsNullOrEmpty(string.Join(",", Model.ApplicableMemberLevel)))
+                            {
+                                var memlevel = string.Join(",", Model.ApplicableMemberLevel).Replace("][", ",").Replace("[", "").Replace("]", "").Split(',');
+
+                                foreach (var v in memlevel)
+                                {
+                                    switch (v)
+                                    {
+                                        case "0":
+                                            lev0 = "checked='checked'";
+                                            break;
+                                        case "1":
+                                            lev1 = "checked='checked'";
+                                            break;
+                                        case "2":
+                                            lev2 = "checked='checked'";
+                                            break;
+                                        case "3":
+                                            lev3 = "checked='checked'";
+                                            break;
+                                        case "4":
+                                            lev4 = "checked='checked'";
+                                            break;
+                                        case "5":
+                                            lev5 = "checked='checked'";
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+
+                        <input type="checkbox" @lev0 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_0"  value="0">
+                        全部 
+                                <input type="checkbox" @lev1 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_1"  value="1">
+                        普通会员 
+                                <input type="checkbox" @lev2 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_2" value="2">
+                        银卡会员
+                                <input type="checkbox" @lev3 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_3" value="3">
+                        金卡会员
+                                <input type="checkbox" @lev4 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_4" value="4">
+                        白金卡会员
+                                <input type="checkbox" @lev5 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_5" value="5">
+                        至尊会员
+                             @*   <input type="checkbox" @lev18 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_6" value="18">
+                        信用卡太阳宝宝*@
+                    </td>
+                </tr>
+                <tr>
+                    <td>应用保税仓(*):</td>
+                    <td class="sendfs" style="height: auto; white-space: normal;">
+                        @{
+                            var sele1 = "";
+                            var modelCang = new string[] { };
+                            if (Model.ApplicablePosition != null && !string.IsNullOrEmpty(string.Join(",", Model.ApplicablePosition)))
+                            {
+                                modelCang = string.Join(",", Model.ApplicablePosition).Replace("][", ",").Replace("[", "").Replace("]", "").Split(',');
+
+                                foreach (var s in modelCang)
+                                {
+                                    if (s.Equals("0"))
+                                    {
+                                        sele1 = "checked='checked'";
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        sele1 = "";
+                                    }
+                                }
+
+                            }
+                        }
+
+                        <input type="checkbox" @sele1 name="chkApplicablePosition" id="chkApplicablePosition_0" value="0">全部 
+                        @{
+                            if (floorItem != null)
+                            {
+                                var i = 0;
+                                foreach (var item in floorItem)
+                                {
+                                    i += 1;
+                                    var select = "";
+                                    foreach (var s in modelCang)
+                                    {
+                                        if (item.Id.ToString().Equals(s))
+                                        {
+                                            select = "checked='checked'";
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            select = "";
+                                        }
+                                    }
+                            <input type="checkbox" @select name="chkApplicablePosition" id="chkApplicablePosition_"@item.Id value="@item.Id" />@item.WarehouseName
+                                    if (i % 6 == 0)
+                                    {
+                            <br />
+                            <span style="margin-left: 29px; width: 37px; height: 3px;"></span>
+                                    }
+                                }
+                            }
+                        }
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>应用商城(*):</td>
+                    <td class="sendfs">
+                        @{
+                            var mall0 = "";
+                            var mall1 = "";
+                            var mall2 = "";
+                            var mall3 = "";
+                            var mall4 = "";
+                            var mall5 = "";
+
+                            if (Model.MallType != null && !string.IsNullOrEmpty(string.Join(",", Model.MallType)))
+                            {
+                                var malllist = string.Join(",", Model.MallType).Replace("][", ",").Replace("[", "").Replace("]", "").Split(',');
+
+                                foreach (var v in malllist)
+                                {
+                                    switch (v)
+                                    {
+                                        case "0":
+                                            mall0 = "checked='checked'";
+                                            break;
+                                        case "1":
+                                            mall1 = "checked='checked'";
+                                            break;
+                                        case "2":
+                                            mall2 = "checked='checked'";
+                                            break;
+                                        case "3":
+                                            mall3 = "checked='checked'";
+                                            break;
+                                        case "4":
+                                            mall3 = "checked='checked'";
+                                            break;
+                                        case "5":
+                                            mall5 = "checked='checked'";
+                                            break;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                //新增时默认选择商城自营
+                                mall1 = "checked='checked'";
+                            }
+                        }
+                        <input type="checkbox" @mall0 name="chkMallType" id="chkMallType_0" value="0">
+                        全部 
+                    <input type="checkbox" @mall1 name="chkMallType" id="chkMallType_1" value="1">
+                        商城类型-自营 
+                    @*<input  type="checkbox" @mall2 name="chkMallType" id="chkMallType_2" value="2">
+                        商城类型-非自营*@
+                        @*  <input type="checkbox" @mall3 name="chkMallType" id="chkMallType_3" value="3">
+                        海淘 自贸
+                    <input type="checkbox" @mall4 name="chkMallType" id="chkMallType_4" value="4">
+                        海淘 直邮*@
+                    <input type="checkbox" @mall3 name="chkMallType" id="chkMallType_3" value="3">
+                         海淘(自贸、直邮)
+                        <input type="checkbox" @mall5 name="chkMallType" id="chkMallType_5" value="5">
+                        新特卖(*选择 新特卖 时，指定商品、分类、品牌功能将无效)
+                    </td>
+                </tr>
+                <tr>
+                    <td>排促销类型(*):</td>
+                    <td class="sendfs" style="word-break: break-all">
+                        @{
+                            var promTypeList = BaseCouponConfigClient.Instance.GetPromotionList();
+                            int a = 0;
+
+                            foreach (var prom in promTypeList)
+                            {
+                                a++;
+
+                                if (Model.PromType != null && Model.PromType.Count > 0)
+                                {
+
+                                    if (Model.PromType.Contains(prom.Key))
+                                    {
+                            <input type="checkbox" name="ckProm" value="@prom.Key" checked="checked" />
+                                    }
+                                    else
+                                    {
+                            <input type="checkbox" name="ckProm" value="@prom.Key" />
+                                    }
+
+                                }
+                                else
+                                {
+                                    if (prom.Value.Contains("秒杀"))
+                                    {
+                            <input type="checkbox" name="ckProm" value="@prom.Key" checked="checked" />
+                                    }
+                                    else
+                                    {
+                            <input type="checkbox" name="ckProm" value="@prom.Key" />
+                                    }
+
+                                }
+                            @prom.Value
+                                if (a % 10 == 0)
+                                {
+                            <br />
+                                }
+
+                            }
+
+
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>供应商ID:</td>
+                    <td class="sendfs">
+                        @if (Model.Supplier != null && Model.Supplier[0] != null)
+                        {
+                            <input class="text-con" type="text" id="Supplier"  name="Supplier" value="@string.Join(",", Model.Supplier)" />
+                        }
+                        else
+                        {
+                            <input class="text-con" type="text" id="Supplier" name="Supplier" value="" />
+                        }( 多个ID以","逗号分割)
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>新特卖供应商专场ID:</td>
+                    <td class="sendfs">
+                        @if (Model.Special != null && Model.Special[0] != null)
+                        {
+                            <input type="text" id="Special" class="text-con"  name="Special" value="@string.Join(",", Model.Special)" />
+                        }
+                        else
+                        {
+                            <input type="text" id="Special" class="text-con" name="Special" value="" />
+
+                        }( 多个ID以","逗号分割)
+                    </td>
+                </tr>
+                <tr>
+                    <td>优惠券使用品牌ID:</td>
+                    <td class="sendfs">
+                        @if (Model.ApplicableBrand != null && Model.ApplicableBrand[0] != null)
+                        {
+                            <input type="text" disabled="disabled" class="text-con" id="ApplicableBrand" name="ApplicableBrand" value="@string.Join(",", Model.ApplicableBrand)" />
+                        }
+                        else
+                        {
+                            <input type="text" disabled="disabled" class="text-con" id="ApplicableBrand" name="ApplicableBrand" value="" />
+
+                        }( 多个ID以","逗号分割)
+                        <input type="button" value="选择" style="width: 60px;" onclick="newopen('ApplicableBrand');" />
+                        <input type="button" value="清空" id="qingkong_ApplicableBrand" class="qingkong" style="width: 60px; margin-left: 10px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>优惠券排除品牌ID:</td>
+                    <td class="sendfs">
+                        @if (Model.ExcludeBrand != null && Model.ExcludeBrand[0] != null)
+                        {
+                            <input type="text" disabled="disabled" class="text-con" id="ExcludeBrand" name="ExcludeBrand" value="@string.Join(",", Model.ExcludeBrand)" />
+                        }
+                        else
+                        {
+                            <input type="text" disabled="disabled" class="text-con" id="ExcludeBrand" name="ExcludeBrand" value="" />
+                        }( 多个ID以","逗号分割)
+                         <input type="button" value="选择" style="width: 60px;" onclick="newopen('ExcludeBrand');" /><input type="button" value="清空" id="qingkong_ExcludeBrand" class="qingkong" style="width: 60px; margin-left: 10px;" />
+                    </td>
+                </tr>
+        </table>
+    </form>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="保存" id="btnSave" />
+    <input type="button" value="取消" id="btnDel" onclick="window.location.href = window.close()" />
+</div>
+
+<script type="text/javascript">
+    function dateFmt(obj, type) {
+        if (type == 1) {
+            if (obj.value == "") {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd 00:00:00' });
+            } else {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' });
+            }
+        } else {
+            if (obj.value == "") {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd 23:59:59' });
+            } else {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' });
+            }
+        }
+
+    }
+    $(function () {
+        $("#Supplier").attr('disabled', 'disabled');
+        $("#Special").attr('disabled', 'disabled');
+        $("#chkMallType_5").click(function () {
+            //新特卖供应商专场id可编辑
+            if ($("#chkMallType_5:checked").length == 1) {
+                $("#Special").removeAttr('disabled');
+            } else {
+                $("#Special").attr('disabled', 'disabled').val("");
+            }
+        });
+
+        $("input[name=chkMallType]:checkbox").click(function () {
+            //供应商id可编辑
+            var v1 = $("#chkMallType_2:checked").length;
+            var v2 = $("#chkMallType_3:checked").length;
+            var v3 = $("#chkMallType_4:checked").length;
+            var v4 = $("#chkMallType_5:checked").length;
+            if (v1 == 1 || v2 == 1 || v3 == 1 || v4 == 1) {
+                $('#Supplier').removeAttr('disabled');
+            } else {
+                $('#Supplier').attr('disabled', 'disabled').val("");
+            }
+        });
+
+        $('#detailForm').validate({
+            errorPlacement: function (error, element) {
+                $(element).next('.field_notice').hide();
+                $(element).after(error);
+            },
+            rules: {
+
+            },
+            messages: {
+
+            },
+            debug: false,
+            submitHandler: function (form) {
+                //验证通过后 的js代码写在这里
+                alert('hello');
+                //form.submit()
+            }
+        });
+    });
+
+    //配置错误提示的节点，默认为label，这里配置成 span （errorElement:'span'）
+    $.validator.setDefaults({
+        errorElement: 'label'
+    });
+
+    //配置通用的默认提示语
+    $.extend($.validator.messages, {
+        required: '必填',
+        equalTo: "请再次输入相同的值"
+    });
+
+    //大于指定数
+    jQuery.validator.addMethod("gt", function (value, element) {
+        var returnVal = false;
+        var gt = $(element).data("gt");
+        if (value > gt && value != "") {
+            returnVal = true;
+        }
+        return returnVal;
+    }, "不能小于0 或空");
+
+
+
+
+    function addDataCondition() {
+        var obj = $("#dataStr");
+        var html = "";
+        html += "<tr>";
+        html += "<td>开始时间：<input id='BatchStartTime' placeholder='必填'  onfocus=\"" + "dateFmt(this,1);" + "\" type='text'>";
+        html += " 结束时间：<input id='BatchEndTime' placeholder='必填'  onfocus=\"" + "dateFmt(this,2);" + "\" type='text'>";
+        html += " 单个领取数量：<input id='BatchSendUserCount' placeholder='必填'  type='text'>";
+        html += " 总数量：<input id='BatchSendCount' placeholder='必填'  type='text'>   <input type='button' value='移除' onclick='removeCondition(this)'/></td>";
+        html += "</tr>";
+        obj.append(html);
+    }
+
+    function removeCondition(obj) {
+        $(obj).parent().parent().remove();
+    }
+
+    $(function () {
+
+        //默认新增时所有chckbox全选
+        var sysNo = $("#IntSysNo").val();
+        if (sysNo == "") {
+            $("input[name=chkPlatform]").each(function () {
+                this.checked = true;
+            });
+            $("input[name=chkApplicableMemberLevel]").each(function () {
+                this.checked = true;
+            });
+            $("input[name=chkApplicablePosition]").each(function () {
+                this.checked = true;
+            });
+
+            $("input[name=chkMallType][id!=chkMallType_1]").removeAttr("checked");
+        }
+
+        $("input[name=chkPlatform]").click(function () {//平台chkbox反选  
+            var id = $(this).attr("id");
+            if (id == "chkPlat_0") {
+                if ($('#chkPlat_0').prop('checked')) {
+                    $("input[name=chkPlatform]:checkbox").each(function () {
+                        this.checked = true;
+                    });
+                } else {
+                    $("input[name=chkPlatform]:checkbox").removeAttr("checked");
+                }
+            } else {
+                $("#chkPlat_0").removeAttr("checked");
+            }
+        });
+
+        $("input[name=chkApplicableMemberLevel]").click(function () {//会员级别chkbox反选  
+            var id = $(this).attr("id");
+            if (id == "chkApplicableMemberLevel_0") {
+                if ($('#chkApplicableMemberLevel_0').prop('checked')) {
+                    $("input[name=chkApplicableMemberLevel]:checkbox").each(function () {
+                        this.checked = true;
+                    });
+                } else {
+                    $("input[name=chkApplicableMemberLevel]:checkbox").removeAttr("checked");
+                }
+            } else {
+                $("#chkApplicableMemberLevel_0").removeAttr("checked");
+            }
+        });
+        $("input[name=chkApplicablePosition]").click(function () {//仓位chkbox反选  
+            var id = $(this).attr("id");
+            if (id == "chkApplicablePosition_0") {
+                if ($('#chkApplicablePosition_0').prop('checked')) {
+                    $("input[name=chkApplicablePosition]:checkbox").each(function () {
+                        this.checked = true;
+                    });
+                } else {
+                    $("input[name=chkApplicablePosition]:checkbox").removeAttr("checked");
+                }
+            } else {
+                $("#chkApplicablePosition_0").removeAttr("checked");
+            }
+        });
+
+        $("input[name=chkMallType]").click(function () {//应用商城chkbox反选  
+            var id = $(this).attr("id");
+            if (id == "chkMallType_0") {
+                if ($('#chkMallType_0').prop('checked')) {
+                    $("input[name=chkMallType]:checkbox").each(function () {
+                        this.checked = true;
+                    });
+                } else {
+                    $("input[name=chkMallType]:checkbox").removeAttr("checked");
+                }
+            } else {
+                $("#chkMallType_0").removeAttr("checked");
+            }
+        });
+
+
+        $(".qingkong").click(function () {
+            $("#" + $(this).attr("id").replace("qingkong_", "")).val('');
+            $("#C_" + $(this).attr("id").replace("qingkong_", "")).val('');
+        });
+
+        $("#btnSave").click(function () {
+            var couponType = $("input[name='CouponType']:checked").val();
+
+            var model = {};
+            model.SysNo = $("#IntSysNo").val();
+            model.CouponKey = $("#StrCouponKey").val();
+            model.Belonging = $("input[name='Belonging']:checked").val();
+            model.CouponName = $("#CouponName").val();
+            model.CouponDescription = $("#CouponDescription").val();
+            model.StartTime = $("#StartTime").val();
+            model.EndTime = $("#EndTime").val();
+
+            model.FillMoney = $("#FillMoney").val();
+            if (couponType == 0) {
+                model.SubtractMoney = $("#SubtractMoney").val();
+            } else {
+                model.SubtractMoney = 0;
+            }
+            model.Remarks = $("#Remarks").val();
+            model.AuditLevel = $("#AuditLevel").val();
+            model.IsEnable = $("input[name='IsEnable']:checked").val();
+            model.CouponCategorySource = $("#CouponCategorySource").val();
+            
+            if (model.CouponName == null || model.CouponName == "") {
+                alert("请输入优惠券名称！");
+                return false;
+            }
+
+            if (model.CouponName.length > 60) {
+                alert("优惠券名称长度不要超过60个字符！");
+                return false;
+            }
+            if (model.CouponDescription == null || model.CouponDescription == "") {
+                alert("请输入优惠券描述！");
+                return false;
+            }
+
+            if (model.StartTime == null || model.StartTime == "") {
+                alert("请输入开始时间！");
+                return false;
+            }
+            if (model.EndTime == null || model.EndTime == "") {
+                alert("请输入结束时间！");
+                return false;
+            }
+
+            if (model.FillMoney == null || model.FillMoney == "") {
+                alert("请输入满金额！");
+                return false;
+            }
+            if (couponType == 0) {
+                if (model.SubtractMoney == null || model.SubtractMoney == "") {
+                    alert("请输入减金额！");
+                    return false;
+                }
+                if (parseFloat(model.FillMoney) < parseFloat(model.SubtractMoney)) {
+                    alert("满减金额输入不合法");
+                    return false;
+                }
+            }
+
+
+            //1,基础扩展字段
+            var basemodel = {};
+            basemodel.SendLimitUserCount = $("#SendLimitUserCount").val();
+            basemodel.SendLimitCount = $("#SendLimitCount").val();
+            basemodel.WillReachWarning = $("#WillReachWarning").val();
+            basemodel.UseSetDays = $("#UseSetDays").val();
+            basemodel.DeptId = $("#DeptId").val();
+            basemodel.CouponType = $("input[name='CouponType']:checked").val();
+            basemodel.IsCodeToCoupon = $("input[name='IsCodeToCoupon']:checked").val();
+            basemodel.IsGetCoupon = $("input[name='IsGetCoupon']:checked").val();
+            basemodel.IsShowOnDetail = $("input[name='IsShowOnDetail']:checked").val();
+          
+            if (couponType == 2) {
+                basemodel.Discount = $("#Discount").val();
+                basemodel.DiscountUpperLimit = $("#DiscountUpperLimit").val();
+
+                if (basemodel.Discount == null || basemodel.Discount == "" || basemodel.Discount.length > 4 || parseFloat(basemodel.Discount) >= 10) {
+                    alert("请输入正确折扣！");
+                    return false;
+                }
+                if (basemodel.DiscountUpperLimit == null || model.DiscountUpperLimit == "") {
+                    alert("请输入折扣金额上限！");
+                    return false;
+                }
+            }
+            if (basemodel.SendLimitUserCount == null || model.SendLimitUserCount == "" || parseInt($("#SendLimitUserCount").val()) < 0) {
+                alert("请输入每个会员限制张数！");
+                return false;
+            }
+            if (basemodel.SendLimitCount == null || model.SendLimitCount == "" || parseInt($("#SendLimitCount").val()) < 0) {
+                alert("请输入限制发送数量！");
+                return false;
+            }
+
+            if (!/^[0-9]*$/.test(basemodel.WillReachWarning)) {
+                alert("将要达到限制数量报警值请输入数字!");
+                return false;
+            }
+
+            if (basemodel.UseSetDays == null || model.UseSetDays == "" || parseInt($("#UseSetDays").val()) < 0) {
+                alert("请输入设置天数！");
+                return false;
+            }
+            var list = [];
+            var obj = $("#dataStr tr");//处理批次列表
+            var length = obj.length;
+            if (length > 0) {
+                var flag = true;
+                $.each(obj, function (i, item) {
+                    var bath = {};
+                    var beginTime = $(this).find("input[id='BatchStartTime']").val(); //开始时间
+                    var endTime = $(this).find("input[id='BatchEndTime']").val(); //结束时间
+                    var num = $(this).find("input[id='BatchSendUserCount']").val(); //数量
+                    var count = $(this).find("input[id='BatchSendCount']").val(); //总数
+                    if (beginTime == null || beginTime == "") {
+                        alert("第" + (i + 1) + "行，请输入批次开始时间！");
+                        flag = false;
+                        return false;
+                    }
+                    if (endTime == null || endTime == "") {
+                        alert("第" + (i + 1) + "行，请输入批次结束时间！");
+                        flag = false;
+                        return false;
+                    }
+
+                    if (num == null || num == "") {
+                        alert("第" + (i + 1) + "行，请输入会员限制数量！");
+                        flag = false;
+                        return false;
+                    }
+                    if (count == null || count == "") {
+                        alert("第" + (i + 1) + "行，请输入批次限制总数！");
+                        flag = false;
+                        return false;
+                    }
+                    bath.BatchStartTime = beginTime;
+                    bath.BatchEndTime = endTime;
+                    bath.BatchSendUserCount = num;
+                    bath.BatchSendCount = count;
+                    var d1 = new Date(bath.BatchEndTime);
+                    var d2 = new Date(bath.BatchStartTime);
+                    
+                    if (Date.parse(d1) < Date.parse(d2)) {
+                        alert("第" + (i + 1) + "行批次时间无效，开始时间：" + bath.BatchStartTime + "结束时间：" + bath.BatchEndTime);
+                        flag = false;
+                        return false;
+                    }
+                    list.push(bath);
+                });
+
+                if (!flag) {
+                    return false;
+                }
+                basemodel.BatchUses = list; //使用限制批次
+            } else {
+                basemodel.BatchUses = null; //使用限制批次
+            }
+
+            $("#BasicsExt").val(JSON.stringify(basemodel));//基础扩展字段
+
+            //2,规则扩展字段
+            var rulemodel = {};
+            var chk_plat = [];
+            $("input[name='chkPlatform']:checked").each(function () {
+                chk_plat.push($(this).val());
+            });
+            var chk_member = [];
+            $("input[name='chkApplicableMemberLevel']:checked").each(function () {
+                chk_member.push($(this).val());
+            });
+            var chk_warehouse = [];
+            $("input[name='chkApplicablePosition']:checked").each(function () {
+                chk_warehouse.push($(this).val());
+            });
+            var chk_mall = [];
+            $("input[name='chkMallType']:checked").each(function () {
+                chk_mall.push($(this).val());
+            });
+            var chk_prom = [];
+            $("input[name='ckProm']:checked").each(function () {
+                chk_prom.push($(this).val());
+            });
+
+            if (chk_plat.length < 1) {
+                alert("请选择应用平台！");
+                return false;
+            }
+            if (chk_member.length < 1) {
+                alert("请选择会员级别！");
+                return false;
+            }
+            if (chk_warehouse.length < 1) {
+                alert("请选择仓位！");
+                return false;
+            }
+            if (chk_mall.length < 1) {
+                alert("请选择商城类型！");
+                return false;
+            }
+            if (chk_prom.length < 1) {
+                alert("请选择促销类型");
+                return false;
+            }
+            //var platstr = chk_plat.join(',');
+            //var memstr = chk_member.join(',');
+            //var warehouse = chk_warehouse.join(',');
+            //var mallStr = chk_mall.join(',');
+
+            var applicableFirstCategory = $("#ApplicableFirstCategory").val();
+            var applicableSecondCategory = $("#ApplicableSecondCategory").val();
+            var applicableThreeCategory = $("#ApplicableThreeCategory").val();
+            var excludeFirstCategory = $("#ExcludeFirstCategory").val();
+            var excludeSecondCategory = $("#ExcludeSecondCategory").val();
+            var excludeThreeCategory = $("#ExcludeThreeCategory").val();
+            var applicableGoodsId = replaceDouHao($("#ApplicableGoodsId").val());
+            var excludeGoodsId = replaceDouHao($("#ExcludeGoodsId").val());
+            var applicablePromotion = replaceDouHao($("#ApplicablePromotion").val());
+            var excludePromotion = replaceDouHao($("#ExcludePromotion").val());
+            var supplier = replaceDouHao($("#Supplier").val());
+            var special = replaceDouHao($("#Special").val());
+            var applicableBrand = replaceDouHao($("#ApplicableBrand").val());
+            var excludeBrand = replaceDouHao($("#ExcludeBrand").val());
+
+            //rulemodel.PlatformEntity = { Platform: platstr };//1_平台规则
+            //rulemodel.GoodsEntity = {
+            //    ApplicableFirstCategory: applicableFirstCategory,        //2_商品分类规则
+            //    ApplicableSecondCategory: applicableSecondCategory,
+            //    ApplicableThreeCategory: applicableThreeCategory,
+            //    ExcludeFirstCategory: excludeFirstCategory,
+            //    ExcludeSecondCategory: excludeSecondCategory,
+            //    ExcludeThreeCategory: excludeThreeCategory,
+            //    ApplicableGoodsId: applicableGoodsId,
+            //    ExcludeGoodsId: excludeGoodsId
+            //};
+            //rulemodel.PromotionEntity = { ApplicablePromotion: applicablePromotion, ExcludePromotion: excludePromotion };//3_促销规则
+            //rulemodel.MemberLevelEntity = { ApplicableMemberLevel: memstr };//4_会员等级规则
+            //rulemodel.PositionEntity = { ApplicablePosition: warehouse };//5_仓位规则
+            //rulemodel.MallTypeEntity = { MallType: mallStr };//6_商城规则
+            //rulemodel.SupplierEntity = { Supplier: supplier };//7_供应商规则
+            //rulemodel.SpecialEntity = { Special: special };//8_专场规则
+            //rulemodel.BrandEntity = { ApplicableBrand: applicableBrand, ExcludeBrand: excludeBrand };//9_品牌规则
+            rulemodel.PlatformEntity = { Platform: chk_plat };//1_平台规则
+            rulemodel.GoodsEntity = {
+                ApplicableFirstCategory: applicableFirstCategory.split(","),        //2_商品分类规则
+                ApplicableSecondCategory: applicableSecondCategory.split(","),
+                ApplicableThreeCategory: applicableThreeCategory.split(","),
+                ExcludeFirstCategory: excludeFirstCategory.split(","),
+                ExcludeSecondCategory: excludeSecondCategory.split(","),
+                ExcludeThreeCategory: excludeThreeCategory.split(","),
+                ApplicableGoodsId: applicableGoodsId.split(","),
+                ExcludeGoodsId: excludeGoodsId.split(",")
+            };
+            rulemodel.PromotionEntity = { ApplicablePromotion: applicablePromotion.split(","), ExcludePromotion: excludePromotion.split(",") };//3_促销规则
+            rulemodel.MemberLevelEntity = { ApplicableMemberLevel: chk_member };//4_会员等级规则
+            rulemodel.PositionEntity = { ApplicablePosition: chk_warehouse };//5_仓位规则
+            rulemodel.MallTypeEntity = { MallType: chk_mall };//6_商城规则
+            rulemodel.PromTypeEntity = { PromType: chk_prom };
+            rulemodel.SupplierEntity = { Supplier: supplier.split(",") };//7_供应商规则
+            rulemodel.SpecialEntity = { Special: special.split(",") };//8_专场规则
+            rulemodel.BrandEntity = { ApplicableBrand: applicableBrand.split(","), ExcludeBrand: excludeBrand.split(",") };//9_品牌规则
+            $("#CouponRule").val(JSON.stringify(rulemodel));
+            //alert(JSON.stringify(rulemodel.PromTypeEntity));
+            //return false;
+            model.BasicsExt = $("#BasicsExt").val();
+            model.CouponRule = $("#CouponRule").val();
+
+            //console.log(model);
+            //console.log(JSON.stringify(model));
+
+            if (confirm("你确定保存吗？")) {
+                $.ajax({
+                    url: '@Url.Action("Save", "CouponManage")',
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: JSON.stringify(model),
+                    success: function (result) {
+                        // alert(result.DoResult+"11111");
+                        if (result.DoFlag) {
+                            window.opener.location = window.opener.location;//刷新父窗口
+                            alert("保存成功！");
+                            window.close();//不一定要关闭当前窗口
+                        } else {
+                            //if (result.DoResult == 'undefined') {
+                            //    alert('页面已过期，请刷新界面');
+                            //} else {
+                            alert(result.DoResult);
+                            //}
+
+                        }
+                    }
+                });
+        }
+        });
+
+    });
+
+
+//替换字符
+function replaceDouHao(obj) {
+    var str = obj.replace('，', ',');
+    //1替换除数字与逗号以外的所有字符
+    str = str.replace(/[^0-9,]*/g, "");
+    //2去掉开头逗号
+    if (str.substr(0, 1) == ',') str = str.substr(1);
+    //3去掉结尾逗号
+    var reg = /,$/gi;
+    str = str.replace(reg, "");
+    return str;
+}
+</script>
+
+<script type="text/javascript">
+    function newopen(id) {
+        window.open("/CouponManage/BrandList?id=" + id, " newwindow", "height=500, width=500, top=0, left=600,top=200,toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no");
+    }
+
+    function choiceDisabled() {
+        var couponType = $("input[name='CouponType']:checked").val();
+        $("#spDis").css("display", "none");
+        $("#spSub").css("display", "none");
+        if (couponType == 0) {
+            $("#spSub").css("display", "block");
+        } else {
+            $("#spDis").css("display", "block");
+        }
+    }
+
+    window.onload = choiceDisabled();
+    $(function () {
+        $(":input[name='CouponType']").click(function () {
+            choiceDisabled();
+        });
+    }
+    );
+</script>
+
+
+
+

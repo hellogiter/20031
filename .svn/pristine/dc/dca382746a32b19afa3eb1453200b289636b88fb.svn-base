@@ -1,0 +1,285 @@
+﻿@using MYZJ.Framework.ServiceBase.ServiceModel
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.SaleHotStyle
+@using Myzj.OPC.UI.Model.WebIndex
+@model Myzj.OPC.UI.Model.ProductLabel.ProductLabelDetail
+@{
+    var isEdit = (Model != null && Model.ID > 0);
+    var actionName = isEdit ? "Update" : "Add";
+
+    var hotApp = (List<SaleHotStyleApplyPlaceDetail>)ViewBag.HotStyleApply; //应用位置列表
+
+    var te = ViewBag.temp;
+}
+
+@if (isEdit)
+{
+    <h2>修改标签</h2>
+}
+else
+{
+    <h2>新增标签</h2>
+}
+
+<style>
+    .DivColor {
+        margin-top: 7px;
+        height: 35px;
+        margin-bottom: 9px;
+    }
+
+        .DivColor input {
+            margin-top: 10px;
+        }
+
+        .DivColor label {
+            margin-top: 10px;
+        }
+</style>
+
+
+<div id="tableContainer">
+    <form id="detailForm">
+        <input type="hidden" id="hidId" value="@Model.ID"/>
+
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>标签名字(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.LabelName)
+                    </td>
+                </tr>
+                <tr>
+                    <td>标签底色(*):</td>
+                    <td colspan="17" class="checkDiv">
+                        @{
+                            var mr = "";
+                            var selectSc = "";
+                            var selectHt = "";
+                            var selectTm = "";
+                            var selectCk = "";
+                            var selectCx = "";
+                            var selectJd = "";
+                            if (Model.LabelColor == null)
+                            {
+                                mr = "checked='checked'";
+                            }
+                            else if (Model.LabelColor == "#FF7600")
+                            {
+                                selectSc = "checked='checked'";
+                            }
+                            else if (Model.LabelColor == "#8B4DD1")
+                            {
+                                selectHt = "checked='checked'";
+                            }
+                            else if (Model.LabelColor == "#FF6599")
+                            {
+                                selectTm = "checked='checked'";
+                            }
+                            else if (Model.LabelColor == "#01939A")
+                            {
+                                selectCk = "checked='checked'";
+                            }
+                            else if (Model.LabelColor == "#FF0000")
+                            {
+                                selectCx = "checked='checked'";
+                            }
+                            else if (Model.LabelColor == "#4992EC")
+                            {
+                                selectJd = "checked='checked'";
+                            }
+                        }
+                        <div class="DivColor" style="background-color: #FF7600; width: 104px;">
+                            <input type="radio" name="LabelColor" value="#FF7600" @mr @selectSc style="width: 60px;"/>
+                            <label style="width: 59%; margin-left: -30%;">商城</label>
+                        </div>
+                        <div class="DivColor" style="background-color: #8B4DD1; width: 104px;">
+                            <input type="radio" name="LabelColor" value="#8B4DD1" @selectHt style="width: 60px;"/>
+                            <label style="width: 59%; margin-left: -30%;">海淘</label>
+                        </div>
+                        <div class="DivColor" style="background-color: #FF6599; width: 104px;">
+                            <input type="radio" name="LabelColor" value="#FF6599" @selectTm style="width: 60px;"/>
+                            <label style="width: 59%; margin-left: -30%;">特卖</label>
+                        </div>
+                        <div class="DivColor" style="background-color: #01939A; width: 104px;">
+                            <input type="radio" name="LabelColor" value="#01939A" @selectCk style="width: 60px;"/>
+                            <label style="width: 59%; margin-left: -30%;">仓库</label>
+                        </div>
+                        <div class="DivColor" style="background-color: #FF0000; width: 104px;">
+                            <input type="radio" name="LabelColor" value="#FF0000" @selectCx style="width: 60px;"/>
+                            <label style="width: 59%; margin-left: -30%;">促销</label>
+                        </div>
+                        <div class="DivColor" style="background-color: #4992EC; width: 104px;">
+                            <input type="radio" name="LabelColor" value="#4992EC" @selectJd style="width: 60px;"/>
+                            <label style="width: 59%; margin-left: -30%;">阶段</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>海淘标签(*):</td>
+                    <td>
+                        <div style="margin: 1% 0 0 -9%; width: 300px;">
+                            <input type="checkbox" name="LabelcontentValue" value="美国直邮" />
+                            <label style="width: 23%; margin-left: -27%;">美国直邮</label>
+                            <input type="checkbox" name="LabelcontentValue" value="德国直邮" style="margin-top: -17px; float: right; width: 110px" />
+                            <label style="width: 23%; margin-right: -8%; margin-top: -17px; float: right">德国直邮</label>
+                            <input type="checkbox" name="LabelcontentValue" value="日本直邮" style="margin-top: -17px; float: right; width: 110px; margin-right: -137px" />
+                            <label style="width: 23%; margin-right: -53%; margin-top: -17px; float: right;">日本直邮</label>
+                            <input type="checkbox" name="LabelcontentValue" value="中外运直邮" style="float: right; margin-top: -17px; margin-right: -298px" />
+                            <label style="width: 23%; margin-right: -100%; margin-top: -17px; float: right">中外运直邮</label>
+                            <input type="checkbox" name="LabelcontentValue" value="杭州保税仓" style="margin-top: 20px" />
+                            <label style="width: 23%; margin-left: -26%; margin-top: 20px">杭州保税仓</label>
+                            <input type="checkbox" name="LabelcontentValue" value="郑州保税仓" style="margin-top: 20px; float: right; width: 30px; margin-right: 44px;" />
+                            <label style="width: 23%; margin-right: -38%; margin-top: 20px; float: right">郑州保税仓</label>
+                            <input type="checkbox" name="LabelcontentValue" value="广州保税仓" style="float: right; margin-right: -180px; margin-top: 20px; width: 30px" />
+                            <label style="width: 23%; margin-right: -83%; float: right; margin-top: 20px">广州保税仓</label>
+                            <input type="checkbox" name="LabelcontentValue" value="宁波保税仓" style="width: 30px; float: right; margin-right: -307px; margin-top: 20px;" />
+                            <label style="width: 23%; margin-right: -128%; margin-bottom: 15px; margin-top: 20px; float: right">宁波保税仓</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>促销标签(*):</td>
+                    <td>
+                        <div style="margin: 1% 0 0 -9%; width: 300px;" class="DivLabelContentKey">
+                            <input type="checkbox" name="LabelContentKey" value="2" />
+                            <label style="width: 23%; margin-left: -29%;">换购</label>
+                            <input type="checkbox" name="LabelContentKey" value="3" style="float: right; margin-right: 42px; width: 30px;" />
+                            <label style="width: 23%; margin-right: -33%; float: right">组合购</label>
+                            <input type="checkbox" name="LabelContentKey" value="4" style="float: right; margin-right: -179px; width: 30px;" />
+                            <label style="width: 23%; margin-right: -80%; float: right">满减</label>
+                            <input type="checkbox" name="LabelContentKey" value="5" style="float: right; margin-right: -306px; width: 30px;" />
+                            <label style="width: 23%; margin-right: -30%; float: right; margin-right: -385px;">抢购【特价】</label>
+                            <input type="checkbox" name="LabelContentKey" value="7" style="margin-top: 15px;" />
+                            <label style="width: 23%; margin-left: -30%; margin-top: 15px;">满折</label>
+                            <input type="checkbox" name="LabelContentKey" value="8" style="margin-top: 15px; float: right; margin-right: 42px; width: 30px" />
+                            <label style="width: 23%; margin-right: -35%; float: right; margin-top: 15px;">天天特价</label>
+                            <input type="checkbox" name="LabelContentKey" value="9" style="margin-top: 15px; float: right; margin-right: -179px; width: 30px;" />
+                            <label style="width: 23%; float: right; margin-right: -241px; margin-top: 15px;">秒杀</label>
+                            <input type="checkbox" name="LabelContentKey" value="62" style="float: right; margin-top: 15px; margin-right: -307px; width: 30px;" />
+                            <label style="width: 23%; margin-right: -30%; float: right; margin-right: -378px; margin-top: 15px;">360专享价</label>
+                            <input type="checkbox" name="LabelContentKey" value="11" style="margin-top: 25px;" />
+                            <label style="width: 23%; margin-left: -29%; margin-top: 27px;">满赠(赠品免费)</label>
+                            <input type="checkbox" name="LabelContentKey" value="12" style="margin-top: 25px; width: 30px; float: right; margin-right: 43px;" />
+                            <label style="width: 23%; margin-left: -30%; margin-top: 25px; float: right; margin-right: -109px;">满赠(赠品有价值)</label>
+                            <input type="checkbox" name="LabelContentKey" value="13" style="float: right; margin-right: -177px; width: 30px; margin-top: 25px;" />
+                            <label style="width: 23%; margin-right: -82%; float: right; margin-top: 25px;">单品折（第几件几折）</label>
+                            <input type="checkbox" name="LabelContentKey" value="14" style="float: right; width: 30px; margin-right: -103%; margin-top: 25px;" />
+                            <label style="width: 23%; margin-right: -125%; float: right; margin-top: 25px; float: right">【码】0元赠品</label>
+                            <input type="checkbox" name="LabelContentKey" value="0" style="margin-bottom: 13px; margin-top: 6%; width: 60%" />
+                            <label style="width: 23%; margin-right: 42%; float: right; margin-top: -24px;">无促销</label>
+                            <input type="checkbox" name="LabelContentKey" value="15" style="margin-top: -7%; width: 30px; float: right; margin-right: 14%" />
+                            <label style="width: 23%; margin-right: -9%; margin-top: -20px; float: right">【码】满减</label>
+                            <input type="checkbox" name="LabelContentKey" value="16" style="float: right; width: 30px; margin-right: -98px; margin-top: -19px;" />
+                            <label style="width: 23%; margin-right: -57%; float: right; margin-top: -20px;">多品秒杀</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>序号(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.LabelSortNo)
+                    </td>
+                </tr>
+        </table>
+    </form>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="保存" id="btnSave" />
+    <input type="button" value="返回" id="btnDel" onclick="window.close()" />
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        //循环选中的促销标签
+        $('input:checkbox[name="LabelContentKey"]').each(function (intdex) {
+            var thisval = $(this).val();
+            var key = "@Model.LabelContentKey";
+            var strs = new Array();
+            strs = key.split(",");
+            for (var i = 0; i < strs.length; i++) {
+                if (thisval == strs[i]) {
+                    $(this).attr("checked", "checked");
+                }
+            }
+        });
+        //循环选中的海淘标签
+        $('input:checkbox[name="LabelcontentValue"]').each(function () {
+            var thisval = $(this).val();
+            var val = "@Model.LabelcontentValue";
+            var strs = new Array();
+            strs = val.split(",");
+            for (var i = 0; i < strs.length; i++) {
+                if (thisval == strs[i]) {
+                    $(this).attr("checked", "checked");
+                }
+            }
+        });
+
+        $("#btnSave").click(function () {
+            var labelType = 1;
+            var labelValue = "";
+            var labelKey = "";
+            //海淘标签
+            $('input:checkbox[name="LabelcontentValue"]:checked').each(function (index) {
+                var thisval = $(this).val();
+                if (thisval != null) {
+                    labelValue += thisval + ",";
+                }
+            });
+            //促销标签
+            $('input:checkbox[name="LabelContentKey"]:checked').each(function (index) {
+                var thisval = $(this).val();
+                if (thisval != null) {
+                    labelKey += thisval + ",";
+                }
+            });
+
+            var labelSortNo = $("#LabelSortNo").val();
+            //判断标签类型
+            if (labelValue == null || labelValue == "") {
+                labelType = 2;
+            }
+            var model = {};
+            model.ID = $("#hidId").val();
+            model.LabelType = labelType;
+            model.LabelName = $("#LabelName").val();
+            model.LabelContentKey = labelKey;
+            model.LabelcontentValue = labelValue;
+            model.LabelColor = $('input:radio[name="LabelColor"]:checked').val();
+            model.LabelSortNo = labelSortNo;
+
+            if (model.LabelName == null || model.LabelName == "") {
+                alert("请输入标签名字!");
+                return false;
+            } else if (model.LabelColor == null || model.LabelColor == "") {
+                alert("请选择标签底色!");
+                return false;
+            } else if (model.LabelContentKey == null || model.LabelContentKey == "") {
+                alert("请选择促销标签!");
+                return false;
+            } else if (model.LabelSortNo == null || model.LabelSortNo == "") {
+                alert("请输入序号!");
+                return false;
+            }
+
+            $.ajax({
+                url: '@Url.Action("Save", "ProductLabel")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("保存成功！");
+                        reloadPage();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>

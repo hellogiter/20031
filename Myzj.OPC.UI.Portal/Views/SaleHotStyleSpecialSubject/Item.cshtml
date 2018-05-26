@@ -1,0 +1,162 @@
+﻿@using System.Collections
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.SaleHotStyle
+
+@model IEnumerable<Myzj.OPC.UI.Model.SaleHotStyleSpecialSubject.SaleHotStyleSpecialSubjectDetail>
+@{
+    Layout = null;
+    var applace = (List<SaleHotStyleApplyPlaceDetail>)ViewBag.StyleApply;
+}
+<style>
+    .box {
+        position: absolute;
+        width: 600px;
+        left: 50%;
+        height: auto;
+        z-index: 100;
+        background-color: #fff;
+        border: 1px #ddd solid;
+        padding: 1px;
+    }
+
+    #bg {
+        background-color: #666;
+        position: absolute;
+        z-index: 99;
+        left: 0;
+        top: 0;
+        display: none;
+        width: 100%;
+        height: 100%;
+        opacity: 0.5;
+        filter: alpha(opacity=50);
+        -moz-opacity: 0.5;
+    }
+</style>
+@{
+    <div class="rowButton">
+        <input type="submit" name="Query" id="Query" value="查询" />
+        <input type="button" name="Query" id="BtnAdd" value="新增" onclick="javascript: window.open('/SaleHotStyleSpecialSubject/Detail')" />
+    </div>
+
+    <div id="bg"></div>
+    <div style="display: none" id="HidThtml" class="box">
+        <h2>置顶时间设置:</h2>
+        <div id="tableContainer">
+            <form id="detailForm">
+                <input type="hidden" id="hidId" value="" />
+
+                <table class="showDetailTableMultiColumnm">
+                    <tbody>
+                        <tr>
+                            <td>开始时间:</td>
+                            <td>
+                                <input type="text" id="TopBeginTime" name="ExpirationFrom" value="" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" style="width: 60%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>结束时间:</td>
+                            <td>
+                                <input type="text" id="TopEndTime" name="ExpirationFrom" value="" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" style="width: 60%" />
+                            </td>
+                        </tr>
+                </table>
+            </form>
+        </div>
+        <div class="rowButton">
+            <input type="button" value="保存" id="btnSaveIsTop" />
+            <input type="button" value="返回" id="btnDel" />
+        </div>
+    </div>
+    
+    
+    if (Model != null && Model.Any())
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>操作</th>
+                    <th>专题名称</th>
+                    <th>专题链接</th>
+                    <th>应用位置</th>
+                    <th>价格/折扣力度</th>
+                    <th>图片</th>
+                    <th>是否置顶</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                    <th>排序</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>
+                            <a style="color: #191970" target="_blank" href="@Url.Action("Detail", "SaleHotStyleSpecialSubject", new { id = item.Id })" >修改</a>
+                            &nbsp;
+                              @if (item.IsTop == 1)
+                              {
+                                  <a href="javascript:(0);" style="color: red" class ="btnDelIstop" pvalue="@item.Id">取消</a>
+                              }
+                              else
+                              {
+                                  <a href="javascript:(0);" style="color: #191970" class ="btnUpdateIstop" pvalue="@item.Id">置顶</a>
+                              }
+                            &nbsp;
+                            <a style="color: #191970"  href="javascript:(0)" pvalue="@item.Id" class="delSubject">删除</a>
+                        </td>
+                        <td>@item.SubjectName</td>
+                        <td>@item.ClickUrl</td>
+                        <td>
+                            @{
+                              string applaceName = "";
+                              if (item.ApplyPlace != null)
+                              {
+                                  var tempModel = item.ApplyPlace.Replace("][", ",").Replace("[", "").Replace("]", "").Split(',');
+
+                                  foreach (var apl in applace)
+                                  {
+                                      foreach (var temp in tempModel)
+                                      {
+                                          if (temp == apl.ApplyPlaceId.ToString())
+                                          {
+                                              applaceName += '【' + apl.ApplyPlaceName + '】';
+                                          }
+                                      }
+                                  }
+                              }
+                                @applaceName
+                            }
+                        </td>
+
+                        <td>@item.SetDiscount</td>
+                        <td><img src="@item.PictureUrl" width="35px"/></td>
+                        <td>@(typeof(AppEnum.IsTop).GetEnumDescription(item.IsTop))</td>
+                        <td>@item.StartTime</td>
+                        <td>@item.EndTime</td>
+                        <td>
+                            <input type="text" value="@item.Sort" pvalue="@item.Id" class="Sort" id="Sort"style="width: 30px"/>
+                        </td>
+                        <td>
+                            @{
+                              var checkStr = "";
+                              if (item.IsEnable == true)
+                              {
+                                  checkStr = "checked='checked'";
+                              }
+                            }
+                            <input id="cbkState-@item.Id" type="checkbox" @checkStr data-id="@item.Id" onclick="updateState(this)" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+}

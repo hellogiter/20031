@@ -1,0 +1,155 @@
+﻿@{
+    ViewBag.Title = "QueryDiscountCodeBatch";
+}
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.BaseDiscountCodeConfig
+@using Myzj.OPC.UI.ServiceClient
+@model BaseRefer<DiscountCodeBatchReq, DiscountCodeBatchRes>
+<h2>查询生成优惠码批次</h2>
+<style>
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+    <div>
+        <table class="showDetailTable">
+            @if (string.IsNullOrWhiteSpace(ViewBag.activityKey))
+            {
+           
+                <tr>
+                    <td>活动名称
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.SearchDetail.ActivityName)
+                    </td>
+                    <td>活动Key</td>
+                    <td>@Html.TextBoxFor(m => m.SearchDetail.ActivityKey)</td>
+                </tr>
+            }
+            <tr>
+                <td>申请人</td>
+                <td>@Html.TextBoxFor(m => m.SearchDetail.ApplyUserName)</td>
+                <td>执行状态</td>
+                <td>
+                    @{
+            var list = new Dictionary<int, string>();
+            list.Add(0, "新建");
+            list.Add(1, "执行中");
+            list.Add(2, "完成");
+            list.Add(3, "失败");
+            list.Add(4, "取消");
+                    }
+                    @Html.DropDownListFor(m => m.SearchDetail.ExeStatus, new KvSelectList(list), true)
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="rowButton">
+        <input type="submit" id="btnSearch" value="查询" />
+    </div>
+            if (Model.List2 != null && Model.List2.Any())
+            {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>批次号</th>
+                    <th>活动Key</th>
+                    <th>活动名称</th>
+                    <th>码长度</th>
+                    <th>设置数量</th>
+                    <th>批次信息</th>
+                    <th>剩余生成数量</th>
+                    <th>生成进度</th>
+                    <th style="width: 300px">执行描述</th>
+                    <th>操作类型</th>
+                    <th>申请人</th>
+                    <th>创建时间</th>
+                    <th>预约执行时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.List2)
+                {
+                    <tr>
+                        <td>@item.SysNo</td>
+                        <td>@item.ActivityKey</td>
+                        <td>@item.ActivityName</td>
+                        <td>@item.SetCodeLength</td>
+                        <td>@item.SetCodeCount</td>
+                        <td>@item.BatchFileName</td>
+                        <td>@item.CreateCodeNum</td>
+                        <td>@BaseDiscountCodeConfigClient.Instance.GetExeStatusStr(item.ExeStatus)</td>
+                        <td >@item.ExeDescription</td>
+                        @if (item.OperationType == 0)
+                        {
+                            <td>新增</td>
+                        }
+                        else
+                        {
+                            <td>覆盖</td>
+                        }
+                        <td>@item.ApplyUserName</td>
+                        <td>@item.RowCreateDate</td>
+                        <td>@item.AdvanceTime</td>
+                        <td>
+                            @if (item.ExeStatus == 0 || item.ExeStatus == 1)
+                            {
+                                <a style="color: #191970; cursor: pointer" target="_blank" onclick="cancelExecute(@item.SysNo);">取消执行</a>
+                            }
+                           @* @if (item.ExeStatus != 4)
+                            {
+                                *@<a style="color: #191970; cursor: pointer" target="_blank" onclick=" window.location.href = '@Url.Action("DiscountCodeExport", "DiscountCodeManager", new { BatchSysNo = item.SysNo })' ">导出码</a>
+                                <a style="color: #191970; cursor: pointer" target="_blank" href="@Url.Action("QueryDiscountCode", "DiscountCodeManager", new { BatchSysNo = item.SysNo })">查看</a>
+                            @*}
+
+                            else
+                            {
+                                <a style="color: #808080; cursor: pointer" target="_blank">导出码</a>
+                                <a style="color: #808080; cursor: pointer" target="_blank">查看</a>
+                            }*@
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    @Html.Partial("Pager", @Model)
+            }
+}
+
+<script type="text/javascript">
+    function cancelExecute(sysNo) {
+        if (confirm("确定操作?")) {
+            $.ajax({
+                url: '/DiscountCodeManager/CancelExecute',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: "{\"sysNo\":" + sysNo + "}",
+                success: function (result) {
+                    alert(result.DoResult);
+                    if (result.DoFlag) {
+                        //  window.location.href = '/DiscountCodeManager/QueryDiscountCodeBatch';
+                        location.reload();
+                    }
+                }
+            });
+        }
+    }
+
+</script>

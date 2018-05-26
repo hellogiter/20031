@@ -1,0 +1,119 @@
+﻿// ***********************************************************************
+// Copyright (c) 2016 Administrator,All rights reserved.
+// CLR Version : 4.0.30319.34209
+// Project:
+// Assembly:Myzj.OPC.UI.Common.ExcelExport
+// Author:ysx2012@muyingzhijia.com
+// Created:2016/8/17 17:28:04
+// Description:
+// ***********************************************************************
+// Last Modified By:WIN-F4KN29N0GFG
+// Last Modified On:2016/8/17 17:28:04
+// ***********************************************************************
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using NPOI.SS.UserModel;
+
+namespace Myzj.OPC.UI.Common
+{
+	internal abstract class NPOIExportBase
+	{
+		protected IWorkbook CurWorkBook;
+		public int defaultColumnWidth = 0xfa0;
+		protected Dictionary<string, int> defineLocation = new Dictionary<string, int>();
+
+		public event EventHandler<BeginExportEventArgs> BgExport;
+
+		protected NPOIExportBase()
+		{
+		}
+
+		protected virtual void BeginExport(BeginExportEventArgs e)
+		{
+			e.Raise<BeginExportEventArgs>(this, ref this.BgExport);
+		}
+
+		protected byte[] Export<T>(IList<T> DataSource, MyFileType fileType)
+		{
+			if ((fileType != MyFileType.EXCEL) && (fileType != MyFileType.EXCEL2003))
+			{
+				throw new ExportException("不能导出类型" + fileType.ToString());
+			}
+			int columnStartIndex = this.ColumnStartIndex;
+			foreach (string str in this.Head)
+			{
+				this.defineLocation.Add(str, columnStartIndex);
+				columnStartIndex++;
+			}
+			ExportHelper.headStyles = new Dictionary<string, ICellStyle>();
+			List<string> sheetName = new List<string>();
+			Dictionary<int, int> columnWidth = new Dictionary<int, int>();
+			BeginExportEventArgs e = new BeginExportEventArgs(sheetName, this.defineLocation, columnWidth);
+			this.BeginExport(e);
+			this.CurWorkBook = ExportCoreHelper.GetVersionWorkbook(fileType);
+			if (this.RowStartIndex == 0)
+			{
+				this.RowStartIndex = this.HeadRowIndex + 1;
+			}
+			if (sheetName.Count == 0)
+			{
+				sheetName.Add("sheet1");
+			}
+			using (MemoryStream stream = new MemoryStream())
+			{
+				foreach (string str2 in sheetName)
+				{
+					ISheet sheet = this.CurWorkBook.CreateSheet(str2);
+					foreach (string str3 in this.defineLocation.Keys)
+					{
+						int key = this.defineLocation[str3];
+						if (columnWidth.ContainsKey(key))
+						{
+							sheet.SetColumnWidth(key, columnWidth[key] * 50);
+						}
+						else
+						{
+							int num3 = StringHelper.trueLength(str3);
+							if (num3 > 14)
+							{
+								sheet.SetColumnWidth(key, 330 * num3);
+							}
+							else
+							{
+								sheet.SetColumnWidth(key, 0x1130);
+							}
+						}
+					}
+					this.SetListHead(sheet);
+					this.SetListData(sheet);
+				}
+				this.CurWorkBook.Write(stream);
+				return stream.ToArray();
+			}
+		}
+
+		protected abstract void SetListData(ISheet sheet);
+		protected void SetListHead(ISheet sheet)
+		{
+			IRow row = sheet.CreateRow(this.HeadRowIndex);
+			row.HeightInPoints = 25f;
+			foreach (string str in this.defineLocation.Keys)
+			{
+				ICell cell = row.CreateCell(this.defineLocation[str]);
+				cell.SetCellValue(str);
+				cell.CellStyle = ExportCoreHelper.Getcellstyle(sheet.Workbook, StyleXls.头);
+			}
+		}
+
+		public int ColumnStartIndex { get; set; }
+
+		public IList<string> Head { get; protected set; }
+
+		public int HeadRowIndex { get; set; }
+
+		public int RowStartIndex { get; set; }
+	}
+}

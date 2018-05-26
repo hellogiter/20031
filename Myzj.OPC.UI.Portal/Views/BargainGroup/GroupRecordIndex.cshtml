@@ -1,0 +1,183 @@
+﻿@using Myzj.OPC.UI.Portal.Models
+@model Myzj.OPC.UI.Model.BargainGroup.GroupRecordRefer
+
+<h2>查询会员参团记录</h2>
+<style>
+    .input-validation-error {
+        border: 1px solid #c0c0c0;
+        background-color: white;
+    }
+
+    .showDetailTable tbody tr.tk-guanli td {
+        width: 15%;
+    }
+
+        .showDetailTable tbody tr.tk-guanli td.tk-name {
+            width: 5%;
+            text-align: center;
+        }
+
+        .showDetailTable tbody tr.tk-guanli td input {
+            text-align: left;
+            width: 85%;
+        }
+
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+        <tbody>
+            <tr class="tk-guanli">
+                <td class="tk-name">会员Id:</td>
+                <td>
+                    @Html.TextBoxFor(m=>m.SearchDetail.UserId, new {@placeholder="请输入参团用户Id进行查询"})
+                </td>
+                @* <td class="tk-name">商品Id:</td>
+                <td>
+                  @Html.TextBoxFor(m=>m.SearchDetail.GoodsId)
+                </td>
+               <td class="tk-name">Ip地址:</td>
+                <td>
+                   @Html.TextBoxFor(m=>m.SearchDetail.ClientIp)
+                </td>*@
+            </tr>
+        </tbody>
+    </table>
+    <div class="rowButton">
+
+        <input type="submit" value="查询" id="btnSearch" />
+    </div>
+    @Html.Partial("GroupRecordItem", @Model.List2)
+    
+    @Html.Partial("Pager", @Model)
+
+    <div style="display: none" id="divMember">
+    </div>
+}
+
+
+<script type="text/javascript">
+    var orderStateShow = false;
+    function showMemberForm(obj,activitySysNo,groupGoodsSysNo) {
+        orderStateShow = false;
+        QueryMemberList(obj,activitySysNo, groupGoodsSysNo);
+      
+    }
+
+    function QueryMemberList(obj,activitySysNo, groupGoodsSysNo) {
+        document.getElementById("divMember").innerHTML = "";
+        var data = {
+            "ActivitySysNo": activitySysNo,
+            "GoodsSysNo": groupGoodsSysNo,
+            "StructSysNo": obj
+        };
+        $.ajax({
+            url: "@GroupUrlFactory.GetMkmsDomainUrl()/json/reply/QueryGrouRecordList",
+            data: data,
+            type: "post",
+            dataType: 'jsonp',
+            async: false,
+            success: function (result) {
+                resultList = result.QueryGrouRecordListDtos;
+                orderStateShow = result.IsShowOrderState;
+                DisplayResultList();
+
+            },
+        });
+    }
+
+    //显示列表
+    function DisplayResultList() {
+        var html = '';
+        html += '                  <table class="resultTable">';
+        html += '             <thead>';
+        html += '                 <tr>';
+        html += '                     <th>会员Id</th>';
+        html += '                     <th>是否团长</th>';
+        html += '                     <th>会员名称</th>';
+        html += '                     <th>会员头像</th>';
+        html += '                     <th>会员Email</th>';
+        html += '                     <th>会员手机</th>';
+        html += '                     <th>是否领取</th>';
+        html += '                     <th>参团日期</th>';
+        html += '                      <th>是否删除</th>';
+        if (orderStateShow) {
+            html += '                      <th>订单状态(组团成功，团长一元购，未关闭，非团长)</th>';
+        }
+
+        html += '                  </tr>';
+        html += '              </thead>';
+        html += '              <tbody>';
+
+        if (resultList != null && resultList.length > 0) {
+
+            for (var i = 0; i < resultList.length; i++) {
+                var result = resultList[i];
+
+                html += '                      <tr>';
+                html += '                          <td>' + result.UserId + '</td>';
+                if (result.IsGroupHead) {
+                    html += '                          <td>是</td>';
+                } else {
+                    html += '                          <td>否</td>';
+                }
+
+                html += '                          <td>' + result.NickName + '</td>';
+                if (result.HeadPicUrl != '' && typeof (result.HeadPicUrl) != 'undefined') {
+                    html += '                          <td><img style="width:40px;height:30px" src="' + result.HeadPicUrl + '"/></td>';
+                } else {
+                    html += '                          <td>无</td>';
+                }
+                if (result.UserEmail != '') {
+                    html += '                          <td>'+result.UserEmail+'</td>';
+                } else {
+                    html += '                          <td>无</td>';
+                }
+                if (result.UserMobile != '') {
+                    html += '                          <td>' + result.UserMobile + '</td>';
+                } else {
+                    html += '                          <td>无</td>';
+                }
+                if (result.IsReceive) {
+                    html += '                          <td>是</td>';
+                } else {
+                    html += '                          <td>否</td>';
+                }
+                html += '                          <td>' + result.CreateTimeStr + '</td>';
+                if (result.IsDelete) {
+                    html += '                          <td>是</td>';
+                } else {
+                    html += '                          <td>否</td>';
+                }
+                if (orderStateShow) {
+                    html += '                          <td>' + result.OrderStateStr + '</td>';
+                }
+                html += '                      </tr>';
+
+            }
+        }
+
+        html += '              </tbody>';
+        html += '</table>';
+        document.getElementById("divMember").innerHTML = html;
+        dialog = new $.Zebra_Dialog(
+          $("#divMember").html()
+          , {
+              'type': '',
+              'modal': true,
+              'overlay_close': false,
+              'custom_class': 'dialog',
+              'overlay_opacity': 0.5,
+              'width': 820,
+              'height': 500,
+              'title': '查询团成员',
+              'buttons': true,
+          });
+    }
+</script>

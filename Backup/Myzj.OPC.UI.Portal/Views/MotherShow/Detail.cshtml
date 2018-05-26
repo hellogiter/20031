@@ -1,0 +1,304 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.ServiceClient
+@model Myzj.OPC.UI.Model.MotherShow.MotherShowDetail
+@{
+    var isEdit = (Model != null && Model.MShowId > 0);
+}
+@Html.Action("ImgUpload", "Default")
+
+@if (isEdit)
+{
+    <h2>编辑妈妈秀</h2>
+}
+else
+{
+    <h2>新增妈妈秀</h2>
+}
+
+<div id="tableContainer">
+
+    <form id="detailForm">
+        @Html.HiddenFor(m => m.MShowId)
+        @Html.HiddenFor(m => m.MShowType)
+        @Html.HiddenFor(m => m.Sort)
+
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>标题:</td>
+                    <td colspan="3">
+                        @Html.TextBoxFor(m => m.MShowTitle)
+                    </td>
+                </tr>
+                <tr>
+                    <td>内容:</td>
+                    <td colspan="3">
+                        @Html.TextAreaFor(m => m.MShowContent)
+                    </td>
+                </tr>
+                <tr>
+                    <td>被赞数量:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.MShowPraiseCount, new { disabled = "disabled" })
+                    </td>
+                    <td>评论数量:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.MShowCommentsCount, new { disabled = "disabled" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>反对数量:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.MShowAgainstCount, new { disabled = "disabled" })
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>用户ID:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.MUserId)
+                    </td>
+                    <td>状态:</td>
+                    <td>
+                        @Html.DropDownListFor(m => m.MShowState, new KvSelectList(typeof(AppEnum.SpecialStates).GetEnumList()), false)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div style="width: 90%; margin: 0 auto;">
+            <input id="btnAddImgTextItem" type="button" value="新增图文+" />
+        </div>
+        @if (isEdit && Model.ShowImageList != null && Model.ShowImageList.Any())
+        {
+            foreach (var item in Model.ShowImageList)
+            {
+                <div class="imgTextForm">
+                    <input type="hidden" name="ImageId" value="@item.ImageId" />
+                    <input type="hidden" name="ImageType" value="@item.ImageType" />
+                    <input type="hidden" name="Deleted" value="0" />
+                    <table class="showDetailTableMultiColumnm">
+                        <tbody>
+                            @{
+                                var title = "";//标题
+                                var show = "";//显示删除
+
+                                if (item.ImageType == 1)
+                                {
+                                    title = "妈妈秀主图";
+                                    show = "none";
+                                }
+                                else
+                                {
+                                    title = "妈妈秀副图";
+                                }
+                            }
+
+                            <tr>
+                                <th colspan="4" style="text-align: left; padding-left: 5px;" id="title">@title</th>
+                            </tr>
+                            <tr style="display: @show" id="del">
+                                <td>
+                                    <input type="button" class="delImg" value="删除" />
+                                </td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>排序:</td>
+                                <td>
+                                    <input type="text" name="Sort" value="@item.Sort" style="width: 50px;" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>图片路径:</td>
+                                <td>
+                                    <input type="text" name="ImageUrl" value="@item.ImageUrl" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>图片链接:</td>
+                                <td>
+                                    <input type="text" name="ImageLink" value="@item.ImageLink" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="imgTextForm">
+                <input type="hidden" name="ImageId" value="0" />
+                <input type="hidden" name="ImageType" value="1" />
+                <input type="hidden" name="Deleted" value="0" />
+                <table class="showDetailTableMultiColumnm">
+                    <tbody>
+
+                        <tr>
+                            <th colspan="4" style="text-align: left; padding-left: 5px;" id="title">妈妈秀主图</th>
+                        </tr>
+                        <tr style="display: none" id="del">
+                            <td>
+                                <input type="button" class="delImg" value="删除" />
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>排序:</td>
+                            <td>
+                                <input type="text" name="Sort" value="0" style="width: 50px;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>图片:</td>
+                            <td>
+                                <input type="text" name="ImageUrl" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>图片链接:</td>
+                            <td>
+                                <input type="text" name="ImageLink" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        }
+    </form>
+    
+</div>
+
+ <div class="rowButton">
+            <input type="button" value="保存" id="btnSave" />
+        </div>
+
+<script type="text/javascript">
+    $(function () {
+
+        $("#MShowState").attr("disabled", true);
+
+        //绑定删除事件
+        function bingDel() {
+            $(".delImg").click(function () {
+                var obj = $(this).parents(".imgTextForm");
+
+                var deletedHid = obj.find("input[name='Deleted']");
+                deletedHid.val(1);
+                $(this).attr("disabled", "disabled");
+            });
+        }
+
+        bingDel();
+
+        $("#btnAddImgTextItem").click(function () {
+
+            var html = $("#tableContainer .imgTextForm").eq(0).clone();
+
+            html.find("input[name='ImageUrl']").val("");
+            html.find("input[name='ImageLink']").val("");
+
+            html.find("input[name='Sort']").val("0");
+            html.find("input[name='_Deleted']").val(0);
+            html.find("input[name='ImageType']").val("2");
+            html.find("input[name='ImageId']").val("0");
+
+            html.find(".delImg").removeAttr("disabled");
+            html.find("#del").css("display", "");
+            html.find("#title").html("妈妈秀副图");
+
+            $("#tableContainer").append(html);
+            bingDel();
+        });
+
+        //保存
+        $("#btnSave").click(function () {
+            var title = $("#MShowTitle").val();
+            var content = $("#MShowContent").val();
+            var praiseCount = $("#MShowPraiseCount").val();
+            var commentsCount = $("#MShowCommentsCount").val();
+            var againstCount = $("#MShowAgainstCount").val();
+            var userId = $("#MUserId").val();
+            var state = $("#MShowState").val();
+            
+            //if (title.length <= 0) {
+            //    alert("请填写标题");
+            //    $("#MShowTitle").focus();
+            //    return false;
+            //}
+            
+            if (content.length <= 0) {
+                alert("请填写内容");
+                $("#MShowContent").focus();
+                return false;
+            }
+
+            var flag = true;
+
+            var fromData = {};
+            
+            fromData.MShowId = $("#MShowId").val();
+            fromData.MShowTyepe = $("#MShowTyepe").val();
+            fromData.Sort = $("#Sort").val();
+
+            fromData.MShowTitle = title;
+            fromData.MShowContent = content;
+            fromData.MShowPraiseCount = praiseCount;
+            fromData.MShowCommentsCount = commentsCount;
+            fromData.MShowAgainstCount = againstCount;
+            fromData.MUserId = userId;
+            fromData.MShowState = state;
+            
+            var subFromArray = [];
+
+            $("#tableContainer .imgTextForm").each(function (i, item) {
+                var $obj = $(this);
+                var subFromData = {};
+                
+                subFromData.ImageId = $obj.find("input[name='ImageId']").val();
+                subFromData.ImageUrl = $obj.find("input[name='ImageUrl']").val();
+                subFromData.ImageLink = $obj.find("input[name='ImageLink']").val();
+                subFromData.ImageType = $obj.find("input[name='ImageType']").val();
+                subFromData.Sort = $obj.find("input[name='Sort']").val();
+                if ($obj.find("input[name='Deleted']").val() == 1) {
+                    subFromData.Delete = true;
+                } else {
+                    subFromData.Delete = false;
+                }
+                subFromArray.push(subFromData);
+                
+                if (subFromData.Delete == false && subFromData.ImageUrl.length <= 0) {
+                    alert("请填图片路径");
+                    $obj.find("input[name='ImageUrl']").focus();
+                    flag = false;
+                    return false;
+                }
+            });
+            
+            if (flag == false) {
+                return false;
+            }
+            
+            fromData.ShowImageList = subFromArray;
+
+            $.ajax({
+                url: '@Url.Action("SaveMotherShow", "MotherShow")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(fromData),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("保存成功！");
+                        reloadPage();
+                    } else {
+                        alert("保存失败");
+                    }
+                }
+            });
+
+        });
+
+    });
+</script>

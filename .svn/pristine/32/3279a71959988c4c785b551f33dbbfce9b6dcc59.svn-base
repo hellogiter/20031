@@ -1,0 +1,166 @@
+﻿@model Myzj.OPC.UI.Model.Base.BaseRefer<Myzj.OPC.UI.Model.RentActivity.BaseRentGoodsInfo>
+<h2>商品列表</h2>
+<style>
+    .input-validation-error {
+        border: 1px solid #c0c0c0;
+        background-color: white;
+    }
+
+    .showDetailTable tbody tr.tk-guanli td {
+        width: 15%;
+    }
+
+        .showDetailTable tbody tr.tk-guanli td.tk-name {
+            width: 5%;
+            text-align: center;
+        }
+
+        .showDetailTable tbody tr.tk-guanli td input {
+            text-align: left;
+            width: 85%;
+        }
+
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+        <tbody>
+            <tr class="tk-guanli">
+                @*<td class="tk-name">活动Key:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.ActivityKey)
+                </td>*@
+                <td class="tk-name">商品id:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.GoodsId)
+                </td>
+                <td class="tk-name"></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="rowButton">
+        <input type="submit" value="查询" id="btnSearch" />
+        <input type="button" value="创建" id="btnAdd" onclick="window.location.href = '/RentManager/GoodsDetail'" />
+    </div>
+    if (Model.List2 != null && Model.List2.Any())
+    {
+        var model = Model.List2;
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>商品id</th>
+                    <th>活动key</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                    <th>押金</th>
+                    <th>租期</th>
+                    <th>促销id</th>
+                    @* <th>备注</th>*@
+                    @*<th>分享地址</th>*@
+                    <th>排序号</th>
+                    <th>商品类型</th>
+                    <th>是否启用</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in model)
+                {
+                    <tr>
+                        <td>@item.GoodsId</td>
+                        <td>@item.ActivityKey</td>
+                        <td>@item.StartTime</td>
+                        <td>@item.EndTime</td>
+                        <td>@item.GoodsDeCash</td>
+                        <td>@item.RentTimeYear</td>
+                        <td>@item.PromotionId</td>
+                        @* <td>@item.Remark</td>*@
+                       @* <td>@item.GoodsShare</td>*@
+                        <td>@item.Sort</td>
+
+                        @if (item.GoodsType == 2)
+                        {
+                            <td>母婴之家租赁</td>
+                        }
+                        else if (item.GoodsType == 3)
+                        {
+                            <td>供应商租赁</td>
+                        }
+                        else if(item.GoodsType==1)
+                        {
+                            <td>母婴之家礼品卡</td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+
+                        @if (item.IsEnable.Value)
+                        {
+                            <td>启用</td>
+                        }
+                        else
+                        {
+                            <td>禁用</td>
+                        }
+
+                        <td>
+                            <a style="color: #191970; cursor: pointer" target="_blank" href="@Url.Action("GoodsDetail", "RentManager", new { sysNo = item.SysNo })">编辑</a>
+                            <a style="color: #191970; cursor: pointer" target="_blank" onclick="DeleteItem(@item.SysNo,this);">删除</a>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+
+    }
+    
+    @Html.Partial("Pager", @Model)
+}
+
+<script type="text/javascript">
+
+    $("#SearchDetail_SysNo").keyup(function () {
+        var tmptxt = $(this).val();
+        $(this).val(tmptxt.replace(/\D|^0/g, ''));
+    }).bind("paste", function () {
+        var tmptxt = $(this).val();
+        $(this).val(tmptxt.replace(/\D|^0/g, ''));
+    }).css("ime-mode", "disabled");
+
+    function DeleteItem(sysNo, obj) {
+        if (confirm("确定删除吗?")) {
+            var model = {};
+            model.SysNo = sysNo;
+            model.IsDelete = true;
+            $.ajax({
+                url: '@Url.Action("SaveGoodsInfo", "RentManager")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("删除成功");
+                        $(obj).parent().parent().remove();
+                    } else {
+                        alert("删除失败");
+                    }
+                }
+            });
+        }
+    }
+
+</script>

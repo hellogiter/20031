@@ -1,0 +1,94 @@
+﻿@using MYZJ.Framework.ServiceBase.ServiceModel
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.SaleHotStyle
+@using Myzj.OPC.UI.Model.WebIndex
+
+@model IEnumerable<Myzj.OPC.UI.Model.SearchManagement.SearchManagementDetail>
+<h2>批量新增商品搜索词</h2>
+
+<div id="tableContainer">
+    <table class="showDetailTableMultiColumnm">
+
+        <input type="hidden" value="0" id="hidSitd" />
+        <tr>
+            <td>商品ID(*):</td>
+            <td>
+                <textarea id="ProductId" name="ProductId"></textarea>
+
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>搜索词(*):</td>
+            <td colspan="2">
+                <textarea id="SearchWord" name="SearchWord"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>排除词:</td>
+            <td colspan="2">
+                <textarea id="ExcludeWord" name="ExcludeWord"></textarea>
+            </td>
+        </tr>
+        <tr style="display: none" class="hidTr">
+            <td colspan="4">
+                <label style="font-weight: 700; width: 50px;" class="label"></label>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="提交" id="btnSave" />
+    <input type="button" value="返回" id="btnDel" onclick="window.close()" />
+</div>
+
+
+<script type="text/javascript">
+    $(function () {
+        $("#btnSave").click(function () {
+            var search = {};
+            var searchModel = [];
+            var sId = 0;
+            var productId = $("#ProductId").val();
+            var searchWord = $("#SearchWord").val();
+            var excludeWord = $("#ExcludeWord").val();
+
+            if (productId == null || productId == "") {
+                alert("请输入商品Id!");
+                return false;
+            } else if (searchWord == null || searchWord == "") {
+                alert("请输入搜索词!");
+                return false;
+            }
+            var iObj = {};
+            iObj.ProductId = productId;
+            iObj.SId = sId;
+            iObj.SearchWord = searchWord;
+            iObj.ExcludeWord = excludeWord;
+            $(".hidTr").show();
+            $(".label").html("正在执行操作，请等待执行结果... ...");
+
+            $.ajax({
+                url: "/SearchManagement/UpdateWebSearchManagement?sId=" + sId,
+                type: "post",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify(iObj),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        $(".hidTr").show();
+                        $(".label").html(result.DoResult);
+                        //   reloadPage();
+                        $("#ProductId").val("");
+                        $("#SearchWord").val("");
+                        $("#ExcludeWord").val("");
+                    } else {
+                        $(".hidTr").show();
+                        $(".label").html(result.DoResult);//商品名称
+                    }
+                }
+            });
+        });
+    });
+</script>

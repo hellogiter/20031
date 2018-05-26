@@ -1,0 +1,306 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Myzj.OPC.UI.Model.ExpressModel
+{
+    #region 物流信息管理model
+    public class ExpressInfoModel
+    {
+        public Nullable<int> SysNo { get; set; }
+        public string OrderCode { get; set; }
+        public Nullable<int> OrderType { get; set; }
+        public Nullable<int> CallType { get; set; }
+        public string LogiscticNo { get; set; }
+        public string LogiscticId { get; set; }
+        public string LogiscticContent { get; set; }
+        public Nullable<int> LastStatus { get; set; }
+        public string PushRequestStatus { get; set; }
+        public string PushRequestMessage { get; set; }
+        public Nullable<int> SubscribeStatus { get; set; }
+        public Nullable<int> CallCount { get; set; }
+        public Nullable<System.DateTime> StartTime { get; set; }
+        public string SaltStr { get; set; }
+        public Nullable<System.DateTime> RowCreateDate { get; set; }
+        public Nullable<System.DateTime> RowModifyDate { get; set; }
+        public Nullable<int> IsDel { get; set; }
+        public Nullable<System.DateTime> CreateDate { get; set; }
+        public string Remark { get; set; }
+    }
+    public class ExpressSelfAccessSearchModel
+    {
+        public int? OrderCode { get; set; }
+        public DateTime? StartTime { get; set; }
+        public DateTime? EndTime { get; set; }
+    }
+    public class ExpressSelfAccessModel
+    {
+        public Nullable<int> SysNo { get; set; }
+        public Nullable<int> ExPressSysNo { get; set; }
+        public string LogiscticNo { get; set; }
+        public string LogiscticId { get; set; }
+        public Nullable<System.DateTime> StartTime { get; set; }
+        public Nullable<int> LastStatus { get; set; }
+        public Nullable<bool> IsBegin { get; set; }
+        public Nullable<int> RequestCount { get; set; }
+        public Nullable<int> RequestFaildCount { get; set; }
+        public byte[] RequestFaildReason { get; set; }
+        public Nullable<System.DateTime> RowCreateDate { get; set; }
+        public Nullable<System.DateTime> RowModifyDate { get; set; }
+        public Nullable<short> IsDel { get; set; }
+        public Nullable<int> StopWatch { get; set; }
+    }
+
+    public class ExpressSubscribeRecordModel
+    {
+        public Nullable<int> SysNo { get; set; }
+        public string OrderCode { get; set; }
+        public string LogiscticNo { get; set; }
+        public string LogiscticCompany { get; set; }
+        public string SubscribeRemark { get; set; }
+        public string RequestUrl { get; set; }
+        public string RequestFaildReason { get; set; }
+        public Nullable<int> IsStatus { get; set; }
+        public Nullable<System.DateTime> RowCreateDate { get; set; }
+        public Nullable<System.DateTime> RowModifyDate { get; set; }
+        public Nullable<short> IsDel { get; set; }
+        public Nullable<System.DateTime> CreateDate { get; set; }
+
+        public string FormatDate { get; set; }
+    }
+
+    public class ExpressInfoSearchModel
+    {
+        /// <summary>
+        /// 订单号，逗号分割
+        /// </summary>
+        public string OrderCode { get; set; }
+        /// <summary>
+        /// 订单类型
+        /// </summary>
+        public int? OrderType { get; set; }
+        /// <summary>
+        /// 订阅方式
+        /// </summary>
+        public int? CallType { get; set; }
+        /// <summary>
+        /// 运单号
+        /// </summary>
+        public string LogiscticNo { get; set; }
+        /// <summary>
+        /// 配送商编号
+        /// </summary>
+        public string LogiscticId { get; set; }
+        /// <summary>
+        /// 运单状态
+        /// </summary>
+        public int? LastStatus { get; set; }
+        /// <summary>
+        /// 快递公司代码
+        /// </summary>
+        public string LogiscticCompany { get; set; }
+        /// <summary>
+        /// 快递公司名称
+        /// </summary>
+        public string LogiscticCompanyName { get; set; }
+        /// <summary>
+        /// 是否归档
+        /// </summary>
+        public int? IsGuidang { get; set; }
+        /// <summary>
+        /// 是否有物流信息
+        /// </summary>
+        public int? IsWuliuInfo { get; set; }
+        /// <summary>
+        /// 订阅状态
+        /// </summary>
+        public int? SubscribeStatus { get; set; }
+        /// <summary>
+        /// 开始时间
+        /// </summary>
+        public DateTime? BeginTime { get; set; }
+        /// <summary>
+        /// 结束时间
+        /// </summary>
+        public DateTime? EndTime { get; set; }
+
+        public DateTime? StartTime { get; set; }
+    }
+
+    public class ExpressInfoModelExt
+    {
+        public Nullable<int> SysNo { get; set; }
+        public string OrderCode { get; set; }
+        public Nullable<int> OrderType { get; set; }
+        public Nullable<int> CallType { get; set; }
+        public string LogiscticNo { get; set; }
+        public string LogiscticId { get; set; }
+        public string LogiscticContent { get; set; }
+        public Nullable<int> LastStatus { get; set; }
+        public string PushRequestStatus { get; set; }
+        public string PushRequestMessage { get; set; }
+        public Nullable<int> SubscribeStatus { get; set; }
+        public Nullable<int> CallCount { get; set; }
+        public Nullable<System.DateTime> StartTime { get; set; }
+        public string SaltStr { get; set; }
+        public Nullable<System.DateTime> RowCreateDate { get; set; }
+        public Nullable<System.DateTime> RowModifyDate { get; set; }
+        public Nullable<int> IsDel { get; set; }
+        public Nullable<System.DateTime> CreateDate { get; set; }
+        public string Remark { get; set; }
+        public string LogiscticCompanyName { get; set; }
+        public Nullable<int> SubscribeCount { get; set; }
+
+        /// <summary>
+        /// 订阅日期
+        /// </summary>
+        public DateTime? SubstribeTime { get; set; }
+        /// <summary>
+        /// 下一次运行时间
+        /// </summary>
+        public Nullable<System.DateTime> NextStartTime { get; set; }
+        /// <summary>
+        /// 请求失败次数
+        /// </summary>
+        public Nullable<int> RequestFaildCount { get; set; }
+        /// <summary>
+        /// 请求失败原因
+        /// </summary>
+        public string RequestFaildReason { get; set; }
+        /// <summary>
+        /// 接口耗时
+        /// </summary>
+        public Nullable<int> StopWatch { get; set; }
+
+        /// <summary>
+        /// 订单扭转
+        /// </summary>
+        public string OrderStatusContent { get; set; }
+        /// <summary>
+        /// 国际物流
+        /// </summary>
+        public string LogisticOuterContent { get; set; }
+    }
+    #endregion
+
+    #region 配送商管理model
+
+    public class CompanyModel
+    {
+        public Nullable<int> SysNo { get; set; }
+        public string LogiscticId { get; set; }
+        public string LogiscticCompany { get; set; }
+        public string LogiscticCompanyName { get; set; }
+        public Nullable<int> OfenFlag { get; set; }
+        public Nullable<int> SetAccessMode { get; set; }
+        public Nullable<System.DateTime> RowCreateDate { get; set; }
+        public Nullable<short> IsDel { get; set; }
+    }
+
+    public class SelfAccessConfigModel
+    {
+        public Nullable<int> SysNo { get; set; }
+        public string LogiscticId { get; set; }
+        public Nullable<int> Frequence { get; set; }
+        public Nullable<int> DayInterval { get; set; }
+        public Nullable<System.DateTime> RowCreateDate { get; set; }
+        public Nullable<int> IsDel { get; set; }
+        public string LogiscticCompanyName { get; set; }
+    }
+
+    #endregion
+
+    #region 国际物流model
+    public class InterNationalModel
+    {
+        public Nullable<int> SysNo { get; set; }
+        public Nullable<int> OrderCode { get; set; }
+        public string Content { get; set; }
+        public Nullable<System.DateTime> LogisticsTime { get; set; }
+        public Nullable<System.DateTime> RowCreateDate { get; set; }
+        public Nullable<System.DateTime> RowModifyDate { get; set; }
+        public Nullable<int> IsDel { get; set; }
+        public Nullable<int> Status { get; set; }
+    }
+    #endregion
+
+    #region 日志model
+    public class ExpressLogModel
+    {
+        public Nullable<int> SysNo { get; set; }
+        public string OrderCode { get; set; }
+        public Nullable<int> OrderStatus { get; set; }
+        public Nullable<int> OrderType { get; set; }
+        public string LogiscticNo { get; set; }
+        public string LogiscticId { get; set; }
+        public Nullable<int> LogType { get; set; }
+        public Nullable<int> BusinessType { get; set; }
+        public string LogContent { get; set; }
+        public Nullable<int> IsDeleted { get; set; }
+        public string CreateBy { get; set; }
+        public Nullable<System.DateTime> CreateDate { get; set; }
+        public Nullable<System.DateTime> UpdateDate { get; set; }
+        public string Remark { get; set; }
+    }
+    public class ExpressLogModel2
+    {
+        public Nullable<int> SysNo { get; set; }
+        public string OrderCode { get; set; }
+        public Nullable<int> OrderStatus { get; set; }
+        public Nullable<int> OrderType { get; set; }
+        public string LogiscticNo { get; set; }
+        public string LogiscticId { get; set; }
+        public string LogType { get; set; }
+        public string BusinessType { get; set; }
+        public string LogContent { get; set; }
+        public Nullable<int> IsDeleted { get; set; }
+        public string CreateBy { get; set; }
+        public string CreateDate { get; set; }
+        public Nullable<System.DateTime> UpdateDate { get; set; }
+        public string Remark { get; set; }
+    }
+
+    #endregion
+
+    #region 对账单查询
+    public class ExpressAccountStateMentModel
+    {
+        public int Sum { get; set; }
+    }
+    #endregion
+
+    #region 订单状态配置
+
+    public class OrderStatusModel
+    {
+        public Nullable<int> SysNo { get; set; }
+        public string OrderCode { get; set; }
+        public string OrderStatusContent { get; set; }
+        public Nullable<int> MallType { get; set; }
+        public Nullable<System.DateTime> OrderMakeDate { get; set; }
+        public Nullable<int> IsDeleted { get; set; }
+        public Nullable<System.DateTime> CreateDate { get; set; }
+        public Nullable<System.DateTime> UpdateDate { get; set; }
+        public string Remark { get; set; }
+        public Nullable<int> OrderStatusNo { get; set; }
+        public Nullable<int> Sort { get; set; }
+    }
+
+    public class OrderStatusConfigModel
+    {
+        public Nullable<int> SysNo { get; set; }
+        public Nullable<int> OrderType { get; set; }
+        public Nullable<int> OrderStatus { get; set; }
+        public string StatusCode { get; set; }
+        public string StatusName { get; set; }
+        public string StatusDesc { get; set; }
+        public Nullable<int> DisplayTime { get; set; }
+        public Nullable<int> Sort { get; set; }
+        public Nullable<System.DateTime> RowCreateDate { get; set; }
+        public Nullable<short> IsDel { get; set; }
+    }
+
+
+    #endregion
+}

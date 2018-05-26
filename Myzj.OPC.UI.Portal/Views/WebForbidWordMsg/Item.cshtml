@@ -1,0 +1,43 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.WordMsg
+
+@model IEnumerable<Myzj.OPC.UI.Model.WordMsg.WordMsgDetail>
+@{
+    <div class="rowButton">
+        <input type="submit" name="Query" id="Query" value="查询" onclick="loadList(1)" />
+        <input type="button" name="Query" id="BtnAdd" value="新增" onclick="javascript: window.open('/WebForbidWordMsg/Detail')" />
+    </div>
+
+    if (Model != null && Model.Any())
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>操作</th>
+                    <th>类型</th>
+                    <th>名称</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.IntForbidID</td>
+                        <td>
+                            <a target="_blank" style="color: #191970" href="@Url.Action("Detail", "WebForbidWordMsg", new { id = item.IntForbidID })" >修改</a>
+                            <a style="color: #191970" href="javascript:(0)" pvalue="@item.IntForbidID" class="delWordMsg">删除</a>
+                        </td>
+                        <td>@(typeof(AppEnum.WordType).GetEnumDescription(item.IntWordType))</td>
+                        <td>@item.VchForbidWord</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+}
+

@@ -1,0 +1,261 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.HotStyle
+@using Myzj.OPC.UI.ServiceClient
+@model  Myzj.OPC.UI.Model.HotStyle.HotStyleModel
+<h2>修改爆款</h2>
+<style type="text/css">
+    .showDetailTableMultiColumnm .manjian textarea {
+        width: 500px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .showDetailTableMultiColumnm .tickename input {
+        width: 200px;
+    }
+</style>
+@{
+    var applyPlace = HotStyleClient.Instance.GetApplyPlace(new ApplyPlaceModel());
+}
+@using (Html.BeginForm())
+{
+    if (Model != null)
+    {
+    <div id="tableContainer">
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <input id="sysNo" value="@Model.Id" type="hidden"/>
+                    <td>商品ID</td>
+                    <td colspan="3">
+                        <input id="txtProductId" readonly="readonly" value="@Model.ProductId" type="text" placeholder="必填" style="width: 200px;color: gray" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>图片地址</td>
+                    <td colspan="3">
+                        <input id="txtPictureUrl" value="@Model.PictureUrl" type="text" style="width: 600px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>新图片地址</td>
+                    <td colspan="3">
+                        <input id="txtPictureUrlTrans" value="@Model.PictureUrlTrans" type="text" style="width: 600px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>描述</td>
+                    <td colspan="3" style="padding: 7px 4px">
+                        <textarea id="txtHotDescription" placeholder="必填">@Model.HotDescription</textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>国籍</td>
+                    <td colspan="3" id="radList" style="text-align: left">
+                        @{
+        var coutryId = Model.CountryId ?? 0;
+        var countrys = typeof(AppEnum.HotCountryEnum).GetEnumList();
+        foreach (var item in countrys)
+        {
+            if (item.Key == coutryId)
+            {
+                            <input style="width: 20px; float: none" type="radio" checked="checked" name="CountryId" value="@item.Key" />@item.Value
+            }
+            else
+            {
+                            <input style="width: 20px; float: none" type="radio" name="CountryId" value="@item.Key" />@item.Value
+            }
+
+        }
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>应用位置</td>
+                    <td colspan="3" style="white-space: normal; text-align: left; line-height: 25px; padding: 4px">
+                        @{
+        var appIds = new List<string>(){};
+        if (!string.IsNullOrEmpty(Model.ApplyPlace))
+        {
+           appIds= Model.ApplyPlace.Replace("][", ",").Replace("[", "").Replace("]", "").Split(',').ToList();
+        }
+
+        foreach (var item in applyPlace)
+        {
+            var index = applyPlace.IndexOf(item);
+            if (appIds.Any(c => c.Equals(item.ApplyPlaceId.ToString())))
+            {
+                            <input style="width: 20px;float: none" value="@item.ApplyPlaceId" checked="checked" type="checkbox" name="ApplyPlace"/>@item.ApplyPlaceName
+            }
+            else
+            {
+                            <input style="width: 20px;float: none" value="@item.ApplyPlaceId" type="checkbox" name="ApplyPlace"/>@item.ApplyPlaceName
+            }
+
+            if (index % 11 == 0 && index != 0)
+            {
+                            <br />
+            }
+        }
+                        }
+
+                    </td>
+                </tr>
+                <tr style="display: none">
+                    <td>应用标签</td>
+                    <td colspan="3" style="padding: 7px 4px">
+                        <textarea id="txtApplyLabel" placeholder="必填">@Model.ApplyLabel</textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>左上角标签</td>
+                    <td colspan="3">
+                        @{
+        var hottag = Model.HotTag;
+        var hottagleft = "";
+        var hottagleft2 = "";
+        if (!string.IsNullOrEmpty(hottag))
+        {
+            var tagArr = hottag.Replace("][", ",").Replace("[", "").Replace("]", "").Split(',');
+            if (tagArr.Count() > 1)
+            {
+                hottagleft = tagArr[0];
+                hottagleft2 = tagArr[1];
+            }
+            else
+            {
+                hottagleft = tagArr[0];
+            }
+        }
+                        }
+                        <input id="txtHotTagOne" value="@hottagleft" type="text" placeholder="必填" style="width: 200px;" />
+                        <input id="txtHotTagTwo" value="@hottagleft2" type="text" placeholder="必填" style="width: 200px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>开始时间</td>
+                    <td colspan="3">
+                        <input id="txStartTime" type="text" placeholder="必填" value="@Model.StartTime" class="Wdate" onfocus="dateFmt(this,1);" style="width: 200px;" />
+                        <span style="width: 10px;">至</span>
+                        <input id="txtEndTime" type="text" placeholder="必填" value="@Model.EndTime" class="Wdate" onfocus="dateFmt(this,2);" style="width: 200px;" />
+                </tr>
+                <tr>
+                    <td>是否启用</td>
+                    <td colspan="3" id="radList">
+                        @{
+        var enable = "";
+        var enable2 = "";
+        if ((Model.IsEnable) ?? false)
+        {
+            enable = "checked=\"checked\"";
+        }
+        else
+        {
+            enable2 = "checked=\"checked\"";
+        }
+                        }
+                        <span style="width: 40px; float: left;">
+                            <input type="radio" name="IsEnable" @enable  value="true" />启用</span>
+                        <span style="width: 40px; margin-left: 50px;">
+                            <input type="radio" name="IsEnable" @enable2 value="false" />禁用</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="rowButton">
+            <input type="button" value="修改" id="btnSave" />
+            <input type="button" value="关闭" id="btnDel" onclick="window.close();" />
+        </div>
+        
+          <div>
+              <img id="imgUrl" src="" type="text" style="width: 600px;" />
+          
+        </div>
+    </div>
+        
+    }
+    else
+    {
+    @Html.Partial("Error");
+    }
+}
+
+<script type="text/javascript">
+
+    $(function() {
+        $("#txtPictureUrlTrans").blur(function() {
+            $("#imgUrl").attr("src", "" + $("#txtPictureUrlTrans").val() + "");
+        });
+    });
+
+    function dateFmt(obj, type) {
+        if (type == 1) {
+            if (obj.value == "") {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd 00:00:00' });
+            } else {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' });
+            }
+        } else {
+            if (obj.value == "") {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd 23:59:59' });
+            } else {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' });
+            }
+        }
+
+    }
+    $("#btnSave").click(function () {
+
+        var applyPlace = "";//应用位置
+        var hotTag = "";//热门标签
+        var country = $("input[name='CountryId']:checked").val();//国籍
+        $('input[name="ApplyPlace"]:checked').each(function () {
+            applyPlace += "[" + $(this).val() + "]";
+        });
+        var txtHotTagOne = $.trim($("#txtHotTagOne").val());
+        var txtHotTagTwo = $.trim($("#txtHotTagTwo").val());
+        if (txtHotTagOne != '') {
+            hotTag += "[" + txtHotTagOne + "]";
+        }
+        if (txtHotTagTwo != '') {
+            hotTag += "[" + txtHotTagTwo + "]";
+        }
+
+        var model = {};
+        model.Id = $.trim($("#sysNo").val());
+        model.ProductId = $.trim($("#txtProductId").val());//商品id
+        model.ApplyLabel = $.trim($("#txtApplyLabel").val());//应用标签，无用
+        model.ApplyPlace = applyPlace;//应用位置
+        model.StartTime = $.trim($("#txStartTime").val());//开始时间
+        model.EndTime = $.trim($("#txtEndTime").val());//结束时间
+        model.HotDescription = $.trim($("#txtHotDescription").val());//爆款描述
+        model.PictureUrl = $.trim($("#txtPictureUrl").val());//大图
+        model.PictureUrlTrans = $.trim($("#txtPictureUrlTrans").val());//app图
+        model.IsEnable = $('#radList input[name="IsEnable"]:checked').val();//启用
+        model.HotTag = hotTag;//热门标签
+        model.CountryId = country;//国籍Id
+
+        console.log(JSON.stringify(model));
+        //return;
+        if (confirm("你确定保存吗？")) {
+            $.ajax({
+                url: '@Url.Action("UpdHotStyle", "HotExec")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("更新成功！");
+                        opener.location.reload();
+                        window.close();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        }
+    });
+</script>

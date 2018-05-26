@@ -1,0 +1,71 @@
+﻿@using System.Collections
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.SaleHotStyle
+
+@model IEnumerable<Myzj.OPC.UI.Model.SearchManagement.SearchManagementItemDetail>
+@{
+    Layout = null; 
+}
+
+@{
+    <div class="rowButton">
+        <input type="submit" name="Query" id="Query" value="查询" />
+    </div>
+    <div>
+        <input type="button" name="Query" id="btnPLExamine" value="批量审核" />
+        <input type="button" name="Query" id="btnPLZF" value="批量作废" />
+        <label style="font-weight: 700; width: 50px;" class="label"></label>
+    </div>
+    
+    if (Model != null && Model.Any())
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>全选<input type="checkbox" class="checkAll" id="selectAll" /></th>
+                    <th>ID</th>
+                    <th>商品ID</th>
+                    <th>商品名称</th>
+                    <th>搜索词(修改前)</th>
+                    <th>搜索词(修改后)</th>
+                    <th>排除词(修改前)</th>
+                    <th>排除词(修改后)</th>
+                    <th>审核人</th>
+                    <th>审核时间</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr class="table_tr">
+                        <td>
+                            @if (item.State == (int)AppEnum.SearchState.NotAudit)
+                            {
+                                <input type="checkbox"  name="all" class="All" value="@item.SItemId"/>
+                            }
+                            else
+                            {
+                                <input type="checkbox" disabled="disabled" name="all" class="All" value="@item.SItemId"/>
+                            }
+                        </td>
+                        <td>@item.SItemId</td>
+                        <td>@item.ProductId</td>
+                        <td>@item.vchProductName</td>
+                        <td>@item.beforeSearchwoes</td>
+                        <td>@item.SearchWord</td>
+                        <td>@item.beforeExcludeWord</td>
+                        <td>@item.ExcludeWord</td>
+                        <td>@item.UpdateBy</td>
+                        <td>@item.UpdateDate</td>
+                        <td>@(typeof(AppEnum.SearchState).GetEnumDescription(item.State)) </td>
+                    </tr>   
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+}

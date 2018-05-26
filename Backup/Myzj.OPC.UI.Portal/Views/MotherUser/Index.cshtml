@@ -1,0 +1,255 @@
+﻿@using Myzj.OPC.UI.Model.MotherUser
+@{
+    ViewBag.Title = "Index";
+
+    var motherUser = (GetMotherUserRequest)ViewBag.MotherUser;
+
+    var userId = "";
+    if (motherUser.UserId != null)
+    {
+        userId = motherUser.UserId.ToString();
+    }
+
+    var isSystem = motherUser.IsSystem ?? 0;
+    var isRecommend = motherUser.IsRecommend ?? 0;
+    var mUserState = motherUser.MUserState ?? -1;
+}
+
+<script type="text/javascript">
+    //选中
+    function selectVal(name, val) {
+        $("#" + name).val(val);
+    }
+
+</script>
+
+<h2>用户管理</h2>
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable">
+        <tr>
+            <td>用户ID:</td>
+            <td>
+                <input id="UserId" name="UserId" type="text" value="@userId" /></td>
+            <td>手机:</td>
+            <td><input id="Mobile" name="Mobile" type="text" value="@motherUser.Mobile" /></td>
+          
+        </tr>
+        <tr>
+            <td>是否系统账号</td>
+            <td>
+                <select id="IsSystem" name="IsSystem">
+                    <option value="0" selected="selected">全部</option>
+                    <option value="1">是</option>
+                </select></td>
+            <td>是否推荐妈妈</td>
+            <td>
+                <select id="IsRecommend" name="IsRecommend">
+                    <option value="0" selected="selected">全部</option>
+                    <option value="1">是</option>
+                </select></td>
+        </tr>
+        <tr>
+              <td>用户状态:</td>
+            <td colspan="3">
+                <select id="MUserState" name="MUserState">
+                    <option value="-1" selected="selected">全部</option>
+                    <option value="1">启用</option>
+                    <option value="0">禁用</option>
+                    <option value="2">被举报</option>
+                </select></td>
+        </tr>
+    </table>
+    
+    <div class="rowButton">
+        <input type="submit" name="Query" id="Query" value="查询" />
+    </div>
+    
+    <div id="item">
+        @Html.Action("Item", "MotherUser", new { model = motherUser })
+    </div>
+    @Html.Partial("Pager", @motherUser)
+}
+
+<script type="text/javascript">
+    //初始化
+    var isSystem = '@isSystem';
+    var isRecommend = '@isRecommend';
+    var mUserState = '@mUserState';
+
+    if (mUserState != "-1") {
+        selectVal('MUserState', mUserState);
+    }
+
+    if (isSystem != '0') {
+        selectVal('IsSystem', isSystem);
+    }
+
+    if (isRecommend != '0') {
+        selectVal('IsRecommend', isRecommend);
+    }
+    
+    //初始化方法
+    bing();
+
+    //初始化方法
+    function bing() {
+        //系统账号
+        $(".system").unbind().bind("click", function () {
+            var obj = $(this);
+
+            if (this.checked) {
+                var muserid = obj.data("muserid");
+                //添加
+                $.ajax({
+                    url: "/MotherUser/AddSysMotherUser?userId=" + muserid,
+                    type: 'post',
+                    dataType: "json",
+                    success: function (result) {
+                        if (result.DoFlag) {
+
+                        } else {
+
+                        }
+                        loadList();
+                    }
+                });
+            } else {
+                var sysId = obj.data("sysid");
+
+                //删除
+                $.ajax({
+                    url: "/MotherUser/DelSysMotherUser?sysUserId=" + sysId,
+                    type: 'post',
+                    dataType: "json",
+                    success: function (result) {
+                        if (result.DoFlag) {
+
+                        } else {
+
+                        }
+                        loadList();
+                    }
+                });
+            }
+        });
+
+        //状态
+        $(".selectState").unbind().bind("change", function () {
+
+            var obj = $(this);
+            var userId = obj.data("userid");
+            var state = obj.val();
+
+            $.ajax({
+                url: "/MotherUser/UpMotherUserState?userId=" + userId + "&state=" + state,
+                type: 'post',
+                dataType: "json",
+                success: function (result) {
+                    if (result.DoFlag) {
+
+                    } else {
+                        loadList();
+                    }
+                }
+            });
+        });
+        
+        //更新关注
+        $(".focus").unbind().bind("change", function () {
+
+            var obj = $(this);
+            var sysId = obj.data("sysid");
+
+            var state = 1;
+            if (!this.checked) {
+                state = 0;
+            } 
+
+            $.ajax({
+                url: "/MotherUser/UpSysMotherUserFocus?sysUserId=" + sysId + "&isDefaultFocus=" + state,
+                type: 'post',
+                dataType: "json",
+                success: function (result) {
+                    if (result.DoFlag) {
+
+                    } else {
+                        loadList();
+                    }
+                }
+            });
+        });
+        
+        //推荐妈妈
+        $(".recommend").unbind().bind("click", function () {
+            var obj = $(this);
+
+            if (this.checked) {
+                var mUserid = obj.data("muserid");
+                //添加
+                $.ajax({
+                    url: "/MotherUser/AddRecommendedMother?mUserId=" + mUserid,
+                    type: 'post',
+                    dataType: "json",
+                    success: function (result) {
+                        loadList();
+                    }
+                });
+            } else {
+                var recommendId = obj.data("rid");
+
+                //删除
+                $.ajax({
+                    url: "/MotherUser/DelRecommendedMother?recommendedMId=" + recommendId,
+                    type: 'post',
+                    dataType: "json",
+                    success: function (result) {
+                        loadList();
+                    }
+                });
+            }
+        });
+        
+        //推荐妈妈排序
+        $(".sort").unbind().bind("change", function () {
+
+            var obj = $(this);
+            
+            var recommendId = obj.data("rid");
+            var sort = obj.val();
+
+            $.ajax({
+                url: "/MotherUser/UpRecommendedMotherSort?recommendedMId=" + recommendId + "&sort=" + sort,
+                type: 'post',
+                dataType: "json",
+                success: function (result) {
+                    loadList();
+                }
+            });
+        });
+    }
+
+
+    //加载列表
+    function loadList() {
+        var model = {};
+        model.UserId = '@motherUser.UserId';
+        model.MUserState = '@motherUser.MUserState';
+        model.IsSystem = '@motherUser.IsSystem';
+        model.IsRecommend = '@motherUser.IsRecommend';
+        model.PageIndex = '@motherUser.PageIndex';
+        model.PageSize = '@motherUser.PageSize';
+
+        $.ajax({
+            url: '@Url.Action("Item", "MotherUser")',
+            type: 'post',
+            dataType: 'html',
+            contentType: 'application/json',
+            data: JSON.stringify(model),
+            success: function (result) {
+                $("#item").html(result);
+                bing();
+            }
+        });
+    }
+</script>

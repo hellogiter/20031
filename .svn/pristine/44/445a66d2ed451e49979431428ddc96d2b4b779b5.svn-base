@@ -1,0 +1,120 @@
+﻿@using System.Collections
+@using Myzj.OPC.UI.Common
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.SpreadInfo
+@model IEnumerable<Myzj.OPC.UI.Model.SpreadInfo.SpreadInfoDetail>
+@{
+    var roleInfo = Session["S_RoleInfo"] as SpreadUserRoleDetail;
+    var userInfo = Session["S_UserInfo"] as UserInfoDetail;
+}
+
+<style>
+    .box {
+        position: absolute;
+        width: 600px;
+        left: 50%;
+        height: auto;
+        z-index: 100;
+        background-color: #fff;
+        border: 1px #ddd solid;
+        padding: 1px;
+    }
+
+    #bg {
+        background-color: #666;
+        position: absolute;
+        z-index: 99;
+        left: 0;
+        top: 0;
+        display: none;
+        width: 100%;
+        height: 100%;
+        opacity: 0.5;
+        filter: alpha(opacity=50);
+        -moz-opacity: 0.5;
+    }
+</style>
+
+<div id="bg"></div>
+<div style="display: none" id="HidThtml" class="box">
+    <h2>使用下面的地址进行预览:</h2>
+    <div id="tableContainer">
+        <form id="detailForm">
+            <input type="hidden" id="hidId" value="" />
+
+            <table class="showDetailTableMultiColumnm">
+                <tbody>
+                    <tr>
+                        <td>地址:</td>
+                        <td>
+                            <input type="text" id="ShowTextUrl" style="width: 95%" />
+                        </td>
+                    </tr>
+            </table>
+        </form>
+    </div>
+    <div class="rowButton">
+        <input type="button" value="确定" id="btnSaveIsTop" />
+        <input type="button" value="取消" id="btnDel" />
+    </div>
+</div>
+
+@{
+    
+   
+    if (Model != null && Model.Any())
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    @* <th>操作</th>*@
+                    <th>用户Id</th>
+                    <th>推广Key</th>
+                    <th>推广点名称</th>
+                    <th>推广类型</th>
+                    <th>创建时间</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.SpreadId</td>
+                        @*  <td>
+                                <a href="@Url.Action("Detail", "SpreadInfo", new { id = item.SpreadId })" target="_blak"  style="color: #000080">修改</a>
+                        </td>*@
+                        <td>@item.UserId</td>
+                        <td>@{
+                    var url = WebUrl.WebAppUrl() + "/Promotion/Promote?key=" + item.SpreadKey;
+                            }
+                            <a style="color: #191970" class ="btnUpdateIstop" pvalue="@url" >生成WAP推广链接</a>
+                        </td>
+                        <td>@item.UserName</td>
+                        <td>@(typeof(AppEnum.SpreadType).GetEnumDescription(item.SpreadType))</td>
+                        <td>@item.CreateTime</td>
+                        <td>
+                            @{
+                    var selectName = "selectState_" + item.SpreadId;
+                            }
+                            <select class="btnUpdateState" id="@selectName" pvale="@item.SpreadId" data-originalstate="@item.Status" data-userid="@item.SpreadId">
+                                <option value="Normal">正常</option>
+                                <option value="Disable">禁用</option>
+                                <option value="Scrap">报废</option>
+                            </select>
+                            <script>
+                                bingSate('@selectName', '@item.Status');
+                            </script>
+
+                        </td>
+                    </tr>   
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+}

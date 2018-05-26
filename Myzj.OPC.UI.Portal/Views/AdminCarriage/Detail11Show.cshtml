@@ -1,0 +1,37 @@
+﻿@{
+    Layout = null;
+}
+@{
+    int rowindex = 0;
+} 
+
+@model Myzj.OPC.UI.Model.AdminCarriage.FreeShipping
+<table class="resultTable" id="Plug_Configure">
+            <thead>
+                <tr>
+                     <th>操作</th>
+                    <th>平台</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                    <th>邮费</th>
+                    <th>优先级</th>                   
+                     
+                </tr>
+            </thead>
+            <tbody>
+               
+@foreach (var item in Model.FreeShippingParams)
+{  
+    <tr>
+        <td><a class="xiugai" href='javascript:;'></a></td>
+        <td>@string.Join(",", @item.Platforms.ToArray()).Replace("1", "PC网站").Replace("2", "Web网站").Replace("4", "安卓APP").Replace("5", "苹果APP").Replace("8", "iPad")</td>
+        <td>@item.StartTime</td>
+        <td>@item.EndTime</td>
+        <td>@item.FullCarriage</td>
+        <td>@item.Priority</td>
+    </tr>
+    
+    rowindex++;
+}
+                 </tbody>
+                </table> 

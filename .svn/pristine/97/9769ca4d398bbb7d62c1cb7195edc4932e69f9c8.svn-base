@@ -1,0 +1,48 @@
+﻿@model Myzj.OPC.UI.Model.MLTSYSProjectMannger.MLTSYSProjectSearchReq
+<h2>话题管理</h2>
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable">
+        <tbody>
+            <tr>
+                <td>ID:</td>
+                <td><input type="text"></input></td>
+                <td>标题:</td>
+                <td><input type="text"></input></td>
+            </tr>
+            <tr>
+                <td>状态:</td>
+                <td colspan="3">
+                    <select>
+                        <option>解禁</option>
+                        <option>封禁</option>
+                    </select>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="rowButton">
+        <input type="submit" name="Query" id="Query" value="查询" onclick="" />
+    </div>
+    var success = @ViewData["SuccessMsg"];
+    if (null != success)
+    {
+    <span style="color: green">@success</span>
+    }
+    var notice = @ViewData["ErrorMsg"];
+    if (null != notice)
+    {
+    <span style="color: red">@notice</span>
+    }
+    var detail = ViewData["Detail"];
+    if (null != detail)
+    {
+    @Html.Partial("Detail", detail)
+    }
+    var pager = ViewData["Pager"];
+    if (null != pager)
+    {
+    @Html.Partial("Pager", pager)
+    }
+}

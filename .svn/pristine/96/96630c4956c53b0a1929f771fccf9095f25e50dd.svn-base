@@ -1,0 +1,102 @@
+﻿@using Myzj.OPC.UI.Portal.Models
+@using Myzj.OPC.UI.Model.WordLibManage
+@model IEnumerable<Myzj.OPC.UI.Model.WordLibManage.ForbiddenTypeDetail>
+@{
+    ViewBag.Title = "应用位置管理";
+}
+<style>
+    .sBtnb { width: 10%; height: 30px; margin-top: 10px; margin-left: 10px; cursor: pointer; }
+</style>
+
+<h2>应用位置管理</h2>
+
+
+@using (Html.BeginForm())
+{
+    var success = @ViewData["SuccessMsg"];
+    if (null != success)
+    {
+        <span style="color: green">@success</span>
+    }
+    var notice = @ViewData["ErrorMsg"];
+    if (null != notice)
+    {
+        <span style="color: red">@notice</span>
+    }
+    if (Model != null && Model.Any())
+     {
+        <input type="button" value="批量删除" class="sBtnb"  onclick=" javascript: DelOrLockList(0);"/>
+         <input type="button" value="新增" class="sBtnb" onclick=" window.location.href = '/WordLibManage/EditFbdTpDetail'; "/>
+     <input type="button" value="返回词库列表" class="sBtnb" onclick=" window.location.href = '/WordLibManage/Index'; "/>
+         <table class="resultTable" style="margin-top: 30px">
+             <thead>
+             <tr>
+                 <th>
+                     <input type="checkbox" id="CheckAll" value="全选"/></th>
+                 <th>序号</th>
+                 <th>名称</th>
+                 <th>操作</th>
+             </tr>
+             </thead>
+             <tbody>
+             @foreach (var item in Model)
+             {
+                 <tr>
+                     <td>
+                         <input type="checkbox" name="checkitem" value="@item.Id"/></td>
+                     <td>@item.TypeId</td>
+                     <td>@item.Type</td>
+                     <td><a style="color: #191970" target="_blank" href="@Url.Action("EditFbdTpDetail", "WordLibManage", new { id = item.Id })">修改</a>&nbsp;|&nbsp;<a style="color: #191970; cursor: pointer" onclick="javascript: DelOrLockList(@item.Id)">删除</a></td></tr>
+
+             }
+
+             </tbody>
+         </table>
+     }
+}
+
+<script type="text/javascript">
+    //全选和反选
+    $("#CheckAll").click(function() {
+        var flag = $("#CheckAll").is(":checked"); //判断全选按钮的状态 
+        $("input[name=checkitem]").prop("checked", flag);
+    });
+
+    function DelOrLockList(onlyone) {
+        var array = new Array();
+        if (onlyone > 0) {
+            array.push(onlyone);
+        } else {
+            $.each($("input[name=checkitem]:checked"), function (index, content) {
+                var iindex = $("input[name=checkitem]:checked")[index].value;
+                array.push(iindex);
+            });
+        }
+        if (array.length < 1) {
+            alert("请您先勾选要删除的选项！");
+            return false;
+        } else {
+            var delIds = array.join(",");
+            if (confirm("你确定删除吗？")) {
+                $.ajax({
+                    url: '@Url.Action("DeleteFbTpEntity", "WordLibManage")',
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ Ids: delIds }),
+                    success: function (result) {
+                        if (result.DoFlag) {
+                            alert(result.DoResult);
+                            location.reload();
+                        } else {
+                            alert(result.DoResult);
+                        }
+                    },
+                    error: function (data) {
+                        alert(data.responseText);
+                    }
+                });
+        }
+        }
+    }
+</script>

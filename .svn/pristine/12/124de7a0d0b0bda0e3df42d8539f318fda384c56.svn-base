@@ -1,0 +1,477 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using Myzj.OPC.UI.Model.Base;
+using Myzj.OPC.UI.Model.ExpressModel;
+using Myzj.OPC.UI.ServiceClient;
+using BaseResponse = Myzj.BS.ServiceModel.BaseResponse;
+
+namespace Myzj.OPC.UI.Portal.Controllers.Express
+{
+    public class ExecController : Controller
+    {
+        //
+        // GET: /Exec/
+
+        public ActionResult QueryAccountStateMent(DateTime StartTime, DateTime EndTime)
+        {
+            var result = ExpressClient.Instance.QueryAccountStateMent(StartTime, EndTime);
+            return Json(result);
+        }
+
+        public JsonResult AddExpressCompany(CompanyModel model)
+        {
+            var result = new BaseResponse() { DoFlag = false, DoResult = "添加失败，请稍后重试... ..." };
+            #region 参数验证
+
+            if (string.IsNullOrEmpty(model.LogiscticId))
+            {
+                result.DoResult = "请填写配送商ID";
+                return Json(result);
+            }
+
+            if (string.IsNullOrEmpty(model.LogiscticCompanyName))
+            {
+                result.DoResult = "请填写配送商名称";
+                return Json(result);
+            }
+
+            model.RowCreateDate = DateTime.Now;
+            model.IsDel = 0;
+            #endregion
+
+            try
+            {
+                var refer = new ExpressCompanyRefer();
+                refer.Search.LogiscticId = model.LogiscticId;
+                refer.Search.IsDel = 0;
+                var item = ExpressClient.Instance.QueryCompanPageList(refer);
+                if (item.List != null && item.List.Any())
+                {
+                    result.DoResult = "添加的配送商 已存在";
+                    return Json(result);
+                }
+
+                result.DoFlag = ExpressClient.Instance.AddCompany(model);
+            }
+            catch (Exception ex)
+            {
+                result.DoResult = "添加异常，请稍后重试... ...";
+            }
+
+            return Json(result);
+        }
+
+        public JsonResult UpdExpressCompany(CompanyModel model)
+        {
+            var result = new BaseResponse()
+            {
+                DoFlag = false,
+                DoResult = "更新失败 ，请稍后重试……"
+            };
+            #region 参数验证
+
+
+            if (string.IsNullOrEmpty(model.LogiscticId))
+            {
+                result.DoResult = "请填写配送商ID";
+                return Json(result);
+            }
+            if (string.IsNullOrEmpty(model.LogiscticCompany))
+            {
+                model.LogiscticCompany = "";
+            }
+
+            if (string.IsNullOrEmpty(model.LogiscticCompanyName))
+            {
+                result.DoResult = "请填写配送商名称";
+                return Json(result);
+            }
+            model.RowCreateDate = DateTime.Now;
+            model.IsDel = 0;
+            #endregion
+            try
+            {
+                var flag = ExpressClient.Instance.UpdateCompany(model);
+                if (flag)
+                {
+                    result.DoFlag = true;
+                    result.DoResult = "更新成功";
+                }
+            }
+            catch (Exception ex)
+            {
+                result.DoResult = "更新异常";
+            }
+            return Json(result);
+        }
+
+        public JsonResult DelExpressCompany(int SysNo)
+        {
+            var result = new BaseResponse()
+            {
+                DoFlag = false,
+                DoResult = "更新失败 ，请稍后重试……"
+            };
+
+            try
+            {
+                var flag = ExpressClient.Instance.UpdateCompany(new CompanyModel
+                    {
+                        SysNo = SysNo,
+                        RowCreateDate = DateTime.Now,
+                        IsDel = 1
+                    });
+                if (flag)
+                {
+                    result.DoFlag = true;
+                    result.DoResult = "作废成功";
+                }
+            }
+            catch (Exception ex)
+            {
+                result.DoResult = "更新异常";
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult AddExpressAccessConfig(SelfAccessConfigModel model)
+        {
+            var result = new BaseResponse() { DoFlag = false, DoResult = "添加失败，请稍后重试... ..." };
+            #region 参数验证
+
+            if (string.IsNullOrEmpty(model.LogiscticId))
+            {
+                result.DoResult = "请填写配送商ID";
+                return Json(result);
+            }
+
+            if (!model.DayInterval.HasValue)
+            {
+                result.DoResult = "天数配置未填写或者您填写的数字过大！";
+                return Json(result);
+            }
+            if (!model.Frequence.HasValue)
+            {
+                result.DoResult = "间隔小时频率配置未填写或者您填写的数字过大！";
+                return Json(result);
+            }
+
+            model.RowCreateDate = DateTime.Now;
+            model.IsDel = 0;
+            #endregion
+
+            try
+            {
+                var ret = ExpressClient.Instance.AddExpressAccessConfig(model);
+                result.DoFlag = ret.DoFlag;
+                result.DoResult = ret.DoResult;
+            }
+            catch (Exception ex)
+            {
+                result.DoResult = "添加异常，请稍后重试... ...";
+            }
+
+            return Json(result);
+        }
+
+        public JsonResult DelExpressAccessConfig(int SysNo)
+        {
+            var result = new BaseResponse()
+            {
+                DoFlag = false,
+                DoResult = "删除失败 ，请稍后重试……"
+            };
+
+            try
+            {
+                var flag = ExpressClient.Instance.UpdateExpressAccessConfig(new SelfAccessConfigModel
+                {
+                    SysNo = SysNo,
+                    IsDel = 1
+                });
+                if (flag)
+                {
+                    result.DoFlag = true;
+                    result.DoResult = "删除成功";
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult AddOrderStatusConfig(OrderStatusConfigModel model)
+        {
+            var result = new BaseResponse() { DoFlag = false, DoResult = "添加失败，请稍后重试... ..." };
+            #region 参数验证
+
+            if (!model.OrderType.HasValue)
+            {
+                result.DoResult = "请填写订单类型";
+                return Json(result);
+            }
+            if (!model.OrderStatus.HasValue)
+            {
+                result.DoResult = "请填写订单状态";
+                return Json(result);
+            }
+            if (string.IsNullOrEmpty(model.StatusName))
+            {
+                result.DoResult = "请填写订单状态名称";
+                return Json(result);
+            }
+            if (string.IsNullOrEmpty(model.StatusDesc))
+            {
+                result.DoResult = "请填写订单状态信息";
+                return Json(result);
+            }
+            if (!model.DisplayTime.HasValue)
+            {
+                result.DoResult = "请填写显示时间";
+                return Json(result);
+            }
+            if (!model.Sort.HasValue)
+            {
+                result.DoResult = "请填写排序值";
+                return Json(result);
+
+            }
+            model.RowCreateDate = DateTime.Now;
+            model.IsDel = 0;
+            #endregion
+
+            try
+            {
+                var ret = ExpressClient.Instance.AddOrderStatusConfig(model);
+                result.DoFlag = ret.DoFlag;
+                result.DoResult = ret.DoResult;
+            }
+            catch (Exception ex)
+            {
+                result.DoResult = "添加异常，请稍后重试... ...";
+            }
+
+            return Json(result);
+        }
+
+        public JsonResult UpdOrderStatusConfig(OrderStatusConfigModel model)
+        {
+            var result = new BaseResponse()
+            {
+                DoFlag = false,
+                DoResult = "更新失败 ，请稍后重试……"
+            };
+            #region 参数验证
+
+
+
+            if (!model.OrderType.HasValue)
+            {
+                result.DoResult = "请填写订单类型";
+                return Json(result);
+            }
+            if (!model.OrderStatus.HasValue)
+            {
+                result.DoResult = "请填写订单状态";
+                return Json(result);
+            }
+            if (string.IsNullOrEmpty(model.StatusName))
+            {
+                result.DoResult = "请填写订单状态名称";
+                return Json(result);
+            }
+            if (string.IsNullOrEmpty(model.StatusDesc))
+            {
+                result.DoResult = "请填写订单状态信息";
+                return Json(result);
+            }
+            if (!model.DisplayTime.HasValue)
+            {
+                result.DoResult = "请填写显示时间";
+                return Json(result);
+            }
+            if (!model.Sort.HasValue)
+            {
+                result.DoResult = "请填写排序值";
+                return Json(result);
+
+            }
+            model.RowCreateDate = DateTime.Now;
+            model.IsDel = 0;
+            #endregion
+            try
+            {
+                var flag = ExpressClient.Instance.UpdateOrderStatusConfig(model);
+                if (flag)
+                {
+                    result.DoFlag = true;
+                    result.DoResult = "更新成功";
+                }
+            }
+            catch (Exception ex)
+            {
+                result.DoResult = "更新异常";
+            }
+            return Json(result);
+        }
+
+        public JsonResult DelOrderStatusConfig(int SysNo)
+        {
+            var result = new BaseResponse()
+            {
+                DoFlag = false,
+                DoResult = "删除失败 ，请稍后重试……"
+            };
+
+            try
+            {
+                var flag = ExpressClient.Instance.UpdateOrderStatusConfig(new OrderStatusConfigModel()
+                {
+                    SysNo = SysNo,
+                    IsDel = 1
+                });
+                if (flag)
+                {
+                    result.DoFlag = true;
+                    result.DoResult = "删除成功";
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult QuerySubscribeByNo(ExpressSubscribeRecordModel model)
+        {
+            var result = ExpressClient.Instance.QuerySubScribeRecord(model.OrderCode);
+            if (result.Any())
+            {
+                result.ForEach(item =>
+                    {
+                        item.FormatDate = item.RowCreateDate.ToString();
+                    });
+            }
+            return Json(result);
+
+        }
+
+        public JsonResult RefreshExpressCache(string OrderCode)
+        {
+            var result = new BaseResponse()
+            {
+                DoFlag = false,
+                DoResult = "刷新失败 ，请稍后重试……"
+            };
+
+            try
+            {
+                var flag = ExpressClient.Instance.RefreshExpressCache(OrderCode);
+                if (flag)
+                {
+                    result.DoFlag = true;
+                    result.DoResult = "刷新缓存成功";
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult UpdateExpressInfo(ExpressInfoModel model)
+        {
+            var result = new BaseResponse()
+            {
+                DoFlag = false,
+                DoResult = "更新失败 ，请稍后重试……"
+            };
+            #region 参数验证
+            if (string.IsNullOrEmpty(model.LogiscticId))
+            {
+                result.DoResult = "请填写配送商ID";
+                return Json(result);
+            }
+            if (string.IsNullOrEmpty(model.LogiscticNo))
+            {
+                result.DoResult = "请填写物流单号";
+                return Json(result);
+            }
+
+            if (string.IsNullOrEmpty(model.Remark))
+            {
+                result.DoResult = "请填写备注";
+                return Json(result);
+            }
+
+            if (string.IsNullOrEmpty(model.LogiscticContent))
+            {
+                model.LogiscticContent = "";
+            }
+
+            model.RowModifyDate = DateTime.Now;
+            model.IsDel = 0;
+            #endregion
+            try
+            {
+                var ptcp = ExpressClient.Instance.UpdateExpressInfo(model);
+                if (ptcp.DoFlag)
+                {
+                    result.DoFlag = true;
+                    result.DoResult = "更新成功";
+                }
+                else
+                {
+                    result.DoResult = ptcp.DoResult;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.DoResult = "更新异常";
+            }
+            return Json(result);
+        }
+
+        public JsonResult DelExpressInfo(string orderCode, int SysNo, string Reason)
+        {
+            var result = new BaseResponse()
+            {
+                DoFlag = false,
+                DoResult = "删除失败 ，请稍后重试……"
+            };
+            try
+            {
+                result = ExpressClient.Instance.DelExpressInfo(SysNo, orderCode, Reason);
+            }
+            catch (Exception ex)
+            {
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult QueryTemaiProvider(string orderCode)
+        {
+            var result = new BaseResponse()
+            {
+                DoFlag = false,
+                DoResult = "查询失败……"
+            };
+
+            try
+            {
+                var val = ExpressClient.Instance.QueryTemaiProvider(orderCode);
+                result.DoFlag = true;
+                result.DoResult = val;
+            }
+            catch (Exception ex)
+            {
+                result.DoResult = "查询失败";
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+    }
+}

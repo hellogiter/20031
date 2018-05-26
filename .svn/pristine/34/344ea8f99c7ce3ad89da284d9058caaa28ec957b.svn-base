@@ -1,0 +1,80 @@
+﻿@using Myzj.OPC.UI.Model.BaseCouponConfig
+@using Myzj.OPC.UI.ServiceClient
+@model Myzj.OPC.UI.Model.Base.BaseRefer<CouponLogDetail, CouponLogDetailExt>
+<h2>优惠券操作记录列表</h2>
+<style>
+    .input-validation-error {
+        border: 1px solid #c0c0c0;
+        background-color: white;
+    }
+
+    .showDetailTable tbody tr.tk-guanli td {
+        width: 15%;
+    }
+
+        .showDetailTable tbody tr.tk-guanli td.tk-name {
+            width: 5%;
+            text-align: center;
+        }
+
+        .showDetailTable tbody tr.tk-guanli td input {
+            text-align: left;
+            width: 85%;
+        }
+
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+  
+    <div style="line-height: 50px; padding: 10px;">
+         优惠券key:  @Html.TextBoxFor(m => m.SearchDetail.CouponKey)
+        <input type="submit" value="查询" id="btnSearch" />
+    </div>
+    if (Model.List2 != null && Model.List2.Any())
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                  @*  <th>SysNo</th>*@
+                    <th>优惠券Key</th>
+                   @* <th>操作表</th>*@
+                    <th>操作类型</th>
+                    <th>操作人</th>
+                    <th>操作时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.List2)
+                {
+                    <tr>
+                       @* <td>@item.SysNo</td>*@
+                        <td>@item.CouponKey</td>
+                     @*   <td>@item.OperationTable</td>*@
+                        <td>@BaseCouponConfigClient.Instance.GetStatus(item.OperationType)</td>
+                        <td>@item.Operator</td>
+                        <td>@item.RowCreateDate</td>
+                        <td>  <a  style="color: #191970" target="_blank" href="@Url.Action("CouponLogDetail", "CouponLog",new {sysNo=item.SysNo,operatorId=item.Operator,rowCreateDate=item.RowCreateDate,operationType=item.OperationType})" >对比</a></td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+    
+    @Html.Partial("Pager", @Model)
+}

@@ -1,0 +1,102 @@
+﻿@{
+    ViewBag.Title = "OrderStatusConfigItem";
+}
+
+
+@using Myzj.OPC.UI.Model.Base
+@model List<Myzj.OPC.UI.Model.ExpressModel.OrderStatusConfigModel>
+<style>
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+</style>
+@if (Model != null && Model.Any())
+{
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>SysNo</th>
+                    <th>操作</th>
+                    <th>订单类型</th>
+                    <th>订单状态</th>
+                    <th>订单状态名称</th>
+                    <th>订单状态信息</th>
+                    <th>显示时间(分钟)</th>
+                    <th>排序</th>
+                    <th>创建日期</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+    var expressOrderTypeArr = typeof(AppEnum.ExpressOrderStatusMallType).GetEnumList();
+    var expressOrderStatusTypeArr = typeof(AppEnum.ExpressOrderStatusType).GetEnumList();
+                }
+
+                @foreach (var item in Model)
+                {
+                    <tr class="gl-title">
+                        <td><a style="color: #191970; font-weight:bold" title="修改"  href="@Url.Action("OrderStatusConfigUpdate", "Express", new { sysNo = item.SysNo })" >@item.SysNo</a></td>
+
+                        <td>
+                            <a style="color: #191970" href="javascript:;" onclick="del(@item.SysNo)">删除</a>
+                        </td>
+                         
+                        @if (expressOrderTypeArr.Any(c => c.Key == item.OrderType))
+                        {
+                            <td>@expressOrderTypeArr.First(c => c.Key == item.OrderType).Value</td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        } 
+                        <td>@item.OrderStatus</td>
+                        @if (expressOrderStatusTypeArr.Any(c => c.Key == item.OrderStatus))
+                        {
+                            <td>@expressOrderStatusTypeArr.First(c => c.Key == item.OrderStatus).Value</td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+
+                       
+                        <td>@item.StatusDesc</td>
+                        <td>@item.DisplayTime</td>
+                        <td>@item.Sort</td>
+                        <td>@item.RowCreateDate</td>
+                    </tr>
+                }
+
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+}
+
+<script type="text/javascript">
+
+    function del(sysNo) {
+
+        if (confirm("你确定删除吗？")) {
+
+            $.ajax({
+                url: '../Exec/DelOrderStatusConfig?SysNo=' + sysNo,
+                type: 'get',
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("已删除！");
+                        window.location.href = window.location.href;
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        }
+    }
+
+</script>

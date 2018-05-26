@@ -1,0 +1,116 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.WebAward.WebPrizeItemRefer
+<h2>[@ViewBag.strName] 商品奖品配置</h2>
+
+<form id="FormWebPrizeItem" action="/WebAward/WebPrizeItemDetail" target="_blank" method="POST">
+    <div class="rowButton">
+        <input type="hidden" value="@ViewBag.AwardId" name="awardId"/>
+        <input type="hidden" value="@ViewBag.strName" name="strName"/>
+        <input type="hidden" value="@ViewBag.PrizeId" name="prizeId"/>
+        <input type="hidden" value="@ViewBag.PrizeType" name="prizeType"/>
+        <input type="button" name="Query" id="BtnAdd" value="新增" />
+    </div>
+</form>
+
+@if (Model != null)
+{
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>操作</th>
+                    <th>奖品类型</th>
+                    <th>奖品关联ID</th>
+                    <th>商品ID</th>
+                    <th>奖项名称</th>
+                    <th>奖品名称</th>
+                    <th>数量</th>
+                    <th>数量区间</th>
+                    <th>活动限中数量</th>
+                    <th>必中</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.List)
+                {
+                    <tr>
+                        <td>@item.IntPrizeItemId</td>
+                        <td>
+                            <a style="color: #191970" target="_blank"  href="@Url.Action("WebPrizeItemDetail", "WebAward", new { id = item.IntPrizeItemId, awardId = item.IntAwardId, strName = ViewBag.strName })" >修改</a>
+                            &nbsp;
+                             <a style="color: #191970" href="javascript:(0)" pvalue="@item.IntPrizeItemId" class="delWebAwardPrizeItem">删除</a>
+                            &nbsp;
+                            <form id="FormPrizeBundItem" action="/WebAward/WebPrizeBundleItem" target="_blank" method="POST">
+                                <a href="javascript:(0);" class="PrizeBundItem" pvalue='@item.IntPrizeItemId' pname='@item.VchPrizeName'>捆绑奖品</a>
+                            </form>
+                            @* <a style="color: #191970" target="_blank"  href="@Url.Action("WebPrizeBundleItem", "WebAward", new { id = item.IntPrizeItemId, strName = item.VchPrizeName })" >捆绑奖品</a>*@
+                        </td>
+                        <td>@item.vchModelName</td>
+                        <td>@item.IntPrizeCaseId</td>
+                        <td>@item.IntProductId</td>
+                        <td>@item.VchPrizeName</td>
+                        <td>@item.VchPrizeNo</td>
+                        <td>@item.IntPrizeCount</td>
+                        <td>@(item.IntPrizeCountInter.ToString() == "1" ? "当日" : "活动")</td>
+                        <td>@(item.IntPrizeActivityCount.ToString() == "-100" ? "不限" : item.IntPrizeActivityCount.ToString())</td>
+                        <td>@item.IntWillbein%</td>
+                        <td>@item.DtStartTime</td>
+                        <td>@item.DtEndTime</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+}
+<script type="text/javascript">
+    $(function () {
+        //新增
+        $("#BtnAdd").click(function () {
+          @*  var intAwardId = '@ViewBag.AwardId';
+            var name = '@ViewBag.strName';
+            var intPrizeId = '@ViewBag.PrizeId';
+            var prizeType = '@ViewBag.PrizeType';
+
+            window.open("/WebAward/WebPrizeItemDetail?prizeId=" + intPrizeId + "&prizeType=" + prizeType + "&awardId=" + intAwardId + "&strName=" + name + "&backurl=" + window.location.href);*@
+            $("#FormWebPrizeItem").submit();
+
+        });
+        //hidden捆绑奖品
+        $(".PrizeBundItem").click(function () {
+            var id = $(this).attr("pvalue");
+            var name = $(this).attr("pname");
+            var td = $("<input type='hidden' value='" + id + "' id='id' name='id'>");
+            var tdName = $("<input type='hidden' value='" + name + "' id='strName' name='strName'>");
+            $("#FormPrizeBundItem").append(td);
+            $("#FormPrizeBundItem").append(tdName);
+            
+            $("#FormPrizeBundItem").submit();
+            
+            $("#id").remove();
+            $("#strName").remove();
+        });
+
+        //删除
+        $(".delWebAwardPrizeItem").click(function () {
+            var id = $(this).attr("pvalue");
+            $.ajax({
+                url: "/WebAward/DelWebAwardPrizeItem",
+                data: { "id": id },
+                dataType: 'json',
+                type: 'POST',
+                success: function (res) {
+                    if (res.DoFlag) {
+                        location.reload();
+                    } else {
+                        alert(res.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>

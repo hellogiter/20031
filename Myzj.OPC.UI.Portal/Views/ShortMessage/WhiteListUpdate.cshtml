@@ -1,0 +1,113 @@
+﻿@{
+    ViewBag.Title = "修改白名单";
+}
+@model  Myzj.OPC.UI.Model.ShortMessage.WhiteListModel
+<h2>修改白名单</h2>
+<style type="text/css">
+    .showDetailTableMultiColumnm .manjian textarea {
+        width: 500px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .showDetailTableMultiColumnm .tickename input {
+        width: 200px;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+    if (Model != null)
+    {
+    <div id="tableContainer">
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <input id="sysNo" type="hidden" value="@Model.SysNo"  style="width: 200px;" />
+
+                <tr>
+                    <td>手机号</td>
+                    <td colspan="3">
+                        <input id="txtMobile" type="text" value="@Model.Mobile" readonly="readonly"  style="width: 200px; " />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>用户姓名</td>
+                    <td colspan="3">
+                        <input id="txtUserName" type="text" value="@Model.UserName" style="width: 200px;" />
+                    </td>
+                </tr>
+                <tr>
+                     <td>备注</td>
+                    <td colspan="3">
+                        <input id="txtRemark" type="text" value="@Model.Remark" style="width: 200px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>是否启用</td>
+                   @if (Model.IsEnable == 1)
+                   {
+                       <td colspan="3" id="radList">
+                           <span style="width: 40px; float: left;">
+                               <input type="radio" name="IsEnable" checked="checked" value="1" />启用</span>
+                           <span style="width: 40px; margin-left: 50px;">
+                               <input type="radio" name="IsEnable" value="0" />禁用</span>
+                       </td>
+                   }
+                   else
+                   {
+                         <td colspan="3" id="radList">
+                           <span style="width: 40px; float: left;">
+                               <input type="radio" name="IsEnable" value="1" />启用</span>
+                           <span style="width: 40px; margin-left: 50px;">
+                               <input type="radio" name="IsEnable"  checked="checked" value="0" />禁用</span>
+                       </td>
+                   }
+                   
+                </tr>
+            </tbody>
+        </table>
+        <div class="rowButton">
+            <input type="button" value="保存" id="btnSave" />
+            <input type="button" value="关闭" id="btnDel" onclick="history.back(-1);" />
+        </div>
+    </div>
+        
+    }
+    else
+    {
+    @Html.Partial("Error");
+    }
+}
+
+<script type="text/javascript">
+
+    $("#btnSave").click(function () {
+        var model = {};
+        model.SysNo = $.trim($("#sysNo").val());
+        model.Mobile = $.trim($("#txtMobile").val());
+        model.UserName = $.trim($("#txtUserName").val());
+        model.Remark = $.trim($("#txtRemark").val());
+        model.IsEnable = $('#radList input[name="IsEnable"]:checked').val();
+
+        if (confirm("你确定保存吗？")) {
+            $.ajax({
+                url: '@Url.Action("UpdWhiteList", "ShortMessageExec")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("更新成功！");
+                        window.location.href = '@Url.Action("WhiteListIndex", "ShortMessage")';
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        }
+    });
+
+
+</script>

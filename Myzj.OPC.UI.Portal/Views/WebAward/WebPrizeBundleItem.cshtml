@@ -1,0 +1,87 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.WebAward.WebPrizeBundleRefer
+<h2>[@ViewBag.strName] 捆绑奖品管理</h2>
+
+<form id="FormPrizeBundleDetail" action="/WebAward/WebPrizeBundleDetail" target="_blank" method="POST">
+    <div class="rowButton">
+        <input type="hidden" value="@ViewBag.IntPrizeItemId" name="id"/>
+        <input type="hidden" value="@ViewBag.strName" name="name"/>
+        <input type="button" name="Query" id="BtnAdd" value="新增" />
+    </div>
+</form>
+@if (Model != null)
+{
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>操作</th>
+                    <th>奖项名称</th>
+                    <th>绑定奖品ID</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.List)
+                {
+                    <tr>
+                        <td>@item.BSysNos</td>
+                        <td>
+                            <a target="_bank" href="@Url.Action("WebPrizeBundleDetail", "WebAward", new { id = item.BSysNos, name = ViewBag.strName })" >修改</a>
+                        </td>
+                        <td>@item.vchPrizeName</td>
+                        <td>@item.PrizeCaseId</td>
+                        <td>@item.DtStartTime</td>
+                        <td>@item.DtEndTime</td>
+                        <td>
+                            @{
+                    var checkStr = "";
+                    if (item.IntStatus == 1)
+                    {
+                        checkStr = "checked='checked'";
+                    }
+                            }
+                            <input id="cbkState-@item.BSysNos" type="checkbox" @checkStr data-id="@item.BSysNos" onclick="updateState(this)" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+}
+<script type="text/javascript">
+    $(function () {
+        //新增
+        $("#BtnAdd").click(function () {
+            @*    var id = '@ViewBag.IntPrizeItemId';
+            var name = '@ViewBag.strName';
+
+            window.open("/WebAward/WebPrizeBundleDetail?id=" + id + "&name=" + name + "&backurl=" + window.location.href);*@
+            $("#FormPrizeBundleDetail").submit();
+        });
+    });
+    //修改状态
+    function updateState(obj) {
+        var id = $(obj).data("id");
+        var state = 0;
+        if (obj.checked) {
+            state = 1;
+        }
+        $.ajax({
+            url: "/WebAward/UpdateWebPrizeBundleState?id=" + id + "&state=" + state,
+            type: "Post",
+            success: function (res) {
+                if (res.DoFlag) {
+                    location.reload();
+                } else {
+                    alert("修改失败");
+                }
+            }
+        });
+    }
+</script>

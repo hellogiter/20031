@@ -1,0 +1,74 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.WebIndex
+@model IEnumerable<Myzj.OPC.UI.Model.WebIndex.WebIndexDetail>
+@{
+    Layout = null;
+    var Activity = (WebActivityRefer)ViewBag.WebActivity;
+}
+
+@{
+    <div class="rowButton">
+        <input type="submit" name="Query" id="Query" value="查询" />
+        <input type="button" name="Query" id="BtnAdd" value="新增" onclick="javascript: window.open('/WebIndexRapidIn/Detail')" />
+    </div>
+
+    if (Model != null && Model.Any())
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>操作</th>
+                    <th>名称</th>
+                    <th>所属</th>
+                    <th>添加时间</th>
+                    <th>链接地址</th>
+                    <th>关联活动</th>
+                    <th>是否验证</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                    <th>排序</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.IntRapidInID</td>
+                        <td>
+                            <a target="_blank" style="color: #191970" href="@Url.Action("Detail", "WebIndexRapidIn", new { id = item.IntRapidInID })" >修改</a>
+
+                            <a style="color: #191970" href="javascript:(0)" pvalue="@item.IntRapidInID" class="delWebIndexRapidIn">删除</a>
+                        </td>
+                        <td>@item.VchName</td>
+                        <td>@(typeof(AppEnum.SystemType).GetEnumDescription(item.IntSystemType))</td>
+                        <td>@item.DtAddDate</td>
+                        <td>@item.VchLink</td>
+                        <td>@item.VchActivityName</td>
+                        <td>@(typeof(AppEnum.NewUserVerify).GetEnumDescription(item.IntNewUserVerify))</td>
+                        <td>@item.DtStratDate</td>
+                        <td>@item.DtEndDate</td>
+                        <td>
+                            <input type="text" value="@item.IntSort" pvalue="@item.IntRapidInID" class="IntSort" id="IntSort"style="width: 30px"/>
+                        </td>
+                        <td>
+                            @{
+                    var checkStr = "";
+                    if (item.IntIsVisibleIndex == 1)
+                    {
+                        checkStr = "checked='checked'";
+                    }
+                            }
+                            <input id="cbkState-@item.IntRapidInID" type="checkbox" @checkStr data-id="@item.IntRapidInID" onclick="updateState(this)" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+}

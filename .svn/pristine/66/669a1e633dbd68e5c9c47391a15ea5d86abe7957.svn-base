@@ -1,0 +1,52 @@
+﻿@{
+    Layout = null;
+}
+@{
+    int rowindex = 0;
+} 
+
+@model Myzj.OPC.UI.Model.AdminCarriage.SeaWashesOrderMoney
+<table class="resultTable" id="Plug_Configure">
+            <thead>
+                <tr>
+                     <th>操作</th>
+                    <th>供应商ID</th>
+                    <th style="width:100px;">起始金额</th>
+                     <th style="width:100px;">终止金额</th>
+                     <th style="width:100px;">邮费</th>
+                     <th style="width:100px;">优先级</th>
+                    <th>不足金额提示信息</th>
+                    <th>足金额提示信息</th>
+                    <th>优先级</th>                   
+                     
+                </tr>
+            </thead>
+            <tbody>
+               
+@foreach (var item in Model.SeaWashesOrderMoneyParams)
+{  
+    <tr>
+        <td><a   class="xiugai" href='javascript:modify(@rowindex);'>修改</a></td>
+        <td>@string.Join(",", @item.Suppliers)</td>
+        <td colspan="4"> 
+            <table style="width:100%;border-collapse: collapse;">
+            @foreach (var om in item.OrderMoneyList)
+            {
+                 <tr>
+                     <td style="width:25%;">@om.OrderStartMoney</td>
+                      <td style="width:25%;">@om.OrderEndMoney </td>
+                      <td style="width:25%;">@om.Carriage</td>
+                      <td style="width:25%;">@om.Priority</td>
+                 </tr>
+            }
+                </table>
+        </td>
+        <td>@item.NotFullMessage</td>
+        <td>@item.FullMessage</td>
+        <td>@item.Priority</td>
+    </tr>
+    
+    rowindex++;
+}
+                 </tbody>
+                </table> 

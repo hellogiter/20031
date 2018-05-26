@@ -1,0 +1,102 @@
+﻿@{
+    ViewBag.Title = "CompanyItem";
+}
+@using Myzj.OPC.UI.Model.Base
+@model List<Myzj.OPC.UI.Model.ExpressModel.CompanyModel> 
+<style>
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+</style>
+
+@if (Model != null && Model.Any())
+{
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>SysNo</th>
+                    <th>配送商ID</th>
+                    <th>配送商编码</th>
+                    <th>配送商名称</th>
+                    <th>是否常用(商城)</th>
+                    <th>对接方式</th>
+                    <th>创建日期</th>
+                    <th>是否有效</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+    var expressofenTypeArr = typeof(AppEnum.ExpresCompanyOfenEnum).GetEnumList();
+    var expressModeTypeArr = typeof(AppEnum.ExpressCompanyModeEnum).GetEnumList();
+                }
+
+                @foreach (var item in Model)
+                {
+                    <tr class="gl-title">
+                        @if ((item.IsDel ?? 0) == 1)
+                        {
+                            <td><a>@item.SysNo</a></td>
+                        }
+                        else
+                        {
+                            <td><a style="color: #191970; font-weight:bold" title="修改" href="@Url.Action("CompanyUpdate", "Express", new { sysNo = item.SysNo })" >@item.SysNo</a></td>
+                        }
+
+
+                        <td>@item.LogiscticId</td>
+                        <td>@item.LogiscticCompany</td>
+                        <td>@item.LogiscticCompanyName</td>
+                        <td>@expressofenTypeArr.First(c => c.Key == item.OfenFlag).Value</td>
+                        <td>@expressModeTypeArr.First(c => c.Key == item.SetAccessMode).Value</td>
+                        <td>@item.RowCreateDate</td>
+
+                        @if ((item.IsDel ?? 0) == 1)
+                        {
+                            <td><a style="color: red">无效</a></td>
+                            <td></td>
+                        }
+                        else
+                        {
+                            <td>有效</td>
+                            <td>
+                                <a style="color: #191970" href="javascript:;" onclick="del(@item.SysNo)">作废</a>
+                            </td>
+                        }
+
+                    </tr>
+                }
+
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+}
+
+<script type="text/javascript">
+
+    function del(sysNo) {
+
+        if (confirm("你确定作废吗？作废后记录无效且无法修改！")) {
+
+            $.ajax({
+                url: '../Exec/DelExpressCompany?SysNo=' + sysNo,
+                type: 'get',
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("已作废！");
+                        window.location.href = window.location.href;
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        }
+    }
+
+</script>

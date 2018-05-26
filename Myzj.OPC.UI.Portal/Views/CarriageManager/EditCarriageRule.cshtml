@@ -1,0 +1,421 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.BaseCarriage.BuyAppointGoodsParam
+<h2>@ViewBag.Title</h2>
+
+<style>
+    .showDetailTableMultiColumnm tbody tr td {
+        text-align: left;
+        padding: 6px 8px;
+        float: none;
+    }
+
+    .showDetailTableMultiColumnm .mjsz input {
+        width: 60px;
+        /*padding: 0px 6px;*/
+        float: none;
+        margin-right: 10px;
+    }
+
+    .showDetailTableMultiColumnm .mjsz span {
+        /*padding-left: 10px;*/
+        text-align: left;
+        color: #000;
+    }
+
+    .showDetailTableMultiColumnm .sendfs {
+        text-align: left;
+    }
+
+        .showDetailTableMultiColumnm .sendfs input {
+            width: 12px;
+            float: none;
+            margin-left: 20px;
+            margin-right: 15px;
+        }
+
+            .showDetailTableMultiColumnm .sendfs input.text-con {
+                width: 200px;
+                margin-left: 10px;
+            }
+
+            .showDetailTableMultiColumnm .sendfs input.text-con500 {
+                width: 500px;
+                margin-left: 10px;
+            }
+
+    .showDetailTableMultiColumnm .manjian textarea {
+        width: 500px;
+        margin-right: 15px;
+    }
+
+    .showDetailTableMultiColumnm .tickename input {
+        width: 300px;
+        margin-right: 15px;
+    }
+
+    #dataStr tr {
+        width: 100%;
+        padding: 5px 0;
+        margin-left: 0;
+    }
+
+    #dataStr td {
+        width: 100%;
+        border: 0px;
+        margin: 0px;
+        text-align: left;
+        /*white-space: normal;*/
+        height: auto;
+    }
+
+    #dataStr {
+        width: 100%;
+        margin-left: 10px;
+    }
+
+    .showDetailTableMultiColumnm table#dataStr td input {
+        width: 123px;
+        padding: 3px 5px;
+        margin: 0 25px 0 6px;
+    }
+
+    .showDetailTableMultiColumnm table#dataStr tbody {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .showDetailTableMultiColumnm .onefirstTd {
+        width: 195px;
+    }
+
+    .showDetailTableMultiColumnm {
+        width: 99%;
+        margin: 5px auto;
+    }
+
+    span.error {
+        color: #C00;
+        padding: 0 6px;
+    }
+
+    .showDetailTableMultiColumnm tbody tr td label.error {
+        float: none;
+        width: inherit;
+        color: red;
+        margin: 0 20px 0 0;
+    }
+</style>
+
+
+<div>
+    <input type="hidden" id="hd_SysNo" value="@Model.SysNo"/>
+    <table class="showDetailTableMultiColumnm">
+        <tr>
+            <td>商品Id*</td>
+            <td colspan="3" class="sendfs">
+                @if (Model.GoodsIds != null && Model.GoodsIds.Count > 0)
+                {
+                    <textarea rows="3" id="txtGoodsIds" placeholder="必填">@string.Join(",", Model.GoodsIds)</textarea>
+                }
+                else
+                {
+                    <textarea rows="3" id="txtGoodsIds" placeholder="必填"></textarea>
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>区域id*</td>
+            <td class="sendfs" colspan="3">
+
+                @if (Model.AreaIds != null && Model.AreaIds.Count > 0)
+                {
+                    <textarea rows="3" id="txtAreaIds" placeholder="必填">@string.Join(",", Model.AreaIds)</textarea>
+                }
+                else
+                {
+                    <textarea rows="3" id="txtAreaIds" placeholder="必填"></textarea>
+                }
+               <span style="width: 300px; height: 20px; margin-top:30px;">
+                    ( 多个ID以","逗号分割)
+                    <input type="button" value="选择" style="width: 60px;" onclick="newopen('txtAreaIds');" />
+                    <input type="button" value="清空" id="cls_text1" style="width: 60px; margin-left: 10px;" />
+                </span>
+            </td>
+
+        </tr>
+        <tr>
+            <td>排除区域id</td>
+            <td class="sendfs" colspan="3">
+
+                @if (Model.ExcludeAreaIds != null && Model.ExcludeAreaIds.Count > 0)
+                {
+                    <textarea rows="3" id="txtExcludeAreaIds">@string.Join(",", Model.ExcludeAreaIds)</textarea>
+                }
+                else
+                {
+                    <textarea rows="3" id="txtExcludeAreaIds"></textarea>
+                }
+                <span style="width: 300px; height: 20px; margin-top:30px;">
+                    ( 多个ID以","逗号分割)
+                    <input type="button" value="选择" style="width: 60px;" onclick="newopen('txtExcludeAreaIds');" />
+                    <input type="button" value="清空" id="cls_text2" style="width: 60px; margin-left: 10px;" />
+                </span>
+            </td>
+
+        </tr>
+        <tr>
+            <td>促销Id</td>
+            <td class="sendfs" colspan="3">
+
+                @if (Model.PromIds != null && Model.PromIds.Count > 0)
+                {
+                    <textarea rows="3" id="txtPromIds">@string.Join(",", Model.PromIds)</textarea>
+                }
+                else
+                {
+                    <textarea rows="3" id="txtPromIds"></textarea>
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>排除促销Id</td>
+            <td class="sendfs" colspan="3">
+
+                @if (Model.ExcludePromIds != null && Model.ExcludePromIds.Count > 0)
+                {
+                    <textarea rows="3" id="txtExcludePromIds">@string.Join(",", Model.ExcludePromIds)</textarea>
+                }
+                else
+                {
+                    <textarea rows="3" id="txtExcludePromIds"></textarea>
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>包含平台*</td>
+            <td colspan="3" class="sendfs">
+                @{
+                    var plat0 = "";
+                    var plat1 = "";
+                    var plat2 = "";
+                    var plat4 = "";
+                    var plat5 = "";
+                    var plat8 = "";
+
+                    if (Model.Platforms != null)
+                    {
+                        foreach (var v in Model.Platforms)
+                        {
+                            switch (v)
+                            {
+                                case 0:
+                                    plat0 = "checked='checked'";
+                                    break;
+                                case 1:
+                                    plat1 = "checked='checked'";
+                                    break;
+                                case 2:
+                                    plat2 = "checked='checked'";
+                                    break;
+                                case 4:
+                                    plat4 = "checked='checked'";
+                                    break;
+                                case 5:
+                                    plat5 = "checked='checked'";
+                                    break;
+                                case 8:
+                                    plat8 = "checked='checked'";
+                                    break;
+                            }
+                        }
+                    }
+                }
+                <input type="checkbox" @plat0 name="chkPlatform" id="chkPlat_0" value="0">
+                全部
+                        <input type="checkbox" @plat1 name="chkPlatform" id="chkPlat_1" value="1">
+                PC网站
+                        <input type="checkbox" @plat2 name="chkPlatform" id="chkPlat_2" value="2">
+                Wap网站
+                        <input type="checkbox" @plat4 name="chkPlatform" id="chkPlat_4" value="4">
+                安卓APP
+                        <input type="checkbox" @plat5 name="chkPlatform" id="chkPlat_5" value="5">
+                苹果APP
+                        <input type="checkbox" @plat8 name="chkPlatform" id="chkPlat_8" value="8">
+                Ipad
+            </td>
+        </tr>
+        <tr>
+            <td>开始时间*</td>
+            <td>
+                <input type="text" name="dateTime" id="txtStartTime" onfocus="dateFmt(this,1)" value="@Model.StartTime"  placeholder="必填"/>
+            </td>
+            <td>结束时间*</td>
+            <td>
+                <input type="text" name="dateTime" id="txtEndTime" onfocus="dateFmt(this,2)" value="@Model.EndTime" placeholder="必填"/>
+            </td>
+        </tr>
+        <tr>
+            <td>运费金额*</td>
+            <td>
+                <input type="text" id="txtFullCarriage" value="@Model.FullCarriage" placeholder="必填"/>
+            </td>
+            <td>是否有效*</td>
+            <td class="sendfs">
+                @{
+                    var IsEnable1 = "";
+                    var IsEnable2 = "";
+                    if (!Model.SysNo.HasValue)
+                    {
+                        Model.IsEnable = true;
+                    }
+                    if (Model.IsEnable)
+                    {
+                        IsEnable1 = "checked='checked'";
+                        IsEnable2 = "";
+                    }
+                    else
+                    {
+                        IsEnable1 = "";
+                        IsEnable2 = "checked='checked'";
+                    }
+                }
+                <input type="radio" @IsEnable1 name="IsEnable"  value="true" />是
+                <input type="radio" @IsEnable2 name="IsEnable" value="false" />否 
+            </td>
+        </tr>
+
+        <tr>
+            <td>备注</td>
+            <td class="sendfs" colspan="3">
+                <textarea rows="3" id="txtRemark">@Model.Remark</textarea>
+            </td>
+        </tr>
+    </table>
+    <div class="rowButton">
+        <input type="button" value="保存" id="btnSave" onclick="SaveCarriageConfig();" />
+        <input type="button" value="关闭" id="btnCancel" onclick="window.location.href = window.close()" />
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(function () {
+        //默认新增时所有chckbox全选
+        var sysNo = $("#hd_SysNo").val();
+        if (sysNo == "") {
+            $("input[name=chkPlatform]").each(function () {
+                this.checked = true;
+            });
+        }
+
+        $("input[name=chkPlatform]").click(function () { //平台chkbox反选  
+            var id = $(this).attr("id");
+            if (id == "chkPlat_0") {
+                if ($('#chkPlat_0').prop('checked')) {
+                    $("input[name=chkPlatform]:checkbox").each(function () {
+                        this.checked = true;
+                    });
+                } else {
+                    $("input[name=chkPlatform]:checkbox").removeAttr("checked");
+                }
+            } else {
+                $("#chkPlat_0").removeAttr("checked");
+            }
+        });
+
+        $(".qingkong").click(function () {
+            $("#" + $(this).attr("id").replace("qingkong_", "")).val('');
+            $("#C_" + $(this).attr("id").replace("qingkong_", "")).val('');
+        });
+    });
+
+    function newopen(id) {
+        window.open("/CarriageManager/AreaList?id=" + id, " newwindow", "height=500, width=500, top=0, left=600,top=200,toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no");
+    }
+
+
+    function SaveCarriageConfig() {
+        if ($.trim($("#txtGoodsIds").val()) == "") {
+            alert("商品id 必填");
+            return;
+        }
+        if ($.trim($("#txtAreaIds").val()) == "") {
+            alert("区域id 必填");
+            return;
+        }
+        if ($.trim($("#txtAreaIds").val()) == "") {
+            alert("区域id 必填");
+            return;
+        }
+        if ($.trim($("#txtStartTime").val()) == "") {
+            alert("开始时间 必填");
+            return;
+        }
+        
+        if ($.trim($("#txtEndTime").val()) == "") {
+            alert("结束时间 必填");
+            return;
+        }
+        
+        var d1 = new Date($("#txtStartTime").val());
+        var d2 = new Date($("#txtEndTime").val());
+       
+        if (Date.parse(d1) > Date.parse(d2)) {
+            alert("输入的开始时间不能小于结束时间");
+            return;
+        }
+
+        if ($.trim($("#txtFullCarriage").val()) == "") {
+            alert("金额 必填");
+            return;
+        }
+
+        if (confirm("确定保存 ?")) {
+            var model = {};
+            model.SysNo = $.trim($("#hd_SysNo").val());
+            model.GoodsIds = $("#txtGoodsIds").val().split(',');
+            model.AreaIds = $("#txtAreaIds").val().split(',');
+            model.ExcludeAreaIds = $("#txtExcludeAreaIds").val().split(',');
+            model.PromIds = $("#txtPromIds").val().split(',');
+            model.ExcludePromIds = $("#txtExcludePromIds").val().split(',');
+
+            var chk_plat = [];
+            $("input[name='chkPlatform']:checked").each(function () {
+                chk_plat.push($(this).val());
+            });
+            model.Platforms = chk_plat;
+            model.StartTime = $.trim($("#txtStartTime").val());
+            model.EndTime = $.trim($("#txtEndTime").val());
+            model.FullCarriage = $("#txtFullCarriage").val();
+            model.IsEnable = $("input[name='IsEnable']:checked").val();
+            model.Remark = $("#txtRemark").val();
+
+            $.ajax({
+                url: '@Url.Action("SaveCarriageRule", "CarriageManager")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+
+                    if (result.DoFlag) {
+                        window.opener.location = window.opener.location;
+                        alert("保存成功！");
+                        window.close();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        }
+    }
+
+    $("#cls_text1").click(function () {
+        $("#txtAreaIds").val('');
+    });
+    
+    $("#cls_text2").click(function () {
+        $("#txtExcludeAreaIds").val('');
+    });
+
+</script>

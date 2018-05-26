@@ -1,0 +1,123 @@
+﻿@{
+    ViewBag.Title = "添加黑名单";
+}
+<h2>添加黑名单</h2>
+<style type="text/css">
+    .showDetailTableMultiColumnm .manjian textarea {
+        width: 500px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .showDetailTableMultiColumnm .tickename input {
+        width: 200px;
+    }
+</style>
+
+
+@using (Html.BeginForm())
+{
+    <div id="tableContainer">
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>会员Guid</td>
+                    <td colspan="3">
+                        <input id="txtUserGuid" type="text"  style="width: 200px;" />
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td>手机号</td>
+                    <td colspan="3">
+                        <input id="txtMobile" type="text" style="width: 200px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>客户端IP</td>
+                    <td colspan="3">
+                        <input id="txtClientIp" type="text" style="width: 200px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>限制原因</td>
+                     <td colspan="3">
+                        <input id="txtLimitReason" type="text"  style="width: 200px;" />
+                    </td>
+                </tr>    <tr>
+                    <td>过期日期</td>
+                     <td colspan="3">
+                        <input id="txtLimitEndTime" type="text" style="width: 200px;" onfocus="dateFmt(this,1);" class="Wdate"/>
+                    </td>
+                </tr>    <tr>
+                    <td>备注</td>
+                     <td colspan="3">
+                        <input id="txtRemark" type="text"  style="width: 200px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>是否启用</td>
+                   <td colspan="3" id="radList">
+                           <span style="width: 40px; float: left;">
+                               <input type="radio" name="IsEnable" checked="checked" value="true" />启用</span>
+                           <span style="width: 40px; margin-left: 50px;">
+                               <input type="radio" name="IsEnable" value="false" />禁用</span>
+                       </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="rowButton">
+            <input type="button" value="添加" id="btnSave" />
+            <input type="button" value="关闭" id="btnDel" onclick="window.close();" />
+        </div>
+    </div>
+    
+}
+
+<script type="text/javascript">
+    function dateFmt(obj, type) {
+        if (type == 1) {
+            if (obj.value == "") {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd 00:00:00' });
+            } else {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' });
+            }
+        } else {
+            if (obj.value == "") {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd 23:59:59' });
+            } else {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' });
+            }
+        }
+
+    }
+    $("#btnSave").click(function () {
+        var model = {};
+        model.UserGuid = $.trim($("#txtUserGuid").val());
+        model.Mobile = $.trim($("#txtMobile").val());
+        model.ClientIp = $.trim($("#txtClientIp").val());
+        model.LimitReason = $.trim($("#txtLimitReason").val());
+        model.LimitEndTime = $.trim($("#txtLimitEndTime").val());
+        model.Remark = $.trim($("#txtRemark").val());
+        model.IsEnable = $('#radList input[name="IsEnable"]:checked').val();
+       
+        if (confirm("你确定保存吗？")) {
+            $.ajax({
+                url: '@Url.Action("AddBlackList", "ShortMessageExec")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("添加成功！");
+                        window.location.href = '@Url.Action("BlackListIndex", "ShortMessage")';
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        }
+    });
+
+</script>

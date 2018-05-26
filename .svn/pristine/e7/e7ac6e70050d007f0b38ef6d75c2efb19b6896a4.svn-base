@@ -1,0 +1,133 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.WebIndex
+@model Myzj.OPC.UI.Model.WebAward.WebAwardDetail
+@{
+    var isEdit = (Model != null && Model.IntAwardId > 0);
+    var actionName = isEdit ? "Update" : "Add";
+}
+
+@if (isEdit)
+{
+    <h2>修改抽奖活动</h2>
+}
+else
+{
+    <h2>新增抽奖活动</h2>
+}
+
+<div id="tableContainer">
+    <form id="detailForm">
+        <input type="hidden" id="hidIntAwardId" value="@Model.IntAwardId"/>
+
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>活动名称:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.VchAwardName)
+                    </td>
+                </tr>
+                <tr>
+                    <td>中奖几率(%):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.IntAwardRate)
+                    </td>
+                </tr>
+                <tr>
+                    <td>每天会员参与次数:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.IntAwarcCount)
+                    </td>
+                </tr>
+                <tr>
+                    <td>每天会员中奖次数:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.IntWinCount)
+                    </td>
+                </tr>
+                <tr>
+                    <td>可参加标签组(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.VchDisplayLabels)-(多个以","分隔)
+                    </td>
+                </tr>
+                <tr>
+                    <td>系统数据权重:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.IntFalseData)
+                    </td>
+                </tr>
+                <tr>
+                    <td>促销码关联活动:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.IntCouponCodeId)
+                    </td>
+                </tr>
+                <tr>
+                    <td>开始时间:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.DtStartTime)
+                    </td>
+                </tr>
+                <tr>
+                    <td>结束时间:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.DtEndTime)
+                    </td>
+                </tr>
+                <tr>
+                    <td>代码模板:</td>
+                    <td>
+                        @Html.TextAreaFor(m => m.VchTemplateCode)
+                    </td>
+                </tr>
+                <tr>
+                    <td>状态:</td>
+                    <td>
+                        @Html.DropDownListFor(m => m.IntStatus, new KvSelectList(typeof(AppEnum.WebAwardState).GetEnumList()), false)
+                    </td>
+                </tr>
+        </table>
+    </form>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="保存" id="btnSave" />
+    <input type="button" value="返回" id="btnDel" onclick="window.close()" />
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $("#btnSave").click(function () {
+            var model = {};
+            model.IntAwardId = $("#hidIntAwardId").val();
+            model.VchAwardName = $("#VchAwardName").val();
+            model.IntAwardRate = $("#IntAwardRate").val();
+            model.IntAwarcCount = $("#IntAwarcCount").val();
+            model.IntWinCount = $("#IntWinCount").val();
+            model.VchDisplayLabels = $("#VchDisplayLabels").val();
+            model.IntFalseData = $("#IntFalseData").val();
+            model.IntCouponCodeId = $("#IntCouponCodeId").val();
+            model.DtStartTime = $("#DtStartTime").val();
+            model.DtEndTime = $("#DtEndTime").val();
+            model.VchTemplateCode = $("#VchTemplateCode").val();
+            model.IntStatus = $("#IntStatus").val();
+
+            $.ajax({
+                url: '@Url.Action("SaveWebAward", "WebAward")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("保存成功！");
+                        reloadPage();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>

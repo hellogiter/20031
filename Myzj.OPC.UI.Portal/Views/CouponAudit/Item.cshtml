@@ -1,0 +1,167 @@
+﻿@model IEnumerable<Myzj.OPC.UI.Model.BaseCouponConfig.CouponAuditDetailExt>
+@{
+    Layout = null;
+}
+<style>
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+</style>
+@{
+
+    if (Model != null && Model.Any())
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>
+                        <input type="checkbox" id="chkItem_0" /></th>
+                   @* <th>Id</th>*@
+                    <th>操作</th>
+                    <th>优惠券Key</th>
+                    <th>优惠券名称</th>
+                    <th>有效时间</th>
+                    <th>满金额</th>
+                    <th>减金额</th>
+                    <th>限制数量</th>
+                   @* <th>预估发放金额</th>*@
+                    <th>已领取</th>
+                    <th>应用平台</th>
+                    <th>是否启用</th>
+                    <th>是否有效</th>
+                    <th>审核状态</th>
+                    <th>审核人</th>
+                    <th>审核时间</th>
+                   @* <th>驳回原因</th>*@
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        @if (item.AuditState == -1)
+                        {
+                            <td>
+                                
+                            </td>
+                            <td></td>
+                        }
+                        else if (item.AuditState == 0)
+                        {
+                            <td>
+                                <input name="item" value="@item.SysNo" type="checkbox"/></td> @*
+                            <td>@item.SysNo</td>*@
+                            <td>
+                                <a style="color: green" href="javascript:showAuditForm(@item.SysNo);" pvalue="@item.SysNo" class="delFloorConfig">点击审核</a>
+                                <a  style="color: #191970" target="_blank" href="@Url.Action("Detail2", "CouponManage", new {id = item.SysNo})" >详细</a>
+                            </td>
+                        }
+                        else if (item.AuditState == 1)
+                        {
+                            <td></td> @*
+                            <td>@item.SysNo</td>*@
+                            <td><a style="color: red" class="delFloorConfig">已驳回</a>
+                                <a  style="color: #191970" target="_blank" href="@Url.Action("Detail2", "CouponManage", new {id = item.SysNo})" >详细</a>
+                            </td>
+                        }
+                        else if (item.AuditState == 2)
+                        {
+                            <td></td> @*
+                            <td>@item.SysNo</td>*@
+                            <td><a style="color: gray" class="delFloorConfig">已通过</a>
+                                <a  style="color: #191970" target="_blank" href="@Url.Action("Detail2", "CouponManage", new {id = item.SysNo})" >详细</a>
+                            </td>
+                        }
+
+                        <td>@item.CouponKey</td>
+                        <td><a title="@item.CouponName">@{
+                        var couponname = "";
+                        if (!string.IsNullOrEmpty(item.CouponName))
+                        {
+                            if (item.CouponName.Length > 15)
+                            {
+                                couponname = item.CouponName.Substring(0, 15) + "...";
+                            }
+                            else
+                            {
+                                couponname = item.CouponName;
+                            }
+                        }
+                        }
+                            @couponname</a></td>
+
+                        <td>@item.StartTime～@item.EndTime</td>
+                       
+                        <td>@Convert.ToDecimal(item.FillMoney).ToString("#0.00")</td>
+                        <td>@Convert.ToDecimal(item.SubtractMoney).ToString("#0.00")</td>
+
+                        <td>@item.SendLimitCount</td>
+                       @* <td>@Convert.ToDecimal(item.SubtractMoney * item.SendLimitCount).ToString("#0.00")</td>*@
+                        <td>@item.ReceiveCount</td>
+                        <td>
+                            @{
+                        var plat = "";
+                        if (item.Platform != null && item.Platform.Any())
+                        {
+                            plat = string.Join(",", item.Platform).Replace("1", "PC网站").Replace("2", "Wap网站").Replace("4", "安卓APP").Replace("5", "苹果APP").Replace("8", "Ipad").Replace("0,", "").Replace("[0],", "");
+                        }
+                                
+                            }@plat
+                        </td>
+                        @if (item.IsEnable == true)
+                        {
+                            <td>启用</td>
+                        }
+                        else
+                        {
+                            <td><a style="color: red">已禁用</a></td>
+                        }
+                        @if (item.IsDelete == true)
+                        {
+                            <td><a style="color: red">已删除</a></td>
+                        }
+                        else
+                        {
+                            <td>有效</td>
+                        }
+                        @if (item.AuditState == 0)
+                        {
+                            <td>待审核</td>
+                        }
+                        else if (item.AuditState == 1)
+                        {
+                            <td>已驳回</td>
+                        }
+                        else if (item.AuditState == 2)
+                        {
+                            <td>已审核</td>
+                        }
+                        <td>@item.AuditPerson</td>
+                        <td>@item.AuditDateTime</td>
+                        @*<td><a title="@item.RejectReason">@{
+                        var reason = "";
+                        if (!string.IsNullOrEmpty(item.RejectReason))
+                        {
+                            if (item.RejectReason.Length > 15)
+                            {
+                                reason = item.RejectReason.Substring(0, 15) + "...";
+                            }
+                            else
+                            {
+                                reason = item.RejectReason;
+                            }
+                        }
+                        }
+                            @reason</a></td>*@
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+}
+

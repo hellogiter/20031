@@ -1,0 +1,53 @@
+﻿
+@{
+    Layout = null;
+}
+@{
+    int rowindex = 0;
+} 
+
+@model Myzj.OPC.UI.Model.AdminCarriage.SeaWashesWeight   
+    
+
+           <table class="resultTable" id="Plug_Configure">
+            <thead>
+                <tr>
+                     <th>操作</th>
+                    <th>供应商ID</th>
+                    <th style="width:10%">起始重量</th>
+                     <th style="width:10%">截止重量</th>
+                     <th style="width:10%">邮费</th>
+                     <th style="width:10%">优先级</th>                    
+                    <th>优先级</th>                   
+                     
+                </tr>
+            </thead>
+            <tbody>
+               
+@foreach (var item in Model.SeaWashesWeightParams)
+{  
+    <tr>
+        <td><a   class="xiugai" href='javascript:modify(@rowindex);'>修改</a></td>
+        <td>@string.Join(",", @item.Suppliers)</td>
+      
+       
+        <td colspan="4">
+             <table style="width:100%;border-collapse: collapse;">
+            @foreach (var om in item.WeightList)
+            {
+                 <tr>
+                     <td style="width:5%;">@om.StartWeight</td>
+                      <td style="width:5%;">@om.EndWeight </td>
+                      <td style="width:5%;">@om.Carriage</td>
+                      <td style="width:5%;">@om.Priority </td>
+                 </tr>
+            }
+                </table>
+        </td>
+        <td>@item.Priority</td>
+    </tr>
+    
+    rowindex++;
+}
+                 </tbody>
+                </table>      

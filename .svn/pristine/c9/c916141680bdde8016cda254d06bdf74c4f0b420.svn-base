@@ -1,0 +1,70 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model IEnumerable<Myzj.OPC.UI.Model.WebAward.WebAwardRecordDetail>
+<div class="rowButton">
+    <input type="submit" name="Query" id="Query" value="查询" />
+</div>
+@if (Model != null && Model.Any())
+{
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>活动名称</th>
+                    <th>用户ID</th>
+                    <th>邮箱</th>
+                    <th>手机号码</th>
+                    <th>奖项</th>
+                    <th>类型</th>
+                    <th>奖品关联</th>
+                    <th>时间</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.IntRecordId</td>
+                        <td>@ViewBag.Name</td>
+                        <td>@item.IntUserId</td>
+                        <td>@item.VchEmail</td>
+                        <td>@item.VchLoginMobile</td>
+                        <td>@item.IntPrizeId</td>
+                        @if ((item.IntPrizeType <= 1 && item.IntPrizeType <= 5) || item.IntPrizeType == 99)
+                        {
+                            <td>其他类型</td>
+                        }
+                        else
+                        {
+                            <td>@(typeof(AppEnum.IntPrizeType).GetEnumDescription(item.IntPrizeType))  </td>
+                        }
+                        @{
+                        var caseId = 0;
+                        var code = "无";
+                        if (item.IntPrizeCaseId == null || item.IntPrizeCaseId.ToString() == "")
+                        {
+                            caseId = 0;
+                        }
+                        else
+                        {
+                            caseId = item.IntPrizeCaseId ?? 0;
+                        }
+                        if (item.VchCouponCode == null || item.VchCouponCode == "")
+                        {
+                            code = "无";
+                        }
+                        else
+                        {
+                            code = item.VchCouponCode;
+                        }
+                        }
+                        <td>Id:@caseId,值:@code</td>
+                        <td>@item.DtCreateTime</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+}

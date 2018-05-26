@@ -1,0 +1,99 @@
+﻿@{
+    ViewBag.Title = "QueryBatchSendCoupon";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>批量发送优惠券</title>
+    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/Pager.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/Dialog/default/zebra_dialog.css")" rel="stylesheet" />
+    <script src="@Url.Content("~/Scripts/jquery-1.10.2.js")" type="text/javascript"></script>
+    <link href="@Url.Content("~/Content/Frame/style.css")" type="text/css" rel="stylesheet" />
+    <script src="@Url.Content("~/Scripts/my97/WdatePicker.js")"></script>
+    <script src="@Url.Content("~/Scripts/pager.js")"></script>
+    <script src="@Url.Content("~/Scripts/Dialog/zebra_dialog.js")"></script>
+    <script src="@Url.Content("~/Scripts/ajaxfileupload.js")"></script>
+    <script src="@Url.Content("~/Scripts/global.js")"></script>
+</head>
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.BaseCouponConfig
+@model Myzj.OPC.UI.Model.Base.BaseRefer<CouponBatchSendDetail, CouponBatchSendDetailExt>
+
+<style type="text/css">
+    .input-validation-error {
+        border: 1px solid #c0c0c0;
+       
+    }
+
+    .showDetailTable tbody tr.tk-guanli td {
+        width: 15%;
+    }
+
+        .showDetailTable tbody tr.tk-guanli td.tk-name {
+            width: 5%;
+            text-align: center;
+        }
+
+        .showDetailTable tbody tr.tk-guanli td input {
+            text-align: left;
+            width: 85%;
+        }
+
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+</style>
+<body style="background: white">
+    @using (Html.BeginForm())
+    {
+        <div >
+            <h2>查询批量发送优惠券批次</h2>
+            <table class="showDetailTable">
+                <tbody>
+                    <tr class="tk-guanli">
+                        <td class="tk-name">申请人:</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.SearchDetail.ApplyPeople)
+                        </td>
+                        <td class="tk-name">文件名:</td>
+                        <td>
+                            @Html.TextBoxFor(m => m.SearchDetail.BatchFileName)
+                        </td>
+
+                    </tr>
+                    <tr class="tk-guanli">
+                        <td class="tk-name">状态:</td>
+                        <td>
+                            @{
+                                var list = new Dictionary<int, string>();
+                                list.Add(-2, "--ALL--");
+                                list.Add(0, "新建");
+                                list.Add(1, "执行中");
+                                list.Add(2, "成功");
+                                list.Add(3, "失败");
+                                list.Add(-1, "取消执行");
+                            }
+                            @Html.DropDownListFor(m => m.SearchDetail.ExeState, new KvSelectList(list))
+                        </td>
+                        <td class="tk-name"></td>
+                        <td></td>
+
+                    </tr>
+
+                </tbody>
+            </table>
+            <div class="rowButton">
+                <input type="submit" value="查询" id="btnSearch" />
+
+            </div>
+            @Html.Partial("BatchSendCouponItem", @Model.List2)
+
+            @Html.Partial("Pager", @Model)
+        </div>
+    }
+</body>
+ </html>

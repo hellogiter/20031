@@ -1,0 +1,89 @@
+﻿@using Myzj.OPC.UI.Portal.Models
+@model IEnumerable<Myzj.OPC.UI.Model.BargainGroup.GroupGoodsDetailExt>
+<h2>@ViewBag.Title</h2>
+<style>
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+</style>
+
+@if (Model != null && Model.Any())
+{
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>SysNo</th>
+                     <th>操作</th>
+                    <th>商品ID</th>
+                    <th>商品名</th>
+                    <th>单价</th>
+                    <th>设置成团人数</th>
+                    <th>设置建团总数</th>
+                    <th>记录建团数</th>
+                    <th>实际建团数(不含已关闭)</th>
+                    <th>总参与人数</th>
+                    <th>已成团人数</th>
+                    @*<th>预测亏损金额</th>*@
+                    <th>已购人数</th>
+                    <th>促销ID</th>
+                    <th>一元购促销ID</th>
+                    <th>活动时间</th>
+                    <th>排序值</th>
+                    <th>是否启用</th>
+                    <th>创建时间</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr class="gl-title">
+                        <td><a title="编辑"  style="color: #191970;font-weight:bold;font-size: 12px" target="_blank" href="@Url.Action("BargainGroupEdit", "BargainGroup", new { SysNo = item.SysNo })" >@item.SysNo</a></td>
+                        <td> 
+                           <a  style="color: #191970;font-size: 12px" target="_blank" href="@Url.Action("CountGoodsInfo", "BargainGroup", new { GoodsSysNo = item.SysNo,GroupActivitySysNo = item.GroupActivitySysNo })" >查看团</a>
+                        </td>
+                           <td>@item.GoodsId</td>
+                        <td>@item.GoodsName</td>
+                        <td>@item.GroupPrice</td>
+                        <td>@item.SetCanGroupCount</td>
+                        <td>@item.SetJianGroupCount</td>
+                       
+                        <td>@item.JianGroupCount</td>
+                        <td>@item.SjJianGroupCount</td>
+                        <td>@item.CanYuMemberCount</td>
+                        <td>@item.ChengtuanMemberCount</td>
+                        @*<td>@item.KuisunJinE</td>*@
+                         <td>@item.PurchasePeopleNum</td>
+                         <td><a target="_blank" href="@GroupUrlFactory.ConvertPromotionUrl(item.PromSysNos)">查看</a></td>
+                        <td><a target="_blank" href="@GroupUrlFactory.ConvertPromotionUrl(item.PromSysNos2)">查看</a></td>
+                        <td>@item.StartTime<br />@item.EndTime</td>
+                        <td>@item.Sort</td>
+
+                        @if (item.IsEnable == true)
+                        {
+                            <td>启用
+                            </td>
+                        }
+                        else
+                        {
+                            <td>禁用
+                            </td>
+                        }
+                        <td>@item.CreateTime</td>
+
+
+                    </tr>
+                    
+                }
+
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+
+}
+
+

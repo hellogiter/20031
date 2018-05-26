@@ -1,0 +1,52 @@
+﻿
+@{
+    Layout = null;
+}
+@{
+    int rowindex = 0;
+} 
+
+@model Myzj.OPC.UI.Model.AdminCarriage._OtherParams 
+    
+
+           <table class="resultTable" id="Plug_Configure">
+            <thead>
+                <tr>
+                     <th>操作</th>
+                    <th>区域ID</th>
+                    <th>不包含的区域ID</th>
+                    <th style="width:10%">开始金额</th>
+                     <th style="width:10%">截止金额</th>
+                     <th style="width:10%">邮费</th>
+                    <th>优先级</th>                   
+                     
+                </tr>
+            </thead>
+            <tbody>
+               
+@foreach (var item in Model.OtherParams)
+{  
+    <tr>
+        <td><a   class="xiugai" href='javascript:modify(@rowindex);'>修改</a></td>
+        <td>@string.Join(",", @item.AreaIds)</td>
+      
+        <td>@string.Join(",", @item.ExcludeAreaIds)</td>
+        <td colspan ="3">
+             <table style="width:100%;border-collapse: collapse;">
+            @foreach (var om in item.OtherSections)
+            {
+                 <tr>
+                     <td style="width:25%;">@om.StartMoney</td>
+                      <td style="width:25%;">@om.EndMoney </td>
+                      <td style="width:25%;">@om.Carriage</td>
+                 </tr>
+            }
+                </table>
+        </td>
+        <td>@item.Priority</td>
+    </tr>
+    
+    rowindex++;
+}
+                 </tbody>
+                </table>      

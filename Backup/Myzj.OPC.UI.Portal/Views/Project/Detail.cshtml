@@ -1,0 +1,401 @@
+﻿@using Myzj.OPC.UI.Model.Project
+@{
+    ViewBag.Title = "专题详细页";
+
+
+    var project = (ProjectDetail)ViewBag.ProjectDetail;//专题信息
+    var imgModel = new ProjectImageDetail(); //专题主图片信息
+    var imgList = new List<ProjectImageDetail>();//专题副图片列表
+
+    if (project.ImgList != null && project.ImgList.Count > 0)
+    {
+        imgModel = project.ImgList.Find(p => p.ImageType == 1);
+        if (imgModel == null)
+        {
+            imgModel = new ProjectImageDetail();
+        }
+
+        imgList = project.ImgList.FindAll(p => p.ImageType == 2);
+    }
+    
+}
+
+<script type="text/javascript" charset="gbk" src="../../Scripts/Ueditor/ueditor.config.js"></script>
+<script type="text/javascript" charset="gbk" src="../../Scripts/Ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" charset="utf-8" src="../../Scripts/Ueditor/lang/zh-cn/zh-cn.js"></script>
+
+<script type="text/javascript">
+    //实例化编辑器
+    function editorObj(name) {
+        //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+        var ue = UE.getEditor(name);
+
+    }
+</script>
+
+@Html.Action("ImgUpload", "Default")
+
+<h2>专题详细页</h2>
+
+<input id="hidProjectId" type="hidden" value="@project.ProjectId" />
+<table class="showDetailTableMultiColumnm">
+    <tr>
+        <td>标题
+        </td>
+        <td>
+            <input id="txtTitle" type="text" value="@project.ProjectTitle" />
+        </td>
+    </tr>
+    <tr>
+        <td>内容
+        </td>
+        <td>
+            <input id="txtContent" type="text" value="@project.ProjectContent" />
+        </td>
+        @* <th style="padding:10px  20px">
+            <script id="txtContent" type="text/plain" style="width: 700px; height: 250px;"></script>
+        </th>*@
+    </tr>
+    <tr>
+        <td>描述
+        </td>
+        <td>
+            <input id="txtDescribe" type="text" value="@project.ProjectDescribe" />
+        </td>
+    </tr>
+    <tr>
+        <td>排序ID
+        </td>
+        <td>
+            <input id="txtSort" type="text" value="@project.Sort" />
+        </td>
+    </tr>
+    <tr>
+        <th colspan="4" style="text-align: left; padding-left: 5px;">专题主图片信息</th>
+    </tr>
+    <tr>
+        <td>标题
+        </td>
+        <td>
+            <input id="hidImgId" type="hidden" value="@imgModel.ImageId" />
+            <input id="txtImgTitle" type="text" value="@imgModel.ImageTitle" />
+        </td>
+    </tr>
+    <tr>
+        <td>图片路径
+        </td>
+        <td>
+            <input id="txtImageUrl" type="text" value="@imgModel.ImageUrl" />
+        </td>
+    </tr>
+    <tr>
+        <td>图片链接
+        </td>
+        <td>
+            <input id="txtImgLink" type="text" value="@imgModel.ImageLink" />
+        </td>
+    </tr>
+    <tr>
+        <td>内容
+        </td>
+        <td>
+            <textarea id="txtImgContent" cols="20">@imgModel.ImageContent</textarea>
+        </td>
+    </tr>
+    <tr>
+        <td>描述
+        </td>
+        <td>
+            <input id="txtImgDescribe" type="text" value="@project.ProjectDescribe" />
+        </td>
+    </tr>
+</table>
+
+<div style="width: 90%; margin: 0 auto;">
+    <input id="btnAddImgTextItem" type="button" value="新增副图信息+" onclick="addImgItem()" />
+</div>
+<div id="divImg">
+
+    @{
+        var count = 0;
+    }
+
+    @foreach (var item in imgList)
+    {
+        count += 1;
+        var editorStr = "editor_" + count;
+        
+        <table class="showDetailTableMultiColumnm">
+            <tr>
+                <th colspan="4" style="text-align: left; padding-left: 5px;">专题副图片信息</th>
+            </tr>
+            <tr>
+                <td>
+                    <input name="hidIsDel" type="hidden" value="0" /><!--是否删除-->
+                    <input name="hidImgContentId" type="hidden" value="@editorStr" /><!--内容Id-->
+                    <input name="hidImgId" type="hidden" value="@item.ImageId" /><!--图片ID-->
+                    <input id="butDel" type="button" value="删除" style="width: 90px" onclick="delImgItem(this)" />
+                </td>
+                <td colspan="3"></td>
+            </tr>
+            <tr>
+                <td>标题
+                </td>
+                <td>
+                    <input name="txtImgTitle" type="text" value="@item.ImageTitle" />
+                </td>
+            </tr>
+            <tr>
+                <td>图片路径
+                </td>
+                <td>
+                    <input name="txtImgUrl" type="text" value="@item.ImageUrl" />
+                </td>
+            </tr>
+            <tr>
+                <td>图片链接
+                </td>
+                <td>
+                    <input name="txtImgLink" type="text" value="@item.ImageLink" />
+                </td>
+            </tr>
+            <tr>
+                <td>内容
+                </td>
+                <th style="padding: 10px  20px">
+                    <script id="@editorStr" type="text/plain" style="width: 700px; height: 250px;">@Html.Raw(item.ImageContent)</script>
+                    <script>
+                        editorObj('@editorStr');
+                    </script>
+                </th>
+            </tr>
+            <tr>
+                <td>描述
+                </td>
+                <td>
+                    <input name="txtImgDescribe" type="text" value="@item.ImageDescribe" />
+                </td>
+            </tr>
+            <tr>
+                <td>排序
+                </td>
+                <td>
+                    <input name="txtImgSort" type="text" value="@item.Sort" />
+                </td>
+            </tr>
+        </table>
+        
+       
+    }
+
+</div>
+
+<div style="display: none" id="table_img">
+    <table class="showDetailTableMultiColumnm">
+        <tr>
+            <th colspan="4" style="text-align: left; padding-left: 5px;">专题副图片信息</th>
+        </tr>
+        <tr>
+            <td>
+                <input name="hidIsDel" type="hidden" value="0" /><!--是否删除-->
+                <input name="hidImgContentId" type="hidden" value="0" /><!--内容Id-->
+                <input name="hidImgId" type="hidden" value="0" /><!--图片ID-->
+                <input type="button" value="删除" style="width: 90px" onclick="delImgItem(this)" />
+            </td>
+            <td colspan="3"></td>
+        </tr>
+        <tr>
+            <td>标题
+            </td>
+            <td>
+                <input name="txtImgTitle" type="text" value="" />
+            </td>
+        </tr>
+        <tr>
+            <td>图片路径
+            </td>
+            <td>
+                <input name="txtImgUrl" type="text" value="" />
+            </td>
+        </tr>
+        <tr>
+            <td>图片链接
+            </td>
+            <td>
+                <input name="txtImgLink" type="text" value="" />
+            </td>
+        </tr>
+        <tr>
+            <td>内容
+            </td>
+            <th style="padding: 10px  20px">
+                <script id="txtEditorContent" name="txtEditorContent" type="text/plain" style="width: 700px; height: 250px;"></script>
+            </th>
+        </tr>
+        <tr>
+            <td>描述
+            </td>
+            <td>
+                <input name="txtImgDescribe" type="text" value="" />
+            </td>
+        </tr>
+        <tr>
+            <td>排序
+            </td>
+            <td>
+                <input name="txtImgSort" type="text" value="0" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="rowButton">
+    <input type="button" value="保存" onclick="butSave()" />
+</div>
+
+
+<script type="text/javascript">
+    //添加副图
+    function addImgItem() {
+        var html = $("#table_img .showDetailTableMultiColumnm").clone();
+
+        var num = rndNum(4);
+        var editorStr = "editor_" + num;
+
+        html.find("input[name='hidImgContentId']").val(editorStr);
+        html.find("#txtEditorContent").prop("id", editorStr);
+
+        $("#divImg").append(html);
+
+        editorObj(editorStr);//初始化
+    }
+
+    //删除副图
+    function delImgItem(objs) {
+        var obj = $(objs);
+        var html = obj.parents(".showDetailTableMultiColumnm");
+
+        var imgId = html.find("input[name='hidImgId']").val();
+        if (imgId == '0') {
+            html.remove();
+        } else {
+            html.find("input[name='hidIsDel']").val("1");
+            html.hide();
+        }
+    }
+
+    //随机数
+    function rndNum(n) {
+        var rnd = "";
+        for (var i = 0; i < n; i++)
+            rnd += Math.floor(Math.random() * 10);
+        return rnd;
+    }    //保存    function butSave() {
+
+        var project = {};
+        var projectImg = [];
+
+        var title = $("#txtTitle").val();
+        if (title.length <= 0) {
+            alert("请填写专题标题");
+            return false;
+        }
+        var content = $("#txtContent").val();
+        var describe = $("#txtDescribe").val();
+        var sort = $("#txtSort").val();
+
+        //专题信息
+        project.ProjectId = $("#hidProjectId").val();
+        project.ProjectTitle = title;
+        project.ProjectContent = content;
+        project.ProjectDescribe = describe;
+        project.ProjectState = 1;
+        project.sort = sort;
+
+        //专题主图信息
+        var imgId = $("#hidImgId").val();
+        var imgTitle = $("#txtImgTitle").val();
+        var imgUrl = $("#txtImageUrl").val();
+        var imgLink = $("#txtImgLink").val();
+        var imgContent = $("#txtImgContent").val();
+        var imgDescribe = $("#txtImgDescribe").val();
+
+        if (imgUrl.length <= 0) {
+            alert("请填写主图图片路径");
+            return false;
+        }
+        var imgObj = {};
+        imgObj.ImageId = imgId;
+        imgObj.ImageState = 1;
+        imgObj.ImageTitle = imgTitle;
+        imgObj.ImageContent = imgContent;
+        imgObj.ImageDescribe = imgDescribe;
+        imgObj.ImageUrl = imgUrl;
+        imgObj.ImageLink = imgLink;
+        imgObj.ImageType = 1;
+        imgObj.sort = 0;
+        imgObj.IsDel = false;
+
+        projectImg.push(imgObj);
+
+        $("#divImg .showDetailTableMultiColumnm").each(function (i, item) {
+            var $obj = $(this);
+
+            var isDel = $obj.find("input[name='hidIsDel']").val();
+            var contentId = $obj.find("input[name='hidImgContentId']").val();
+            var iId = $obj.find("input[name='hidImgId']").val();
+
+            var iTitle = $obj.find("input[name='txtImgTitle']").val();
+            var iUrl = $obj.find("input[name='txtImgUrl']").val();
+            var iLink = $obj.find("input[name='txtImgLink']").val();
+            var iContent = UE.getEditor(contentId).getContent();
+            var iDescribe = $obj.find("input[name='txtImgDescribe']").val();
+            var iSort = $obj.find("input[name='txtImgSort']").val();
+
+
+
+            if (iUrl.length <= 0) {
+                alert("请填写副图图片路径");
+                return false;
+            }
+
+            var iObj = {};
+            iObj.ImageId = iId;
+            iObj.ImageState = 1;
+            iObj.ImageTitle = iTitle;
+            iObj.ImageContent = iContent;
+            iObj.ImageDescribe = iDescribe;
+            iObj.ImageUrl = iUrl;
+            iObj.ImageLink = iLink;
+            iObj.ImageType = 2;
+            iObj.sort = iSort;
+
+            if (isDel == "1") {
+                iObj.IsDel = true;
+            } else {
+                iObj.IsDel = false;
+            }
+            projectImg.push(iObj);
+        });
+        project.List = projectImg;
+
+        $.ajax({
+            url: '@Url.Action("Save", "Project")',
+            type: 'post',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(project),
+            success: function (result) {
+                if (result.DoFlag) {
+                    alert("保存成功！");
+                    reloadPage();
+                } else {
+                    alert(result.DoResult);
+                }
+            }
+        });
+
+
+        console.log(project);
+    }
+
+</script>

@@ -1,0 +1,105 @@
+﻿@model  Myzj.OPC.UI.Model.FloorConfig.FloorLabelRefer
+<h2>详细配置：@ViewBag.StrName->@ViewBag.name</h2>
+
+@{
+    <div class="rowButton">
+        <input type="button" name="Query" id="BtnAdd" value="新增" />
+    </div>
+
+    if (Model != null)
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>操作</th>
+                    <th>商品ID</th>
+                    <th>楼层类型</th>
+                    <th>配置项名称</th>
+                    <th>配置项链接</th>
+                    <th>配置项图片</th>
+                    <th>商品描述</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                    <th>排序</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.List)
+                {
+                    <tr>
+                        <td>@item.SysNo</td>
+                        <td>
+                            <a style="color: #191970" target="_blank" href="@Url.Action("FloorLabelDetail", "FloorConfig", new { id = item.SysNo, strName = ViewBag.StrName, name = item.FloorTypeName, floorId = item.FloorDetailID })" >编辑</a>
+                            &nbsp;
+                            <a style="color: #191970" href="javascript:(0)" pvalue="@item.SysNo" class="delFloorLabel">删除</a>
+                        </td>
+                        <td>@item.ProductID</td>
+                        <td>@item.FloorTypeName</td>
+                        <td>@item.ConfigItemName</td>
+                        <td>@item.ProductLink</td>
+                        <td>@item.ProductPicture</td>
+                        <td>@item.ProductDiscription</td>
+                        <td>@item.ExpirationFrom</td>
+                        <td>@item.ExpirationEnd</td>
+                        <td>
+                            <input type="text" value="@item.Sequence" pvalue="@item.SysNo" class="Sequence" id="Sequence"style="width: 30px"/>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+}
+
+<script type="text/javascript">
+    $(function () {
+        //新增 
+        $("#BtnAdd").click(function () {
+            var strName = '@ViewBag.StrName';
+            var floorId = '@ViewBag.FloorId';
+
+            window.open("/FloorConfig/FloorLabelDetail?strName=" + strName + "&floorId=" + floorId);
+        });
+
+        //修改排序
+        $(".Sequence").change(function () {
+            var id = $(this).attr("pvalue");
+            var number = $(this).val();
+            $.ajax({
+                url: "/FloorConfig/UpdateFloorLableSort",
+                data: { "id": id, "sort": number },
+                success: function (res) {
+                    if (res.DoFlag) {
+                        //  alert("更新成功");
+                        location.reload();
+                    } else {
+                        alert(res.DoResult);
+                    }
+                }
+            });
+        });
+        //删除
+        $(".delFloorLabel").click(function () {
+            var obj = $(this);
+            var id = obj.attr("pvalue");
+            $.ajax({
+                url: "/FloorConfig/DelFloorLabel",
+                data: { "id": id },
+                dataType: 'json',
+                type: 'POST',
+                success: function (res) {
+                    if (res.DoFlag) {
+                        location.reload();
+                    } else {
+                        alert(res.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>

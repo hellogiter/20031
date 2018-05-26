@@ -1,0 +1,107 @@
+﻿@using Myzj.OPC.UI.Common
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.ReportRecord
+
+@{
+    var model = (GetReportRecord)ViewBag.ReportRecord;
+    model.RedirectUrl = "/ReportRecord/Index";
+
+    Layout = null;
+}
+
+@{
+
+
+    if (model.List != null && model.List.Count > 0)
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    @* <th>操作</th>*@
+                    <th>举报人ID</th>
+                    <th>被举报人ID</th>
+                    <th>内容</th>
+                    <th>标签</th>
+                    <th>举报时间</th>
+                    <th>被举报ID</th>
+                    <th>举报类型</th>
+                    <th>举报状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in model.List)
+                {
+                    <tr>
+                        <td>
+                            @item.ReportRecordId
+                        </td>
+                        @* <td>
+                            @if (item.ReportRecordState == 0)
+                            {
+                                //只有未审核状态下才能删除
+                                <a href="javascript:(0)" pvalue="@item.ReportRecordId" class="delRecord">删除</a>
+                            }
+                        </td>*@
+                        <td>
+                            @*举报人ID*@
+                            <a href="/MotherUser/Index?UserId=@item.ReportMotherUserId" target="_blank">@item.ReportMotherUserId</a>
+                        </td>
+                        <td>
+                            @*被举报人ID*@
+                            <a href="/MotherUser/Index?UserId=@item.ReportMotherUserId" target="_blank">@item.ReportMotherUserId</a>
+                        </td>
+                        <td>@item.ReportContent</td>
+                        <td>@item.ReportMsgContent</td>
+                        <td>@item.CreateTime</td>
+
+                        <td>
+                            @{
+                    var url = "";
+
+                    if (item.ReportRecordType == (int)AppEnum.ReportRecordType.妈妈秀)
+                    {
+                        //麻麻秀
+                        url = WebUrl.WebAppUrl() + "/MLT/MotherShow?id=" + item.ByReportProjectId;
+                                <a href="/Default/Preview?url=@url" target="_blank">@item.ByReportProjectId</a>
+                    }
+                    else if (item.ReportRecordType == (int)AppEnum.ReportRecordType.投诉)
+                    {
+                        //评论
+                                <a href="/MLTCommentsRecord/Index?id=@item.ByReportProjectId" target="_blank">@item.ByReportProjectId</a>
+                    }
+                            }
+                        </td>
+                        <td>@(typeof(AppEnum.ReportRecordType).GetEnumDescription(item.ReportRecordType))</td>
+                        <td>
+                            @{
+                    if (item.ReportRecordState == (int)AppEnum.ReportRecordState.未审核)
+                    {
+                        //只有在未审核的状态下才能修改状态
+                        var selectName = "selectSate_" + item.ReportRecordId;
+                                <select id="@selectName" data-showid="@item.ReportRecordState" class="selState" pvalue="@item.ReportRecordId">
+                                    <option value="0">未审核</option>
+                                    <option value="1">审核通过</option>
+                                    <option value="2">审核不通过</option>
+                                </select>
+                    }
+                    else
+                    {
+                        var stateName = typeof(AppEnum.ReportRecordType).GetEnumDescription(item.ReportRecordState);
+                                @stateName
+                    }
+                               
+                            }
+                        </td>
+                    </tr>   
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+}
+
+@Html.Partial("Pager", @model)

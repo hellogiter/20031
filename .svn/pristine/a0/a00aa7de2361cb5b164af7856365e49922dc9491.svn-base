@@ -1,0 +1,141 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.ServiceClient
+@model Myzj.OPC.UI.Model.MLTSYSProjectMannger.EditMLTSYSProjectImageRes
+<h2>修改专题图片</h2>
+@using (Html.BeginForm(string.Empty, "MLTSYSProject"))
+{
+    if (Model != null)
+    {
+    <div>
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+
+                <tr>
+                    <td>标题:</td>
+                    <td>
+                        <input type="hidden" value ="@Model.ImageId" name="ImageId"/>
+                        <input type="hidden" value="@Model.ProjectId" name="ProjectId"/>
+                        <input type="hidden" value="@Model.ImageType" name="ImageType"/>
+                       @* <input type="hidden" value="@Model.ImageState" name="ImageState"/>*@
+
+                        @Html.TextBoxFor(m => m.ImageTitle)
+                    </td>
+                </tr>
+                <tr>
+                    <td>内容:</td>
+                    <td>
+                        @Html.TextAreaFor(m => m.ImageContent)
+                    </td>
+                </tr>
+                <tr>
+                    <td>图片:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.ImageUrl)
+                    </td>
+                </tr>
+                <tr>
+                    <td>链接:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.ImageLink)
+                    </td>
+                </tr>
+                <tr>
+                    <td>排序:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.Sort, new { @value = "0", @width = "40px;" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>状态:</td>
+                    <td>
+                        <select name="ImageState">
+                            @if (Model.ImageState == 1 && Model.ImageType == 1)
+                            {
+                                <option value="1" name="ImageState" selected="selected">启用</option>
+                            }
+                            else
+                            {
+                                if (Model.ImageState == 1)
+                                {
+                                <option value="1" name="ImageState" selected="selected">启用</option>
+                                <option value="0" name="ImageState">禁用</option>
+                                }
+                                else
+                                {
+                                <option value="1" name="ImageState">启用</option>
+                                <option value="0" name="ImageState" selected="selected">禁用</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>描述:</td>
+                    <td>
+                        @Html.TextAreaFor(m => m.ImageDescribe)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="rowButton">
+        <input type="submit" value="保存" id="Edit" name="Edit" />
+    </div>
+                            var detail = ViewData["Detail"];
+                            if (null != detail)
+                            {
+    @Html.Partial("AddMLTSYSProjectImage", detail)
+                            }
+    }
+}
+<script type="text/javascript">
+    $(function () {
+        $("form").submit(function (e) {
+            var sort = $.trim($("#Sort").val());
+            var imageTitle = $("#ImageTitle").val();
+            var imageContent = $("#ImageContent").val();
+            var imageUrl = $("#ImageUrl").val();
+            var imageLink = $("#ImageLink").val();
+            var projectState = $("[name='ImageState']").val();
+
+            var regex = /^[0-9]*$/;
+            if (!regex.test(sort)) {
+                alert("只能输入数字!");
+                return false;
+            }
+
+            if (imageUrl == null || imageUrl == "") {
+                alert("图片不能为空");
+                return false;
+            }
+
+            if (projectState < 0) {
+                alert("请选择状态");
+                return false;
+            }
+        });
+
+        $("#Sort").change(function () {
+            var sort = $.trim($("#Sort").val());
+            var regex = /^[0-9]*$/;
+            if (!regex.test(sort)) {
+                alert("只能输入数字!");
+                return false;
+            }
+        });
+        $("#ImageUrl").change(function () {
+            var imageUrl = $("#ImageUrl").val();
+            if (imageUrl == null || imageUrl == "") {
+                alert("图片不能为空");
+                return false;
+            }
+        });
+        $("[name='ImageState']").change(function () {
+            var projectState = $("[name='ImageState']").val();
+            if (projectState < 0) {
+                alert("请选择状态");
+                return false;
+            }
+        });
+    });
+</script>

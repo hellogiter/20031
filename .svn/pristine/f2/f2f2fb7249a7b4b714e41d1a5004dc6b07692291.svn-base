@@ -1,0 +1,36 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@{
+    ViewBag.Title = "Export";
+    Layout = null;
+    var result = (BaseResponse)ViewBag.Result;
+}
+
+<!DOCTYPE html>
+<html>
+<body>
+    <h2>仅导入处理建议</h2>
+    @using (Html.BeginForm("ExpressInfoImport", "Express", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div id="tableContainer">
+            <div class="rowButton">
+                <input type="file" id="fileUpload" name="files" />
+                <input type="submit" value="立即导入" onclick="ExeImprot();" />
+                <input type="button" value="模板下载" id="btnDown" onclick="window.location.href ='@Url.Action("GetFile", "Express")    '" />
+            </div>
+            @if (result != null)
+            {
+                if (result.DoFlag)
+                {
+                <span style="color: red">导入成功</span>
+                }
+                else
+                {
+                <span style="color: red">导入失败：@result.DoResult</span>
+                }
+            }
+
+        </div>
+    }
+</body>
+
+</html>

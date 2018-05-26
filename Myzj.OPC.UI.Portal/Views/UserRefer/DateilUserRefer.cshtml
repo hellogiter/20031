@@ -1,0 +1,82 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.UserRefer.UserReferByProduct
+@if (Model.UserReferDos != null)
+{
+    <h2>咨询列表</h2>
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>商品ID</th>
+                    <th>用户ID</th>
+                    <th>用户昵称</th>
+                    <th>咨询类型</th>
+                    <th>咨询内容</th>
+                    <th>咨询时间</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var Item in Model.UserReferDos)
+                {
+                    <tr>
+                        <td>@Item.IntReferID</td>
+                        <td>@Item.IntProductID</td>
+                        <td>@Item.IntUserID</td>
+                        <td>@Item.VchUserNick</td>
+                        @if (Item.IntReferType < 0 || Item.IntReferType > 5)
+                        {
+                            <td>其他</td>
+                        }
+                        else
+                        {
+                            <td>@(typeof(AppEnum.ReferType).GetEnumDescription(Item.IntReferType))</td>
+                        }
+                        <td>@Item.VchContent</td>
+                        <td>@Item.DtDatetime</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    <h2>回复列表</h2>
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>商品ID</th>
+                    <th>咨询类型</th>
+                    <th>回复内容</th>
+                    <th>回复时间</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var Item in Model.UserReferDos)
+                {
+                    if (!string.IsNullOrEmpty(Item.VchReplyContent))
+                    {
+                    <tr>
+                        <td>@Item.IntReferID</td>
+                        <td>@Item.IntProductID</td>
+                        @if (Item.IntReferType < 0 || Item.IntReferType > 5)
+                        {
+                            <td>其他</td>
+                        }
+                        else
+                        {
+                            <td>@(typeof(AppEnum.ReferType).GetEnumDescription(Item.IntReferType))</td>
+                        }
+                        <td>@Item.VchReplyContent</td>
+                        <td>@Item.DtReplyDatetime</td>
+                    </tr>
+                    }
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+}

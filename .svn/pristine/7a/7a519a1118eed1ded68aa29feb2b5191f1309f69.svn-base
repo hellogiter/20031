@@ -1,0 +1,80 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.WebAward
+@using Myzj.OPC.UI.Model.WebUserBe
+@model IEnumerable<Myzj.OPC.UI.Model.WebAward.WebAwardDetail>
+@{
+    Layout = null;
+}
+
+@{
+    <div class="rowButton">
+        <input type="submit" name="Query" id="Query" value="查询" />
+        <input type="button" name="Query" id="BtnAdd" value="新增" onclick="javascript: window.open('/WebAward/Detail')" />
+    </div>
+
+    if (Model != null && Model.Any())
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>操作</th>
+                    <th>活动名称</th>
+                    <th>中奖率</th>
+                    <th>参与次数</th>
+                    <th>中奖次数</th>
+                    <th>标签组</th>
+                    <th>FalseDate</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                    <th>创建人</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.IntAwardId</td>
+                        <td>
+                            <a style="color: #191970" target="_blank" href="@Url.Action("Detail", "WebAward", new { id = item.IntAwardId })" >修改</a>
+                            &nbsp;
+                            <a style="color: #191970" target="_blank" href="@Url.Action("WebAwardUserTagsItem", "WebAward", new { id = item.IntAwardId, strName = item.VchAwardName })">用户组</a>
+                            &nbsp;
+                            <a style="color: #191970" target="_blank" href="@Url.Action("WebAwardPrizeItem", "WebAward", new { awardId = item.IntAwardId,strName=item.VchAwardName })">奖项</a>
+                            &nbsp;
+                            <a style="color: #191970" target="_blank" href="@Url.Action("WebPrizeItem", "WebAward", new { awardId = item.IntAwardId ,strName=item.VchAwardName})">基础</a>
+                            &nbsp;
+                            <a style="color: #191970" target="_blank" href="@Url.Action("WebAwardRecordIndex", "WebAward", new { record = "", id = item.IntAwardId, name = item.VchAwardName })">明细</a>
+                          @*  &nbsp;
+                            <a style="color: #191970" target="_blank" href="@Url.Action("TenYearPhotoShowItem", "WebAward", new { })">点赞</a>*@
+                        </td>
+                        <td>@item.VchAwardName</td>
+                        <td>@item.IntAwardRate %</td>
+                        <td>@item.IntAwarcCount</td>
+                        <td>@item.IntWinCount</td>
+                        <td>@item.VchDisplayLabels</td>
+                        <td>@item.IntFalseData</td>
+                        <td>@item.DtStartTime</td>
+                        <td>@item.DtEndTime</td>
+                        <td>@item.UserName</td>
+                        <td>
+                            @{
+                                var checkStr = "";
+                                if (item.IntStatus == 1)
+                                {
+                                    checkStr = "checked='checked'";
+                                }
+                            }
+                            <input id="cbkState-@item.IntAwardId" type="checkbox" @checkStr data-id="@item.IntAwardId" onclick="updateState(this)" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+}

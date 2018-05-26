@@ -1,0 +1,359 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.IO.Pipes;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Web;
+using System.Web.Mvc;
+using Myzj.MKMS.ServiceModel;
+using Myzj.OPC.UI.Common;
+using Myzj.OPC.UI.Model.Base;
+using Myzj.OPC.UI.Model.ExpressModel;
+using Myzj.OPC.UI.Portal.Controllers.Base;
+using Myzj.OPC.UI.ServiceClient;
+using BaseResponse = Myzj.OPC.UI.Model.Base.BaseResponse;
+
+namespace Myzj.OPC.UI.Portal.Controllers.Express
+{
+
+    public class ExpressController : Controller
+    {
+        #region 物流信息管理
+        //[NoResubmit]
+        public ActionResult Index(ExpressInfoRefer refer)
+        {
+            if (refer.Search.BeginTime == null)
+            {
+                refer.Search.BeginTime = DateTime.Now.AddMonths(-1).Date;
+            }
+            if (refer.Search.EndTime == null)
+            {
+                refer.Search.EndTime = DateTime.Now.Date;
+            }
+
+            refer.PageSize = 30;
+            var result = ExpressClient.Instance.QueryExpressInfoPageList(refer);
+            ViewBag.Total = result.Total;
+            return View(result);
+        }
+        public ActionResult Add()
+        {
+            return View();
+        }
+        public ActionResult Update()
+        {
+            return View();
+        }
+        public ActionResult ShowLog(string orderCode)
+        {
+            var result = ExpressClient.Instance.QueryLogPageList(new ExpressLogRefer()
+            {
+                Search = new ExpressLogModel()
+                    {
+                        OrderCode = orderCode
+                    },
+                PageSize = int.MaxValue
+            });
+
+            var list2 = new List<ExpressLogModel2>();
+
+            if (result.List.Any())
+            {
+                var logTypeArr = typeof(AppEnum.ExpressLogType).GetEnumList();
+                var businessTypeArr = typeof(AppEnum.ExpressBusinessType).GetEnumList();
+
+                foreach (var item in result.List)
+                {
+                    var logType = item.LogType.ToString();
+                    var busType = item.BusinessType.ToString();
+                    if (logTypeArr.Any(c => c.Key == item.LogType))
+                    {
+                        logType = logTypeArr.First(c => c.Key == item.LogType).Value;
+                    }
+                    if (businessTypeArr.Any(c => c.Key == item.BusinessType))
+                    {
+                        busType = businessTypeArr.First(c => c.Key == item.BusinessType).Value;
+                    }
+
+                    list2.Add(new ExpressLogModel2()
+                    {
+                        SysNo = item.SysNo,
+                        OrderCode = item.OrderCode,
+                        LogType = logType,
+                        BusinessType = busType,
+                        CreateDate = item.CreateDate.ToString(),
+                        Remark = item.Remark,
+                        LogContent = item.LogContent
+                    });
+                }
+            }
+
+            return View(list2);
+        }
+
+        public ActionResult UpdateExpressInfo(int sysNo, string orderCode)
+        {
+            var refer = new ExpressCompanyRefer();
+
+            var result = ExpressClient.Instance.QueryExpressInfoEntity(sysNo, orderCode);
+
+            return View(result);
+        }
+
+        #endregion
+
+        #region 国际物流
+        public ActionResult InterNationalIndex(ExpressGuojiRefer refer)
+        {
+            var result = ExpressClient.Instance.QueryGuojiPageList(refer);
+            return View(result);
+        }
+
+        #endregion
+
+        #region 配送商管理
+        public ActionResult CompanyIndex(ExpressCompanyRefer refer)
+        {
+            var result = ExpressClient.Instance.QueryCompanPageList(refer);
+            return View(result);
+        }
+        public ActionResult CompanyUpdate(int sysNo)
+        {
+            var refer = new ExpressCompanyRefer();
+            var gad = new CompanyModel();
+            var result = ExpressClient.Instance.QueryCompanyEntity(sysNo);
+            if (result.LogiscticId != null)
+            {
+                gad = result;
+            }
+            return View(gad);
+        }
+
+        public ActionResult CompanySetFreqIndex(ExpressAcessConfigRefer refer)
+        {
+            var result = ExpressClient.Instance.QueryExpressAccessConfigPageList(refer);
+            return View(result);
+        }
+
+        public ActionResult CompanyAdd()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 对账单查询
+        public ActionResult AccountStateMentIndex()
+        {
+            var now = DateTime.Now;
+            var d1 = new DateTime(now.Year, now.Month, 1);
+            var d2 = d1.AddMonths(1).AddDays(-1);
+            ViewBag.d1 = d1;
+            ViewBag.d2 = d2;
+
+            return View();
+        }
+        #endregion
+
+        #region 查询日志
+        public ActionResult LogIndex(ExpressLogRefer refer)
+        {
+            var result = ExpressClient.Instance.QueryLogPageList(refer);
+            return View(result);
+        }
+
+        #endregion
+
+        #region 订单状态扭转
+
+        public ActionResult OrderStatusIndex(ExpressOrderStatusRefer refer)
+        {
+            var result = ExpressClient.Instance.QueryOrderStatusPageList(refer);
+            return View(result);
+        }
+
+        public ActionResult OrderStatusConfigIndex(ExpressOrderStatusConfigRefer refer)
+        {
+            var result = ExpressClient.Instance.QueryOrderStatusConfigList(refer);
+            return View(result);
+        }
+        public ActionResult OrderStatusConfigUpdate(int sysNo)
+        {
+            var refer = new ExpressOrderStatusConfigRefer();
+            var gad = new OrderStatusConfigModel();
+            var result = ExpressClient.Instance.QueryOrderStatusConfigEntity(sysNo);
+            if (result.SysNo != null)
+            {
+                gad = result;
+            }
+            return View(gad);
+        }
+        public ActionResult OrderStatusConfigAdd()
+        {
+            return View();
+        }
+        #endregion
+
+
+        [HttpPost]
+        [MultipleButton(Name = "action", Argument = "ExpressInfoExport")]
+        public ActionResult ExpressInfoExport(ExpressInfoRefer refer)
+        {
+            refer.PageIndex = 1;
+            refer.PageSize = int.MaxValue;
+            var result = ExpressClient.Instance.QueryExpressInfoPageList(refer);
+            if (result.List == null || !result.List.Any())
+            {
+                return View("Error");
+            }
+            var dicProperties = new Dictionary<string, string>();
+            dicProperties.Add("SysNo", "SysNo");
+            dicProperties.Add("OrderCode", "订单号");
+            dicProperties.Add("LogiscticNo", "物流单号");
+            dicProperties.Add("LogiscticId", "配送商ID");
+            dicProperties.Add("LogiscticCompanyName", "快递公司");
+            dicProperties.Add("OrderStatusContent", "订单扭转");
+            dicProperties.Add("LogiscticContent", "物流信息");
+            dicProperties.Add("LogisticOuterContent", "国际物流");
+            dicProperties.Add("CallTypeDesc", "对接方式");
+            dicProperties.Add("SubscribeStatusDesc", "订阅状态");
+            dicProperties.Add("SubscribeCount", "订阅次数");
+            dicProperties.Add("CallCount", "总调用(推送)次数");
+            dicProperties.Add("LastStatusDesc", "运单状态");
+            dicProperties.Add("PushRequestMessage", "快递100消息");
+            dicProperties.Add("RequestFaildReason", "订阅失败原因");
+            dicProperties.Add("OrderTypeDesc", "订单类型");
+            dicProperties.Add("RowCreateDate", "创建日期");
+            dicProperties.Add("Remark", "备注");
+            dicProperties.Add("HandleSuggest", "处理建议");
+
+            ExcelHelper.GetInstance().WriteListToExcel(result.List, dicProperties, "物流信息列表");
+            return null;
+        }
+
+        public ActionResult Export()
+        {
+            return View("Export/Export");
+        }
+
+        public ActionResult DelInfo(int SysNo, string OrderCode)
+        {
+            ViewBag.SysNo = SysNo;
+            ViewBag.OrderCode = OrderCode;
+            return View("DelReason/DelReason", JsonRequestBehavior.AllowGet);
+        }
+
+        //导入数据
+        public ActionResult ExpressInfoImport()
+        {
+            var ptcp = new BaseResponse() { DoFlag = true, DoResult = "Success" };
+            var file = Request.Files["files"];
+            if (file == null)
+            {
+                ptcp.DoFlag = false;
+                ptcp.DoResult = "请选择上传文件";
+                goto ovr;
+            }
+            try
+            {
+                var filename = Path.GetFileName(file.FileName);
+                if (string.IsNullOrEmpty(filename))
+                {
+                    ptcp.DoFlag = false;
+                    ptcp.DoResult = "请选择上传文件"; goto ovr;
+
+                }
+                var filesize = file.ContentLength;//获取上传文件的大小单位为字节byte
+                var fileEx = Path.GetExtension(filename);//获取上传文件的扩展名
+                var noFileName = Path.GetFileNameWithoutExtension(filename);//获取无扩展名的文件名
+                var maxSize = 4000 * 1024;//定义上传文件的最大空间大小为4M
+                var fileType = ".xls,.xlsx";//定义上传文件的类型字符串
+
+                var fileName = noFileName + "_" + System.Guid.NewGuid() + fileEx;
+                if (!fileType.Contains(fileEx))
+                {
+                    ptcp.DoFlag = false;
+                    ptcp.DoResult = "文件类型不对，只能导入xls和xlsx格式的文件"; goto ovr;
+                }
+                if (filesize >= maxSize)
+                {
+                    ptcp.DoFlag = false;
+                    ptcp.DoResult = "上传文件超过4M，不能上传"; goto ovr;
+                }
+                var url = Configurator.JsonServiceUrl("UploadFile");
+                if (!Directory.Exists(url))//如果不存在就创建file文件夹
+                {
+                    Directory.CreateDirectory(url);
+                }
+                var virtualPath = string.Format("{0}{1}", url, fileName);
+                // 文件系统不能使用虚拟路径
+                file.SaveAs(virtualPath);
+
+                //读取文件内容，循环处理
+                var stream = new FileStream(virtualPath, FileMode.Open);
+                var dataTable = ExcelHelper.GetInstance().ReadExcelToDataTable(stream);
+                var list = new List<ExpressImportModel>();
+                try
+                {
+                    foreach (DataRow dr in dataTable.Rows)
+                    {
+                        var sysNo = dr["SysNo"];
+                        var orderCode = dr["订单号"];
+                        var logiscticNo = dr["物流单号"];
+                        var sugges = dr["处理建议"];
+                        list.Add(new ExpressImportModel()
+                            {
+                                SysNo = Convert.ToInt32(sysNo),
+                                OrderCode = orderCode.ToString(),
+                                LogiscticNo = logiscticNo.ToString(),
+                                Suggest = sugges.ToString()
+                            });
+                    }
+                }
+                catch (Exception e)
+                {
+                    ptcp.DoFlag = false;
+                    ptcp.DoResult = "导入格式不正确：e" + e.Message; goto ovr;
+                }
+                if (!list.Any())
+                {
+                    ptcp.DoFlag = false;
+                    ptcp.DoResult = "导入内容为空"; goto ovr;
+                }
+
+                var response = ExpressClient.Instance.ImportHandleInfo(list);
+                ptcp.DoFlag = response.DoFlag;
+                ptcp.DoResult = response.DoResult;
+                if (response.ErrDtos.Any())
+                {
+                    var errStr = new StringBuilder();
+                    foreach (var item in response.ErrDtos)
+                    {
+                        errStr.AppendFormat(@"SysNo_{0}_OrderCode{1}_LogiscticNo{2}导入错误:{3} <br/>", item.SysNo,
+                                            item.OrderCode, item.LogiscticNo, item.ErrReason);
+                    }
+                    ptcp.DoResult = "以下导入出现错误：<br/>" + errStr.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                ptcp.DoFlag = false;
+                ptcp.DoResult = ex.ToString();
+            }
+
+        ovr:
+            ViewBag.Result = ptcp;
+            return View("Export/Export");
+        }
+
+        public FileResult GetFile()
+        {
+            var url = Configurator.JsonServiceUrl("DownExpressFile");
+            var fileName = Server.MapPath(url);
+            var name = Path.GetFileName(fileName);
+            return File(fileName, "application/ms-excel", Url.Encode(name));
+        }
+    }
+}

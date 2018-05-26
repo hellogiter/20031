@@ -1,0 +1,298 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using MYZJ.VIP.ServiceModel;
+using Myzj.MKMS.ServiceModel;
+using Myzj.OPC.UI.Model.SearchManagement;
+using Myzj.SearchEngine.ServiceModel;
+using Myzj.SearchEngine.ServiceModel.Base;
+
+namespace Myzj.OPC.UI.ServiceClient
+{
+    public class SearchManagementClient : BaseService
+    {
+        private SearchManagementClient()
+        {
+        }
+        private static readonly object Lockobj = new object();
+        private static SearchManagementClient _instance;
+        public static SearchManagementClient Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    lock (Lockobj)
+                    {
+                        if (_instance == null)
+                        {
+                            _instance = new SearchManagementClient();
+                        }
+                    }
+                }
+                return _instance;
+            }
+        }
+
+        #region 商品搜索词列表
+        /// <summary>
+        /// 商品搜索词列表
+        /// </summary>
+        /// <param name="search"></param>
+        /// <returns></returns>
+        public SearchManagementRefer QueryWebSearchManagement(SearchManagementRefer search)
+        {
+            var result = new SearchManagementRefer();
+
+            var req = new QueryWebSearchManagementRequest();
+
+            if (search.SearchDetail != null)
+            {
+                var str = string.Empty;
+                StringBuilder sb = new StringBuilder();
+                if (!string.IsNullOrEmpty(search.SearchDetail.TempProductId))
+                {
+                    var pidList = search.SearchDetail.TempProductId.Split(new string[] { " ", ",", "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+
+                    foreach (var pid in pidList)
+                    {
+                        sb.Append(pid + ",");
+                    }
+                    str = sb.ToString(0, sb.Length - 1);
+                }
+
+                req.ProductId = str;
+                req.ProductName = search.SearchDetail.vchProductName;
+                req.SearchWord = search.SearchDetail.SearchWord;
+                req.ExcludeWord = search.SearchDetail.ExcludeWord;
+                req.CreateBy = search.SearchDetail.CreateBy;
+                if (search.SearchDetail.State == null)
+                {
+                    req.State = 0;
+                }
+                else if (search.SearchDetail.State == 3)
+                {
+                    req.State = null;
+                }
+                else
+                {
+                    req.State = search.SearchDetail.State;
+                }
+            }
+            req.PageIndex = search.PageIndex;
+            req.PageSize = search.PageSize;
+
+            var res = MKMSClient.Send<QueryWebSearchManagementResponse>(req);
+            if (res.DoFlag)
+            {
+                result.List =
+                    Mapper.MappGereric<Web_SearchManagementExt, SearchManagementDetail>(res.SearchManageMentDos);
+                result.Total = res.Total;
+            }
+            result.SearchDetail = search.SearchDetail;
+            result.PageIndex = search.PageIndex;
+            result.PageSize = search.PageSize;
+
+            return result;
+        }
+        #endregion
+
+        #region 根据多个ID获取批量数据
+        /// <summary>
+        /// 根据多个ID获取批量数据
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public List<SearchManagementDetail> QueryWebSearchManagementListById(string id)
+        {
+            var result = new List<SearchManagementDetail>();
+            var req = new QueryWebSearchManagementByIdListRequest();
+            req.ListId = id;
+            var res = MKMSClient.Send<QueryWebSearchManagementByIdListResponse>(req);
+            if (res.DoFlag)
+            {
+                result = Mapper.MappGereric<Web_SearchManagementExt, SearchManagementDetail>(res.SearchDos);
+            }
+            return result;
+        }
+        #endregion
+
+        #region 批量修改商品搜索词
+        /// <summary>
+        /// 批量新增/批量修改商品搜索词
+        /// </summary>
+        /// <param name="search"></param>
+        /// <returns></returns>
+        public bool Update(SearchManagementBody search, out string str)
+        {
+            var req = Mapper.Map<SearchManagementBody, UpdateWebSearchManagementRequest>(search);
+
+            var res = MKMSClient.Send<UpdateWebSearchManagementResponse>(req);
+
+            str = res.DoResult;
+
+            return res.DoFlag;
+        }
+        #endregion
+
+        #region 批量新增商品搜索词
+        /// <summary>
+        /// 批量新增/批量修改商品搜索词
+        /// </summary>
+        /// <param name="search"></param>
+        /// <returns></returns>
+        public bool AddWebSearchManagement(SearchManagementBody search, out string str)
+        {
+            var req = new AddWebSearchManagementRequest();
+
+            req.SearchList = new List<TempWeb_SearchManagement>();
+
+            if (search != null && !string.IsNullOrEmpty(search.ProductId))
+            {
+                var pidList = search.ProductId.Split(new string[] { " ", ",", "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).Distinct();
+
+                foreach (var pid in pidList)
+                {
+                    var productId = 0;
+                    if (!int.TryParse(pid, out productId))
+                    {
+                        //
+                        str = "商品id错误！";
+                        return false;
+                    }
+                    req.SearchList.Add(new TempWeb_SearchManagement() { ProductId = productId, ExcludeWord = search.ExcludeWord, SearchWord = search.SearchWord, CreateBy = search.CreateBy });
+                }
+            }
+
+            var res = MKMSClient.Send<AddWebSearchManagementResponse>(req);
+
+            if (res.DoFlag)
+            {
+                //对接鲍双龙接口
+                if (!string.IsNullOrEmpty(search.ProductId))
+                {
+                    var request = new UpdateIndex();
+                    var pidList = search.ProductId.Split(new string[] { " ", ",", "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).Distinct();
+                    request.ids = new List<int>();
+
+                    foreach (var pid in pidList)
+                    {
+                        request.ids.Add(Convert.ToInt32(pid));
+                    }
+
+                    var searchEngine = SearchEngineClient.Send<MessageResponse<bool>>(request);
+                    if (!searchEngine.successful)
+                    {
+                        str = searchEngine.msg;
+                        res.DoFlag = searchEngine.successful;
+                    }
+                }
+            }
+            str = res.DoResult;
+
+            return res.DoFlag;
+        }
+        #endregion
+
+        #region 审核商品搜索词列表
+        /// <summary>
+        /// 审核商品搜索词列表
+        /// </summary>
+        /// <param name="searchItem"></param>
+        /// <returns></returns>
+        public SearchManagementItemRefer QueryWebSearchManagementItem(SearchManagementItemRefer searchItem)
+        {
+            var result = new SearchManagementItemRefer();
+            var req = new QueryWebSearchManagementItemRequest();
+            if (searchItem.SearchDetail != null)
+            {
+                var str = string.Empty;
+                StringBuilder sb = new StringBuilder();
+                if (!string.IsNullOrEmpty(searchItem.SearchDetail.TempProductId))
+                {
+                    var pidList = searchItem.SearchDetail.TempProductId.Split(new string[] { " ", ",", "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+
+                    foreach (var pid in pidList)
+                    {
+                        sb.Append(pid + ",");
+                    }
+                    str = sb.ToString(0, sb.Length - 1);
+                }
+
+                req.ProductId = str;
+                req.ProductName = searchItem.SearchDetail.vchProductName;
+                req.UpdateBy = searchItem.SearchDetail.UpdateBy;
+                req.State = searchItem.SearchDetail.State;
+                req.UpdateStartDate = searchItem.SearchDetail.UpdateStartDate;
+                req.UpdateEndDate = searchItem.SearchDetail.UpdateEndDate;
+                if (searchItem.SearchDetail.State == null)
+                {
+                    req.State = 0;
+                }
+                else if (searchItem.SearchDetail.State == 3)
+                {
+                    req.State = null;
+                }
+                else
+                {
+                    req.State = searchItem.SearchDetail.State;
+                }
+            }
+            req.PageIndex = searchItem.PageIndex;
+            req.PageSize = searchItem.PageSize;
+
+            var res = MKMSClient.Send<QueryWebSearchManagementItemResponse>(req);
+            if (res.DoFlag)
+            {
+                result.List = Mapper.MappGereric<Web_SearchManagementItemExt, SearchManagementItemDetail>(res.SearchManagementDos);
+                result.Total = res.Total;
+            }
+            result.SearchDetail = searchItem.SearchDetail;
+            result.PageIndex = searchItem.PageIndex;
+            result.PageSize = searchItem.PageSize;
+
+            return result;
+        }
+        #endregion
+
+        #region 批量审核商品搜索词详细
+        /// <summary>
+        /// 批量审核商品搜索词详细
+        /// </summary>
+        /// <param name="examine"></param>
+        /// <returns></returns>
+        public bool UpdateExamineSearchManage(ExamineSearch examine, out string str)
+        {
+            var req = Mapper.Map<ExamineSearch, WebSearchManagementItemExamineRequest>(examine);
+            var res = MKMSClient.Send<WebSearchManagementItemExamineResponse>(req);
+            str = res.DoResult;
+            return res.DoFlag;
+        }
+        #endregion
+
+        #region 检测商品Id是否存在商品表中
+        /// <summary>
+        /// 检测商品Id是否存在商品表中
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public bool CheckPdtInfoById(int productId, out string str)
+        {
+            var req = new QueryPdtBaseInfoByIdRequest();
+            req.IntProductID = productId;
+            var res = OpcClient.Send<QueryPdtBaseInfoByIdResponse>(req);
+            if (res.PdtBaseInfoDos != null)
+            {
+                str = res.PdtBaseInfoDos.VchProductName;
+            }
+            str = "";
+            return res.DoFlag;
+        }
+        #endregion
+
+    }
+}

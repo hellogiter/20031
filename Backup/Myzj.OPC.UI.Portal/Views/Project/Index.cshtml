@@ -1,0 +1,110 @@
+﻿@using Myzj.OPC.UI.Model.Project
+@{
+    ViewBag.Title = "Index";
+
+    var project = new GetProjectList();
+    project.State = -1;
+}
+
+<h2>专题管理</h2>
+<table class="showDetailTable" cellspacing="0">
+    <tr>
+        <td>专题编号:</td>
+        <td>
+            <input id="txtId" type="text" /></td>
+        <td>专题名称:</td>
+        <td>
+            <input id="txtTitle" type="text" /></td>
+    </tr>
+    <tr>
+        <td>专题状态:</td>
+        <td colspan="4">
+            <select id="selectState">
+                <option value="-1">-请选择-</option>
+                <option value="1">启用</option>
+                <option value="0">禁用</option>
+            </select>
+
+        </td>
+    </tr>
+</table>
+<div class="rowButton">
+    <input type="button" name="Add" id="btnAdd" value="新建" />
+    <input type="submit" name="Query" id="Query" value="查询" onclick="loadItem(1)" />
+</div>
+
+<div id="item">
+    @Html.Action("Item", "Project", @project)
+</div>
+
+
+<script type="text/javascript">
+
+    //更新状态
+    function updateState(obj) {
+        
+        var id = $(obj).data("id");
+        var state = 0;
+
+        if (obj.checked) {
+            state = 1;
+        }
+
+        $.ajax({
+            url: "/Project/UpState?id=" + id + "&state=" + state,
+            type: "Post",
+            success: function (res) {
+                if (res.DoFlag) {
+                } else {
+                    alert("修改失败");
+                }
+            }
+        });
+
+    }
+
+
+    //加载列表页
+    function loadItem(index) {
+        var project = {};
+        project.Id = $("#txtId").val();
+        project.Title = $("#txtTitle").val();
+        project.State = $("#selectState").val();
+
+        project.PageIndex = index;
+        project.PageIndex = '@project.PageIndex';
+        project.Fun = "loadItem";
+
+        $.ajax({
+            url: '@Url.Action("Item", "Project")',
+            type: 'post',
+            dataType: 'html',
+            contentType: 'application/json',
+            data: JSON.stringify(project),
+            success: function (result) {
+                $("#item").html(result);
+            }
+        });
+    }
+
+    function upSort(o) {
+        var obj = $(o);
+
+        var id = obj.data("id");
+        var sort = obj.val();
+
+        $.ajax({
+            url: "/Project/UpSort",
+            type: "post",
+            data: { "id": id, "sort": sort },
+            success: function (res) {
+                if (res.DoFlag) {
+                    loadItem(1);
+                } else {
+                    alert("更新失败");
+                }
+            }
+        });
+    }
+
+</script>

@@ -1,0 +1,433 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Portal.Models
+@using Myzj.OPC.UI.Model.CommentsManage
+@using Newtonsoft.Json
+@model IEnumerable<Myzj.OPC.UI.Model.CommentsManage.VipCommentProductDetail>
+@{
+	ViewBag.Productlink = Configurator.JsonServiceUrl("ProductLinkUrl");
+	}
+<style>
+	.sBtnb {width: 10%;height: 30px;margin-top: 10px;margin-left: 10px;cursor: pointer; }
+</style>
+				  	<link rel="stylesheet" href="@Url.Content("~/Content/lightbox/css/lightbox.css")">
+ <script src="@Url.Content("~/Scripts/lightbox/lightbox.js")"></script>
+@if (Model != null && Model.Any())
+{
+	<input type="button" value="批量审核" class="sBtnb" onclick=" javascript: Checking(); " id="ChkBtn"/>
+	<input type="button" value="批量加精" class="sBtnb" onclick=" AddEssence() "/>
+	<input type="button" class="sBtnb" onclick="ImportComment()" value="导入" />
+    <table class="resultTable" style="margin-top: 30px">
+        <thead>
+            <tr>
+                <th>
+                    <input type="checkbox" id="CheckAll"/></th>
+                <th>评论ID</th>
+	            <th>会员ID</th>
+				<th>会员昵称</th>
+                <th>订单ID</th>
+                <th style="width:12%">评价商品</th>
+                <th>总评</th>
+				<th style ="width:12%">评论详情</th>
+				<th>评论图片</th>
+	            <th>原评论ID</th>
+				<th style="width:12%">回复详情</th>
+			
+				<th style="width:12%">审核详情</th>
+	            <th style="width: 160px">
+		            审核状态:
+		            <select id="scoresame">
+			            <option value="1">未审核</option>
+			            <option value="2">审核通过</option>
+			            <option value="3">审核未通过</option>
+		            </select>
+	            </th>
+				<th>精华</th>
+				<th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+						<input type="checkbox" name="checkitem" value="@item.Id" @(item.CheckState > 1 ? "disabled" : "")/></td>
+	                <td>@item.Id</td>
+	                <td>@item.UserId</td>
+					<td>@item.ShowNickName</td>
+	                <td>@item.OrderId</td>
+	                <td style="text-align:left"><a href="@(ViewBag.Productlink + item.ProductId).html" target="_blank" style="text-decoration: underline"><span style="color: #ff0000">@item.ProductId</span>@item.ProductName</a></td>
+
+					<td>@item.Score</td>
+
+					<td style="text-align: left;">
+						@{
+							if (!string.IsNullOrEmpty(item.ContentInfo))
+							{
+								<span style="color: #ff0000">评论内容：</span>@item.ContentInfo<br />
+							}
+							if (item.AddTime != null)
+							{
+								<span style="color: #ff0000">评论时间：</span>@item.AddTime
+							}
+						}
+					</td>
+
+	                <td>
+		                @{
+			                     if (!string.IsNullOrEmpty(item.UserImgObj))
+			                     {
+				                     var imgList = JsonConvert.DeserializeObject<List<CommentImg>>(item.UserImgObj).OrderBy(m => m.ImgSort);
+				                     foreach (var itemImg in imgList)
+				                     {
+					                     <a href="@itemImg.ImgUrl" data-lightbox="commentImg-set"><img src="@itemImg.ImgUrl" height="50"/></a>
+				                     }
+			                     }
+		                     }
+	                </td>
+	                <td>
+		                @if (item.ParentId > 0)
+		                {
+			                <a href="@Url.Action("Index", "CommentsManage", new { pids = item.ParentId })">@item.ParentId</a>
+		                }
+		                else
+		                {
+			                <span>无</span>
+		                }
+		                
+
+	                </td>
+	                <td style="text-align: left;">
+						@{
+							if (!string.IsNullOrEmpty(item.ReplyContent))
+							{
+								<span style="color: #ff0000">回复内容：</span>@item.ReplyContent<br />
+							}
+							if (!string.IsNullOrEmpty(item.ReplyUser))
+							{
+								<span style="color: #ff0000">回复人：</span>@item.ReplyUser<br />
+							}
+							if (item.ReplyTime != null)
+							{
+								<span style="color: #ff0000">回复时间：</span>@item.ReplyTime
+							}
+						}
+	                </td>
+					
+					<td style="text-align: left;">
+						@{
+				if (!string.IsNullOrEmpty(item.CheckInfo))
+				{
+					<span style="color: #ff0000">拒绝理由：</span>@item.CheckInfo<br />
+				}
+				if (!string.IsNullOrEmpty(item.CheckUser))
+				{
+					<span style="color: #ff0000">审核人：</span>@item.CheckUser<br />
+				}
+				if (item.CheckTime != null)
+				{
+					<span style="color: #ff0000">审核时间：</span>@item.CheckTime
+				}
+						}
+					</td>
+
+	                <td>
+		                <select value="@item.CheckState" name="selsectItem">
+			                @{
+				                var stateList = typeof (AppEnum.CheckState).GetEnumList();
+				                foreach (var stateItem in stateList)
+				                {
+					                if (item.CheckState == stateItem.Key)
+					                {
+						                <option selected="selected" value="@stateItem.Key">@stateItem.Value</option>
+					                }
+					                else
+					                {
+						                <option value="@stateItem.Key"> @stateItem.Value </option>
+					                }
+				                }
+			                }
+		                </select>
+	                </td>
+
+					<td><input type="checkbox" name="essenceitem" value="@item.Id" @(item.IsHighLight == 1 ? "checked" : "") /></td>
+	                <td>
+						@{
+							if (item.CheckState > 1)
+							{
+								<span>已审核</span>
+							}
+							else
+							{
+								
+						<input type="button" value="提交审核" name="subState" style="cursor: pointer"/>
+							}
+							if (item.CheckState == 2 && string.IsNullOrEmpty(item.ReplyContent))
+							{
+								<input type="button" value="回复" onclick=" javascript: ReplyComment(@item.Id); " />
+							}
+						}
+		        
+	                </td>
+
+                </tr>
+  
+            }
+
+        </tbody>
+    </table>
+}
+
+<script type="text/javascript">
+	var checkJsonList = new Array();
+	var unEssenceList = new Array();
+	var refusedReason = "";
+	var cheJsonStr = "";
+	var replyinfo = "";
+	var rid;
+	var writeReason = false;
+	var unSetStat = false;
+	//全局控制select
+	$("#scoresame").change(function() {
+		var value = $(this).val();
+		$("select[name='selsectItem']").each(function() {
+			$(this).val(value);
+		});
+	});
+
+	//select改变同时勾选checkbox
+	$("select[name='selsectItem']").change(function () {
+		var itemsel = $(this).val();
+		if (itemsel > 1) {
+			$(this).parents("tr").find("input[name='checkitem']").prop("checked", "true");
+		} else {
+			$(this).parents("tr").find("input[name='checkitem']").removeAttr("checked");
+		}
+	});
+
+	//单项审核
+	$("input[name=subState]").click(function () {
+		var oneState = $(this).parents("tr").find("select[name='selsectItem']").val();
+		var oneId = $(this).parents("tr").find("input[name=checkitem]").val();
+		if (oneId > 0 && oneState > 1) {
+			checkJsonList.push({ "Id": oneId, "CheckState": oneState });
+			preaudit();
+		} else {
+			$.psAlert('请设置审核状态',2);
+		}
+	});
+
+	//多项审核
+	function Checking() {
+		checkJsonList = new Array();
+		var checkobj = $("input[name=checkitem]:checked");
+		$.each(checkobj, function (index, content) {
+			var id = checkobj[index].value;
+			//var checkState = $(this).parent().parent().find("select[name='selsectItem']").val();
+			var checkState = $(this).parents("tr").find("select[name='selsectItem']").val();
+			if (checkState > 1) {
+				checkJsonList.push({ "Id": id, "CheckState": checkState });
+			}
+			if (checkState == 1) {
+				$.psAlert('请设置审核状态！',2);
+				return false;
+			}
+		});
+
+		if (checkobj.length < 1) {
+			$.psAlert('请选择要审核的选项！',2);
+			return false;
+		}
+		if (checkobj.length == checkJsonList.length) {
+			preaudit();
+		}
+
+	}
+	//审核功能
+	function preaudit() {
+		//填写原因
+		$.each(checkJsonList, function (index, content) {
+			var tempState = checkJsonList[index]["CheckState"];
+			if (tempState == 3) {
+				writeReason = true;
+				return false;
+			}
+		});
+
+		//填写拒绝原因
+		if (writeReason) {
+			var rejectcontentbox = '<div id="setTemCon"><select name="setdefault"><option selected="selected" value="0">设置拒绝理由</option><option value="抱歉，您的评论有反动信息">模板一</option><option value="抱歉，您的评论有低俗信息">模板二</option><option value="抱歉，您的评论过于夸张">模板三</option></select><input type="text" id="refusedre" name="refusedre" placeholder="*注明拒绝理由" maxlength="500" style="width:240px;height:60px;line-height:30px"/></div>';
+
+			$.psAlert(rejectcontentbox,0,{
+				'modal': true,
+				'overlay_close': false,
+				'custom_class': 'dialog',
+				'overlay_opacity': 0.5,
+				'width': 300,
+				'height': 200,
+				'buttons': [
+					{
+						caption: '确认',
+						callback: function() {
+							refusedReason = $.trim(($("#refusedre").val()));
+							if ($.trim(refusedReason).length == 0) {
+								$.psAlert('请注明拒绝理由！',2);
+							} else {
+								auditComment();
+							}
+						}
+					}
+				]
+			},"拒绝理由");
+
+			//设置textarea的值
+			$("select[name='setdefault']").change(function () {
+				var setval = $(this).val();
+				if (setval == "0") {
+					$("#refusedre").val("");
+				} else {
+					$("#refusedre").val(setval) ;
+				}
+			});
+		} else {
+			//勾选全部审核通过
+			auditComment();
+		}
+	}
+	//设置审核状态ajax请求
+	function auditComment() {
+		cheJsonStr = $.trim(JSON.stringify(checkJsonList));
+		var postdata = { CheJsonStr: cheJsonStr, RefusedReason: refusedReason };
+		$.ajax({
+			url: '@Url.Action("AuditCommnetManage", "CommentsManage")',
+			type: 'post',
+			dataType: 'json',
+			contentType: 'application/json',
+			data: JSON.stringify(postdata),
+			success: function (result) {
+				if (result.DoFlag) {
+					$.psAlert(result.DoResult,4,{'buttons':  [
+						{caption: '确定', callback: function() {
+							location.reload();
+						}}
+					]});
+				} else {
+					$.psAlert(result.DoResult,3);
+				}
+
+			},
+			error: function (data) {
+				$.psAlert(data.responseText,1);
+			}
+		});
+	}
+
+	//获取取消精华的id
+	$("input[name=essenceitem]").click(function() {
+		var isSelect = $(this).is(":checked");
+		if (!isSelect) {
+			unEssenceList.push(this.value);
+		}
+	});
+
+	//设置精华
+	function AddEssence() {
+		var checkEssenceList = new Array();
+		var essenceobj = $("input[name=essenceitem]:checked");
+		$.each(essenceobj, function (index, content) {
+			var cId = essenceobj[index].value;
+			checkEssenceList.push(cId);
+		});
+
+		if (checkEssenceList.length < 1) {
+			$.psAlert('请勾选好要加精的项！',2);
+			return false;
+		}
+		else {
+			var cIds = checkEssenceList.join(",");
+			var uncIds = unEssenceList.join(",");
+			if (confirm("你确定设置好精华了吗？")) {
+				$.ajax({
+					url: '@Url.Action("SetEssence", "CommentsManage")',
+					type: 'post',
+					dataType: 'json',
+					contentType: 'application/json',
+					data: JSON.stringify({ cids: cIds ,uncids:uncIds}),
+					success: function (result) {
+						if (result.DoFlag) {
+							$.psAlert(result.DoResult,4);
+							location.reload();
+						} else {
+							$.psAlert(result.DoResult,3);
+						}
+					},
+					error: function (data) {
+						$.psAlert(data.responseText,1);
+					}
+				});
+			}
+		}
+	}
+
+	var containerdiv = '<div styel="width:400px,height:300px"><textarea id="reply"  maxlength="50" cols="38"></textarea><span style="font-size:12px">请输入50字以内回复</span></div>';
+
+	function ReplyComment(replyid) {
+		rid = replyid;
+		$.psAlert(containerdiv,0,{'buttons':  [
+							{caption: '提交', callback: function() {
+								replyinfo = $("#reply").val();
+								if (replyinfo.length > 0 && rid > 0) {
+									TryReply();
+								} else {
+									$.psAlert('请输入回复内容！',2);
+								}
+							}},
+							{caption: '取消', callback: function() { }}
+		]},"回复");
+	}
+	function TryReply() {
+		$.ajax({
+			url: '@Url.Action("ReplyComment", "CommentsManage")',
+			type: 'post',
+			dataType: 'json',
+			contentType: 'application/json',
+			data: JSON.stringify({ rid: rid, replyinfo: replyinfo }),
+			success: function(result) {
+				if (result.DoFlag) {
+					$.psAlert(result.DoResult, 4, {
+						'buttons': [
+							{
+								caption: '确定',
+								callback: function() {
+									location.reload();
+								}
+							}
+						]
+					});
+				} else {
+					$.psAlert(result.DoResult, 3);
+				}
+			},
+			error: function(data) {
+				$.psAlert(data.responseText, 1);
+			}
+		});
+	}
+
+	function ImportComment() {
+		$.psAlert("",0,{
+			'modal': true,
+			'overlay_close': false,
+			'custom_class': 'dialog',
+			'overlay_opacity': 0.5,
+			'width': 600,
+			'buttons': false,
+			source: {
+				'iframe': {
+					'src': '@Url.Action("ImportCommnets", "CommentsManage")',
+					'height': 200
+				}
+			}
+		},"导入评论");
+	}
+
+</script> 

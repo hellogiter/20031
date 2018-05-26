@@ -1,0 +1,125 @@
+﻿@{
+	ViewBag.Title = "新增商品搜索词";
+}
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.SearchManagement
+@using Myzj.OPC.UI.ServiceClient
+@model Myzj.OPC.UI.Model.SearchManagement.SearchManCheckDetail
+
+<style>
+	.showDetailTable tr td:nth-child(2n+1) {
+		width: 15%;
+		text-align: right;
+	}
+
+	.showDetailTable tr td:nth-child(2n) {
+		width: 85%;
+	}
+
+	.showDetailTable select[name=OperateType] {width: 200px;}
+
+		.showDetailTable .sBtn {
+		width: 15%;
+		height: 30px;
+		margin-top: 10px;
+		margin-bottom: 10px;
+		cursor: pointer;
+	}
+
+</style>
+
+<h2>@ViewBag.Title</h2>
+<table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+	<tbody>
+	<tr>
+		<td>商品ID:</td>
+		<td colspan="2">
+			<textarea id="ProductIds">@Model.ProductIds</textarea>
+			<span style ="width: 240px; padding-top:60px">可添加多个商品ID，多个ID之间以逗号或换行分割</span>
+		</td>
+	</tr>
+	<tr>
+		<td>搜索关键词:</td>
+		<td colspan="2">
+			<textarea id="KeyWords">@Model.KeyWords</textarea>
+			<span style="width: 240px; padding-top:60px">可添加多个搜索词，多个词之间用逗号或换行分割</span>
+		</td>
+	</tr>
+	<tr>
+		<td>操作类型:</td>
+		<td colspan="2">
+			@{
+				var operatetypeList = new Dictionary<int, string>()
+				{
+					{1, "新增/追加"},
+					{2, "删除搜索词"}
+				};
+				@Html.DropDownListFor(m => m.OperateType, new KvSelectList(operatetypeList))
+			}
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			<input type="button" value="确认并提交" id="btnSave" class="sBtn" style="margin-left: 35%"/>
+			<input type="button" value="返回" onclick=" window.close() " class="sBtn"/>
+		</td>
+	</tr>
+	</tbody>
+
+</table>
+
+
+<script type="text/javascript">
+	//用英文逗号替换英文分号、中英文逗号或者回车
+	function ReplaceSeperator(mobiles) {
+		var i;
+		var result = "";
+		var c;
+		for (i = 0; i < mobiles.length; i++) {
+			c = mobiles.substr(i, 1);
+			if (c == ";" || c == "," || c == "，" || c == "\n")
+				result = result + ",";
+			else if (c != "\r")
+				result = result + c;
+		}
+		return result;
+	}
+
+	function necessaryinput() {
+		if ($("#ProductIds").val() == '' || $("#ProductIds").val() == undefined) {
+			alert("请填写商品ID");
+			return false;
+		}
+		if ($("#KeyWords").val() == '' || $("#KeyWords").val() == undefined) {
+			alert("请填写搜索关键词");
+			return false;
+		}
+		return true;
+	}
+
+	var model = {};
+	$("#btnSave").click(function() {
+		model.ProductIds = ReplaceSeperator($.trim($("#ProductIds").val()));
+		model.KeyWords = ReplaceSeperator($.trim($("#KeyWords").val()));
+		model.OperateType = $("#OperateType").val();
+		if (necessaryinput()) {
+			if (confirm("你确定保存吗？")) {
+				$.ajax({
+					url: '@Url.Action("AddSearchManCheckEntity", "SearchManagement")',
+					type: 'post',
+					dataType: 'json',
+					contentType: 'application/json',
+					data: JSON.stringify(model),
+					success: function(result) {
+						if (result.DoFlag) {
+							alert(result.DoResult);
+							window.location.href = '@Url.Action("ExamineIndex", "SearchManagement")';
+						} else {
+							alert(result.DoResult);
+						}
+					}
+				});
+			}
+		}
+	});
+</script>

@@ -1,0 +1,115 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.Comments.CommentsRecord
+<h2>评论管理</h2>
+
+<script type="text/javascript">
+    //绑定状态
+    //name 名称
+    //val 值
+    function bingSate(name, val) {
+        $("#" + name).val(val);
+    }
+</script>
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable">
+        <tbody>
+            <tr>
+                <td>ID:</td>
+                <td>
+                    <input type="text" value="@ViewBag.ByReportProjectId" id="ReplyUserId" name="ReplyUserId"/>
+                </td>
+                <td>评论人Id:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.ReplyUserId)
+                </td>
+            </tr>
+            <tr>
+                <td>主标题ID:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.ProjectId)
+                </td>
+                <td>类型:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.SearchDetail.CommentsRecordType, new KvSelectList(typeof(AppEnum.CommentsRecordType).GetEnumList()), true)
+                </td>
+            </tr>
+            <tr>
+                <td>状态:</td>
+                <td colspan="3">
+                    @Html.DropDownListFor(m => m.SearchDetail.CommentsRecordState, new KvSelectList(typeof(AppEnum.CommentsRecordState).GetEnumList()), true)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    var success = @ViewData["SuccessMsg"];
+    if (null != success)
+    {
+    <span style="color: green">@success</span>
+    }
+    var notice = @ViewData["ErrorMsg"];
+    if (null != notice)
+    {
+    <span style="color: red">@notice</span>
+    }
+
+   
+    @Html.Partial("Item", @Model.List)
+    
+    @Html.Partial("Pager", @Model)
+   
+}
+
+<script type="text/javascript">
+    $(function () {
+        //删除评论
+        $(".delcomment").click(function () {
+            
+            var obj = $(this);
+
+            var id = obj.attr("pvalue");
+            var tpye = obj.data("type");
+            var projectId = obj.data("projectid");
+            
+
+            $.ajax({
+                url: "/MLTCommentsRecord/Delete",
+                data: { "id": id, "recordType": tpye, "projectId": projectId },
+                dataType: 'json',
+                type: 'POST',
+                success: function (res) {
+                    if (res.DoFlag) {
+                        location.reload();
+                        // reloadPage();
+
+                    } else {
+                        alert(res.DoResult);
+                    }
+                }
+            });
+        });
+        //修改评论状态
+        $(".selState").change(function () {
+            var obj = $(this);
+
+            var id = obj.attr("pvalue");
+            var state = obj.val();
+            var tpye = obj.data("type");
+            var projectId = obj.data("projectid");
+
+            $.ajax({
+                url: "/MLTCommentsRecord/UpdateCommentState",
+                data: { "id": id, "state": state, "recordType": tpye, "projectId": projectId },
+                dataType: 'json',
+                type: 'POST',
+                success: function (res) {
+                    if (res.DoFlag) {
+                        location.reload();
+                    } else {
+                        alert(res.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>

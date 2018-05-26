@@ -1,0 +1,632 @@
+﻿@using System.Web.Script.Serialization
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.SpreadInfo
+@model Myzj.OPC.UI.Model.SpreadInfo.AddSpreadActivity
+@{
+    var region = (List<SpreadUserDetail>)ViewBag.Region;
+    var activity = (Activity)ViewBag.AllActivity;
+    var isEdit = (Model != null && Model.ActivityId > 0);
+    var actionName = isEdit ? "Update" : "Add";
+
+    BackGroundData Photo = new BackGroundData();
+    ShareInfo share = new ShareInfo();
+    NecessaryInfoJson NecessaryData = new NecessaryInfoJson();
+
+    var code = "";//优惠码
+    var coupon = "";//优惠劵
+}
+
+@if (isEdit)
+{
+    if (Model.BackGroundPhotoUrl != null && Model.BackGroundPhotoUrl != "")
+    {
+        var strNecessary = HttpUtility.HtmlDecode(Model.BackGroundPhotoUrl);
+        JavaScriptSerializer json = new JavaScriptSerializer();
+        Photo = json.Deserialize<BackGroundData>(strNecessary);
+    }
+    if (Model.ShareInfoJson != null && Model.ShareInfoJson != "")
+    {
+        var strshare = HttpUtility.HtmlDecode(Model.ShareInfoJson);
+        JavaScriptSerializer jsonShare = new JavaScriptSerializer();
+        share = jsonShare.Deserialize<ShareInfo>(strshare);
+    }
+    if (Model.NecessaryInfoJson != null && Model.NecessaryInfoJson != "")
+    {
+        var strNecessaryData = HttpUtility.HtmlDecode(Model.NecessaryInfoJson);
+        JavaScriptSerializer jsonNecessaryData = new JavaScriptSerializer();
+        NecessaryData = jsonNecessaryData.Deserialize<NecessaryInfoJson>(strNecessaryData);
+    }
+
+    <h2>修改活动</h2>
+    <input type="hidden" value="@Model.ActivityId" id="ActivityId"/>
+    
+    if (Model.ActivityPrize != null)
+    {
+        foreach (var item in Model.ActivityPrize)
+        {
+            if (item.PrizeType == AppEnum.PrizeType.Code)
+            {
+                code += item.PrizeIdentity + ",";
+            }
+            else if (item.PrizeType == AppEnum.PrizeType.Coupon)
+            {
+                coupon += item.PrizeIdentity + ",";
+            }
+        }
+    }
+}
+else
+{
+    <h2>创建活动</h2>
+}
+<script src="../../Scripts/Ueditor/ueditor.javaconfig.js"></script>
+<script src="../../Scripts/Ueditor/ueditor.all.js"> </script>
+<script src="../../Scripts/Ueditor/lang/zh-cn/zh-cn.js"></script>
+
+
+<script type="text/javascript">
+    $(function () {
+        $("body").append("<div id=\"editor-img\" style=\"display:none\"></div><div id=\"temp-img-list\" style=\"display: none\"></div> ");
+        var ue = UE.getEditor('editor-img');
+
+
+        if (typeof (UE) != 'undefined') {
+            UE.imageDialog = function showImageDialog(editor, targetId, limit) {
+
+                if (typeof (limit) === "undefined" || limit <= 0) {
+                    limit = 10;
+                }
+
+                var beforeInsertImage = function (t, arg) {
+
+                    if (typeof (arg) == 'undefined') {
+                        xwarning("返回对象为undefined");
+                        return false;
+                    }
+
+                    if (arg.length > limit) {
+                        xwarning("选择图片不能超过" + limit + "张。");
+                        return false;
+                    }
+                    var tmps = [];
+                    for (var i = 0; i < arg.length; i++) {
+                        var el = arg[i];
+                        if (el && el.src) {
+                            tmps.push(el.src);
+                        }
+                    }
+                    var input = document.getElementById(targetId);
+                    input.setAttribute("value", tmps.join(','));
+
+                    editor.removeListener("beforeInsertImage", beforeInsertImage);
+                    return false;
+                };
+
+                editor.addListener('beforeInsertImage', beforeInsertImage);
+
+                editor.addListener('imageClosed', function () {
+                    editor.removeListener("beforeInsertImage", beforeInsertImage);
+                });
+
+                var myImage = editor.getDialog("insertimage");
+                myImage.open();
+            };
+        }
+        //奖品图片
+        $("#btnUpLoad").click(function () {
+            UE.imageDialog(ue, 'ActivityPic', 1);
+        });
+        //背景图片
+        $("#btnBackImg").click(function () {
+            UE.imageDialog(ue, 'BackImg', 1);
+        });
+        //底部图片
+        $("#btnFootImg").click(function () {
+            UE.imageDialog(ue, 'FootImg', 1);
+        });
+        //分享图片
+        $("#btnSharePic").click(function () {
+            UE.imageDialog(ue, 'ShareData_SharePic', 1);
+        });
+        //副图1
+        $("#btnMYZJ").click(function () {
+            UE.imageDialog(ue, 'Picture1', 1);
+        });
+        //副图2
+        $("#btnJJH").click(function () {
+            UE.imageDialog(ue, 'Picture2', 1);
+        });
+
+    });
+</script>
+
+<div id="tableContainer">
+    <form id="detailForm">
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>活动名称(*):</td>
+                    <td colspan="3">
+                        @Html.TextBoxFor(m => m.ActivityName)
+                    </td>
+                </tr>
+                <tr>
+                    <td>奖品图片(*):</td>
+                    <td colspan="3">
+                        <input type="text" value="@Model.ActivityPic" id="ActivityPic"/>
+                        <input type="button" value="选择图片" style="width: 65px; margin-left: 25px;" id="btnUpLoad" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>背景图片(*):</td>
+                    <td colspan="3">
+                        <input type="text" value="@Photo.BackImg" id="BackImg" />
+                        <input type="button" value="选择图片" style="width: 65px; margin-left: 25px;" id="btnBackImg" />
+                        <input type="hidden" value="" id="HeadImg" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>底部图片(*):</td>
+                    <td colspan="3">
+                        <input type="text" value="@Photo.FootImg" id="FootImg"/>
+                        <input type="button" value="选择图片" style="width: 65px; margin-left: 25px;" id="btnFootImg" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>副图1:</td>
+                    <td colspan="3">
+                        <input type="text" value="@Photo.Picture1" id="Picture1" />
+                        <input type="button" value="选择图片" style="width: 65px; margin-left: 25px;" id="btnMYZJ" />
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>副图2:</td>
+                    <td colspan="3">
+                        <input type="text" value="@Photo.Picture2" id="Picture2" />
+                        <input type="button" value="选择图片" style="width: 65px; margin-left: 25px;" id="btnJJH" />
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>限制人数(*):</td>
+                    <td colspan="3">
+                        @Html.TextBoxFor(m => m.LimitNumber)
+                    </td>
+                </tr>
+                <tr>
+                    <td>优惠码（多个用","隔开）:</td>
+                    @{
+                        var read = "";
+                        if (Model.ActivityId > 0)
+                        {
+                            read = "disabled='disabled'";
+                        }
+                        else
+                        {
+                            read = "";
+                        }
+                        <td colspan="3">
+                            <input type="text" value="@code.ToString().TrimEnd(',')" id="PrizeId" name="PrizeId" @read/>
+                        </td>
+                    }
+                </tr>
+                <tr>
+                    <td >优惠劵（多个用","隔开）:</td>
+                    @{
+                        var readCoupon = "";
+                        if (Model.ActivityId > 0)
+                        {
+                            readCoupon = "disabled='disabled'";
+                        }
+                        else
+                        {
+                            readCoupon = "";
+                        }
+                        <td colspan="3">
+                            <input type="text" value="@coupon.ToString().TrimEnd(',')" id="CouponId" name="CouponId" @readCoupon/>
+                        </td>
+                    }
+                </tr>
+                <tr>
+                    <td>开始时间(*):</td>
+                    <td colspan="3">
+                        @Html.TextBoxFor(m => m.StartTime, new { @style = "width:180px;" })
+                        <label style="width: 20px;">-</label>
+                        @Html.TextBoxFor(m => m.EndTime, new { @style = "width:180px;" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>活动规则:</td>
+                    <td colspan="3">
+                        @Html.TextAreaFor(m => m.RoleDetail, new { @style = "margin: 10px 10px 10px 10px;" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>活动备注:</td>
+                    <td colspan="3">
+                        @Html.TextAreaFor(m => m.Remark, new { @style = "margin: 10px 10px 10px 10px;" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>分享标题:</td>
+                    <td colspan="3">
+                        <input type="text" value="@share.Title" id="ShareData_Title"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>分享图片:</td>
+                    <td colspan="3">
+                        <input type="text" value="@share.SharePic" id="ShareData_SharePic"/>
+                        <input type="button" value="选择图片" style="width: 65px; margin-left: 13px;" id="btnSharePic" />
+                        <label style="width: 50px">图片尺寸必须大于:300px × 300px</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>分享描述:</td>
+                    <td colspan="3">
+                        <textarea id="ShareData_Describition" style="margin: 10px 10px 10px 10px;">@share.Describition</textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>领取成功提示语:</td>
+                    <td colspan="3">
+                        <textarea id="ShareData_SuccessfulCue" style="margin: 10px 10px 10px 10px;">@share.Successtips</textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>新老用户:</td>
+                    <td colspan="3">
+                        @{
+                            if (Model.EnableOldUser == true)
+                            {
+                            <input type="radio" value="false" style="width: 30px; margin-top: 8px" name="EnableOldUser" id="OldTrue" />
+                            <label style="width: 30px; float: left; margin-left: -2px; margin-top: 8px" for="OldTrue">不支持老用户</label>
+                            <input type="radio" value="true" style="width: 30px; margin-top: 8px; margin-left: 55px;" name="EnableOldUser" checked="checked" id="OldFalse" />
+                            <label style="width: 30px; float: left; margin-left: -6px; margin-top: 8px" for="OldFalse">支持老用户</label>
+                            }
+                            else
+                            {
+                            <input type="radio" value="false" style="width: 30px; margin-top: 8px" name="EnableOldUser" checked="checked" id="OldTrue" />
+                            <label style="width: 30px; float: left; margin-left: -2px; margin-top: 8px" for="OldTrue">不支持老用户</label>
+                            <input type="radio" value="true" style="width: 30px; margin-top: 8px; margin-left: 55px;" name="EnableOldUser" id="OldFalse" />
+                            <label style="width: 30px; float: left; margin-left: -6px; margin-top: 8px" for="OldFalse">支持老用户</label>
+                            }
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>用户提交信息:</td>
+                    <td colspan="3">
+                        @{
+                            var check = "";
+                            if (!string.IsNullOrEmpty(NecessaryData.BirthdayTime))
+                            {
+                                check = "checked='checked'";
+                            }
+                            else
+                            {
+                                check = "";
+                            }
+                            <input type="checkbox" style="width: 30px; margin-top: 8px;" id="phone" checked="checked" disabled="disabled" />
+                            <label style="width: 30px; margin-top: 7px; float: left; margin-left: -2px;" for="phone">手机号</label>
+                            <input type="checkbox" style="margin-top: 8px; width: 30px; margin-left: 55px;" id="brithday" @check/>
+                            <label style="width: 30px; margin-top: 7px; margin-left: -4px;" for="brithday">预产期/宝宝生日</label>
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 25%">是否显示</td>
+                    <td colspan="3">
+                        @{
+                            var checkLogo = "";
+                            if (!string.IsNullOrEmpty(NecessaryData.Logo))
+                            {
+                                checkLogo = "checked='checked'";
+                            }
+                            else
+                            {
+                                checkLogo = "";
+                            }
+
+                            var checkPrize = "";
+                            if (!string.IsNullOrEmpty(NecessaryData.Prize))
+                            {
+                                checkPrize = "checked='checked'";
+                            }
+                            else
+                            {
+                                checkPrize = "";
+                            }
+                        }
+                        <input type="checkbox" style="width: 30px; margin-top: 8px;" id="logo" @checkLogo/>
+                        <label style="width: 52px; margin-top: 7px; float: left; margin-left: -13px;" for="logo">logo</label>
+                        <input type="checkbox" style="width: 30px; margin-top: 8px; margin-left: 44px;" id="Prize" @checkPrize/>
+                        <label style="width: 30px; margin-top: 7px; float: left; margin-left: -2px;" for="Prize">奖品信息</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>活动模块:</td>
+                    <td>
+                        <select id="Modular" style="width: 110px; margin-left: 18px;">
+                            @if (NecessaryData.Modular == AppEnum.Modular.Promote.ToString())
+                            {  
+                                <option value="Promote" selected="selected">推广活动</option>
+                                <option value="PromoteJjh">基金活动</option>
+                            }
+                            else if (NecessaryData.Modular == AppEnum.Modular.PromoteJjh.ToString())
+                            {
+                                <option value="Promote">推广活动</option>
+                                <option value="PromoteJjh" selected="selected">基金活动</option>
+                            }
+                            else
+                            {
+                                <option value="Promote" selected="selected">推广活动</option>
+                                <option value="PromoteJjh">基金活动</option>
+                            }
+                        </select>
+                    </td>
+                    <td>短信提示模板Id:</td>
+                    <td>
+                           <input type="text" value="@share.MsgId" id="ShareData_MsgId"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>注册平台:</td>
+                    @if (Model.ActivityId > 0)
+                    {
+                        <td colspan="3">
+                            @{
+                        var checkweb = "";
+                        var checkWap = "";
+                        var checkAndroid = "";
+                        var checkIPhone = "";
+                        var checkIpad = "";
+                        if (Model.EnableWeb == true)
+                        {
+                            checkweb = "checked='checked'";
+                        }
+                        else
+                        {
+                            checkweb = "";
+                        }
+                        if (Model.EnableWap == true)
+                        {
+                            checkWap = "checked='checked'";
+                        }
+                        else
+                        {
+                            checkWap = "";
+                        }
+                        if (Model.EnableAndroid == true)
+                        {
+                            checkAndroid = "checked='checked'";
+                        }
+                        else
+                        {
+                            checkAndroid = "";
+                        }
+                        if (Model.EnableIos == true)
+                        {
+                            checkIPhone = "checked='checked'";
+                        }
+                        else
+                        {
+                            checkIPhone = "";
+                        }
+                        if (Model.EnableIpad == true)
+                        {
+                            checkIpad = "checked='checked'";
+                        }
+                        else
+                        {
+                            checkIpad = "";
+                        }
+                                <input type="checkbox" style="width: 30px; margin-top: 8px;" id="WebSite" value="1" name="ActivitySite" @checkweb disabled="disabled" />
+                                <label style="width: 30px; margin-top: 7px; float: left; margin-left: -2px;" for="WebSite">网站</label>
+                                <input type="checkbox" style="margin-top: 8px; width: 30px; margin-left: 30px;" id="Wap" value="2" name="ActivitySite" @checkWap  disabled="disabled"/>
+                                <label style="width: 30px; margin-top: 7px; margin-left: -4px;" for="Wap">WAP</label>
+                                <input type="checkbox" style="margin-top: 8px; width: 30px; margin-left: 30px;" id="Andriod" value="4" name="ActivitySite" @checkAndroid  disabled="disabled"/>
+                                <label style="width: 30px; margin-top: 7px; margin-left: -4px;" for="Andriod">安卓</label>
+                                <input type="checkbox" style="margin-top: 8px; width: 30px; margin-left: 30px;" id="IOS" value="8" name="ActivitySite" @checkIPhone  disabled="disabled"/>
+                                <label style="width: 30px; margin-top: 7px; margin-left: -4px;" for="IOS">IPhone</label>
+                                <input type="checkbox" style="margin-top: 8px; width: 30px; margin-left: 30px;" id="Ipad" value="16" name="ActivitySite" @checkIpad  disabled="disabled"/>
+                                <label style="width: 30px; margin-top: 7px; margin-left: -4px;" for="Ipad">Ipad</label>
+                            }
+                        </td>
+                    }
+                    else
+                    {
+                        <td colspan="3">
+
+                            <input type="checkbox" style="width: 30px; margin-top: 8px;" id="WebSite" value="1" name="ActivitySite" />
+                            <label style="width: 30px; margin-top: 7px; float: left; margin-left: -2px;" for="WebSite">网站</label>
+                            <input type="checkbox" style="margin-top: 8px; width: 30px; margin-left: 30px;" id="Wap" value="2" name="ActivitySite" />
+                            <label style="width: 30px; margin-top: 7px; margin-left: -4px;" for="Wap">WAP</label>
+                            <input type="checkbox" style="margin-top: 8px; width: 30px; margin-left: 30px;" id="Andriod" value="4" name="ActivitySite" />
+                            <label style="width: 30px; margin-top: 7px; margin-left: -4px;" for="Andriod">安卓</label>
+                            <input type="checkbox" style="margin-top: 8px; width: 30px; margin-left: 30px;" id="IOS" value="8" name="ActivitySite" />
+                            <label style="width: 30px; margin-top: 7px; margin-left: -4px;" for="IOS">IPhone</label>
+                            <input type="checkbox" style="margin-top: 8px; width: 30px; margin-left: 30px;" id="Ipad" value="16" name="ActivitySite" />
+                            <label style="width: 30px; margin-top: 7px; margin-left: -4px;" for="Ipad">Ipad</label>
+                        </td>
+                    }
+                </tr>
+                <tr>
+                    <td>状态:</td>
+                    <td colspan="3">
+                        @{
+                            if (Model.Status == AppEnum.ActivityStatus.Enable)
+                            {
+                            <input type="radio" value="1" style="width: 30px; margin-top: 8px" name="Status" checked="checked" id="enable" />
+                            <label style="width: 30px; float: left; margin-left: -2px; margin-top: 8px" for="enable">启用</label>
+                            <input type="radio" value="2" style="width: 30px; margin-top: 8px; margin-left: 30px;" name="Status" id="close" />
+                            <label style="width: 30px; float: left; margin-left: -6px; margin-top: 8px" for="close">禁用</label>
+                            }
+                            else if (Model.Status == AppEnum.ActivityStatus.Close)
+                            {
+                            <input type="radio" value="1" style="width: 30px; margin-top: 8px" name="Status" id="enable" />
+                            <label style="width: 30px; float: left; margin-left: -2px; margin-top: 8px" for="enable">启用</label>
+                            <input type="radio" value="2" style="width: 30px; margin-top: 8px; margin-left: 30px;" name="Status" checked="checked" id="close" />
+                            <label style="width: 30px; float: left; margin-left: -6px; margin-top: 8px" for="close">禁用</label>
+                            }
+                            else
+                            {  <input type="radio" value="1" style="width: 30px; margin-top: 8px" name="Status" checked="checked" id="enable" />
+                            <label style="width: 30px; float: left; margin-left: -2px; margin-top: 8px" for="enable">启用</label>
+                            <input type="radio" value="2" style="width: 30px; margin-top: 8px; margin-left: 30px;" name="Status" id="close" />
+                            <label style="width: 30px; float: left; margin-left: -6px; margin-top: 8px" for="close">禁用</label>
+                            }
+                        }
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="保存" id="btnSave" />
+    <input type="button" value="取消" id="btnDel" onclick="window.close()" />
+</div>
+
+<script type="text/javascript">
+
+    $(function () {
+        //保存
+        $("#btnSave").click(function () {
+            var model = {};
+            model.ActivityId = $("#ActivityId").val();
+            model.ActivityName = $("#ActivityName").val();
+            model.ActivityPic = $("#ActivityPic").val();
+            model.LimitNumber = $("#LimitNumber").val();
+            model.StartTime = $("#StartTime").val();
+            model.EndTime = $("#EndTime").val();
+            model.EnableOldUser = $('input:radio[name="EnableOldUser"]:checked').val();
+            model.Remark = $("#Remark").val();
+            model.RoleDetail = $("#RoleDetail").val();
+            model.Status = $('input:radio[name="Status"]:checked').val();
+            model.PrizeId = $("#PrizeId").val();//优惠码
+            model.CouponId = $("#CouponId").val();//优惠劵
+
+            var phone = "";
+            var brithday = "";
+            var logo = "";
+            var prize = "";
+            //循环选择的项
+            if ($("#phone").is(":checked")) {
+                phone = "必填";
+            }
+            if ($("#brithday").is(":checked")) {
+                var myDate = new Date();
+                brithday = myDate.toLocaleString();
+            }
+            if ($("#logo").is(":checked")) {
+                logo = "显示";
+            }
+            if ($("#Prize").is(":checked")) {
+                prize = "显示";
+            }
+            var site = 0;
+            $('input:checkbox[name="ActivitySite"]:checked').each(function () {
+                var thisval = $(this).val();
+                site = site | thisval;
+            });
+            model.ActivitySite = site;
+
+            model.BackGroundPhotoUrl = '{"HeadImg":"' + $("#HeadImg").val() + '","BackImg":"' + $("#BackImg").val() + '","FootImg":"' + $("#FootImg").val() + '","Picture1":"' + $("#Picture1").val() + '","Picture2":"' + $("#Picture2").val() + '"}';
+            model.NecessaryInfoJson = '{ "Phone": "' + phone + '", "BirthdayTime": "' + brithday + '", "logo": "' + logo + '", "prize": "' + prize + '", "modular": "' + $("#Modular").val() + '"}';
+            model.ShareInfoJson = '{ "Title": "' + $("#ShareData_Title").val() + '", "SharePic": "' + $("#ShareData_SharePic").val() + '", "Describition":"' + $("#ShareData_Describition").val() + '", "Successtips":"' + $("#ShareData_SuccessfulCue").val() + '","MsgId":"' + $("#ShareData_MsgId").val() + '"}';
+
+            if (model.ActivityName == null || model.ActivityName == "") {
+                alert("请输入活动名称");
+                return false;
+            }
+            if (model.ActivityPic == null || model.ActivityPic == "") {
+                alert("请输入活动图片");
+                return false;
+            }
+            if ($("#BackImg").val() == null || $("#BackImg").val() == "") {
+                alert("请输入背景图片");
+                return false;
+            }
+            if ($("#FootImg").val() == null || $("#FootImg").val() == "") {
+                alert("请输入底部图片");
+                return false;
+            }
+            if (model.LimitNumber == null || model.LimitNumber == "") {
+                alert("请输入限制人数");
+                return false;
+            }
+            if ((model.PrizeId == null || model.PrizeId == "") && (model.CouponId == "" || model.CouponId == null)) {
+                alert("优惠码或者优惠劵必须填写一项");
+                return false;
+            }
+
+            if (model.StartTime == null || model.StartTime == "" || model.EndTime == "" || model.EndTime == null) {
+                alert("请输入活动开始时间或结束时间");
+                return false;
+            }
+            if (model.RoleDetail == null || model.RoleDetail == "") {
+                alert("请输入活动规则");
+                return false;
+            }
+            if (model.Remark == null || model.Remark == "") {
+                alert("请输入活动备注");
+                return false;
+            }
+            if (model.Remark.length > 100) {
+                alert("长度不能超过100");
+                return false;
+            }
+            if ($("#ShareData_Title").val() == null || $("#ShareData_Title").val() == "") {
+                alert("请输入分享标题");
+                return false;
+            }
+
+            if ($("#ShareData_SharePic").val() == null || $("#ShareData_SharePic").val() == "") {
+                alert("请输入分享图片");
+                return false;
+            }
+            if ($("#ShareData_Describition").val() == null || $("#ShareData_Describition").val() == "") {
+                alert("请输入分享描述");
+                return false;
+            }
+            if ($("#ShareData_SuccessfulCue").val() == null || $("#ShareData_SuccessfulCue").val() == "") {
+                alert("请选择领取成功提示语");
+                return false;
+            }
+
+            if ($("#ShareData_MsgId").val() == null || $("#ShareData_MsgId").val()=="") {
+                alert("请填写短信推送模板ID");
+                return false;
+            }
+            var msgId = $("#ShareData_MsgId").val();
+            var regex = /^[1-9]([0-9])*$/;
+            if (msgId.match(regex) == null) {
+                alert("只能输入正整数");
+                return false;
+            }
+
+            if (model.ActivitySite == null || model.ActivitySite == "" || model.ActivitySite < 0) {
+                alert("请选择注册平台");
+                return false;
+            }
+
+            $.ajax({
+                url: '@Url.Action("SaveActivity", "SpreadInfo")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert(result.DoResult);
+                        reloadPage();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,1119 @@
+﻿@{
+    ViewBag.Title = "CouponLogDetail";
+
+    var floorItem = (IEnumerable<Myzj.OPC.UI.Model.BaseCouponConfig.WareHouseDetail>)ViewBag.ItemModel;
+}
+@using System.Web.Script.Serialization
+@using Myzj.OPC.UI.Model.BaseCouponConfig
+@using Myzj.OPC.UI.ServiceClient
+@using Newtonsoft.Json
+@model System.Collections.Generic.Dictionary<CouponInfoData, CouponInfoData>
+<style>
+    .input-validation-error {
+        border: 1px solid #c0c0c0;
+        background-color: white;
+    }
+
+    .showDetailTable tbody tr.tk-guanli td {
+        width: 15%;
+    }
+
+        .showDetailTable tbody tr.tk-guanli td.tk-name {
+            width: 5%;
+            text-align: center;
+        }
+
+        .showDetailTable tbody tr.tk-guanli td input {
+            text-align: left;
+            width: 85%;
+        }
+
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+
+    .color {
+        background: #ADFF2F;
+    }
+
+    .resultTable tr td {
+        word-break: break-all;
+        max-width: 500px;
+    }
+</style>
+
+<h2>日志明细</h2>
+@if (Model != null && Model.Any())
+{
+    <table class="resultTable">
+        <thead>
+            <tr class="gl-title">
+                <th></th>
+                <th>操作前</th>
+                <th>操作后</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>优惠券名称(*):</td>
+                <td class="@(Model.Keys.First().CouponName != Model.Values.First().CouponName ? "color" : "")">@Model.Keys.First().CouponName</td>
+                <td class="@(Model.Keys.First().CouponName != Model.Values.First().CouponName ? "color" : "")">@Model.Values.First().CouponName</td>
+            </tr>
+            <tr>
+                <td>优惠券发送方:</td>
+                <td class="@(Model.Keys.First().Belonging != Model.Values.First().Belonging ? "color" : "")">
+                    @{
+    var rdBelog1 = "第三方";
+    if (Model.Keys.First().Belonging != null && Model.Keys.First().Belonging.Equals("1"))
+    {
+        rdBelog1 = "母婴之家";
+    }
+                           
+                    }
+                    @rdBelog1
+
+                </td>
+                <td class="@(Model.Keys.First().Belonging != Model.Values.First().Belonging ? "color" : "")">
+                    @{
+    var rdBelog2 = "第三方";
+    if (Model.Values.First().Belonging != null && Model.Values.First().Belonging.Equals("1"))
+    {
+        rdBelog2 = "母婴之家";
+    }
+                           
+                    }
+                    @rdBelog2
+                </td>
+            </tr>
+
+            <tr>
+                <td>是否码转券：</td>
+                @if (Model.Keys.First().IsCodeToCoupon.HasValue && Model.Keys.First().IsCodeToCoupon == 1)
+                {
+                    <td>是</td>
+                }
+                else
+                {
+                    <td>否</td>
+                }
+                @if (Model.Values.First().IsCodeToCoupon.HasValue && Model.Keys.First().IsCodeToCoupon == 1)
+                {
+                    <td>是</td>
+                }
+                else
+                {
+                    <td>否</td>
+                }
+            </tr>
+            <tr>
+                <td>优惠券类型：</td>
+                @if (Model.Keys.First().CouponType.HasValue && Model.Keys.First().CouponType == 2)
+                {
+                    <td>折扣券</td>
+                }
+                else
+                {
+                    <td>满减券</td>
+                }
+                @if (Model.Values.First().CouponType.HasValue && Model.Keys.First().CouponType == 2)
+                {
+                    <td>折扣券</td>
+                }
+                else
+                {
+                    <td>满减券</td>
+                }
+            </tr>
+            <tr>
+                <td>设置(*):</td>
+                @if (Model.Keys.First().CouponType.HasValue && Model.Keys.First().CouponType == 2)
+                {
+                    <td class="@(Model.Keys.First().FillMoney != Model.Values.First().FillMoney || Model.Keys.First().Discount != Model.Values.First().Discount || Model.Keys.First().DiscountUpperLimit != Model.Values.First().DiscountUpperLimit ? "color" : "")">满 @string.Format("{0:C}", Model.Keys.First().FillMoney) &nbsp; &nbsp; &nbsp; &nbsp;
+                        折扣 @Model.Keys.First().Discount &nbsp; &nbsp; &nbsp; &nbsp;
+                        折扣金额上限 @string.Format("{0:C}", Model.Keys.First().DiscountUpperLimit)
+                    </td>
+                    <td class="@(Model.Keys.First().FillMoney != Model.Values.First().FillMoney || Model.Keys.First().SubtractMoney != Model.Values.First().SubtractMoney || Model.Keys.First().DiscountUpperLimit != Model.Values.First().DiscountUpperLimit ? "color" : "")">满 @string.Format("{0:C}", Model.Values.First().FillMoney) &nbsp; &nbsp; &nbsp; &nbsp;
+                        折扣 @Model.Values.First().Discount &nbsp; &nbsp; &nbsp; &nbsp;
+                        折扣金额上限 @string.Format("{0:C}", Model.Values.First().DiscountUpperLimit)&nbsp; &nbsp; &nbsp; &nbsp;
+                    </td>
+                }
+                else
+                {
+                    <td class="@(Model.Keys.First().FillMoney != Model.Values.First().FillMoney || Model.Keys.First().SubtractMoney != Model.Values.First().SubtractMoney ? "color" : "")">满 @string.Format("{0:C}", Model.Keys.First().FillMoney) &nbsp; &nbsp; &nbsp; &nbsp;
+                        减 @string.Format("{0:C}", Model.Keys.First().SubtractMoney)
+                    </td>
+                    <td class="@(Model.Keys.First().FillMoney != Model.Values.First().FillMoney || Model.Keys.First().SubtractMoney != Model.Values.First().SubtractMoney ? "color" : "")">满 @Model.Values.First().FillMoney &nbsp; &nbsp; &nbsp; &nbsp;
+                        减 @string.Format("{0:C}", Model.Values.First().SubtractMoney)
+                    </td>
+                }
+
+            </tr>
+            <tr>
+                <td>开始时间(*):</td>
+                <td class="@(Model.Keys.First().StartTime != Model.Values.First().StartTime ? "color" : "")">@Model.Keys.First().StartTime</td>
+                <td class="@(Model.Keys.First().StartTime != Model.Values.First().StartTime ? "color" : "")">@Model.Values.First().StartTime</td>
+            </tr>
+            <tr>
+                <td>结束时间(*):</td>
+                <td class="@(Model.Keys.First().EndTime != Model.Values.First().EndTime ? "color" : "")">@Model.Keys.First().EndTime</td>
+                <td class="@(Model.Keys.First().EndTime != Model.Values.First().EndTime ? "color" : "")">@Model.Values.First().EndTime</td>
+            </tr>
+            <tr>
+                <td>是否启用:</td>
+                <td class="@(Model.Keys.First().IsEnable != Model.Values.First().IsEnable ? "color" : "")">
+
+                    @{
+                var selectTrue = "是";
+                if (Model.Keys.First().IsEnable != null)
+                {
+                    if (Model.Keys.First().IsEnable == true)
+                    {
+                    }
+                    else
+                    {
+                        selectTrue = "否";
+                    }
+
+                }
+                           
+                    }
+                    @selectTrue
+                </td>
+                <td class="@(Model.Keys.First().IsEnable != Model.Values.First().IsEnable ? "color" : "")">
+
+                    @{
+                var selectTrue1 = "是";
+                if (Model.Values.First().IsEnable != null)
+                {
+                    if (Model.Values.First().IsEnable == true)
+                    {
+                    }
+                    else
+                    {
+                        selectTrue1 = "否";
+                    }
+
+                }
+                           
+                    }
+                    @selectTrue1
+                </td>
+            </tr>
+            <tr>
+                <td>满减券描述(*):</td>
+                <td class="@(Model.Keys.First().CouponDescription != Model.Values.First().CouponDescription ? "color" : "")">@Model.Keys.First().CouponDescription</td>
+                <td class="@(Model.Keys.First().CouponDescription != Model.Values.First().CouponDescription ? "color" : "")">@Model.Values.First().CouponDescription</td>
+            </tr>
+            <tr>
+                <td>备注信息:</td>
+                <td class="@(Model.Keys.First().Remarks != Model.Values.First().Remarks ? "color" : "")">@Model.Keys.First().Remarks</td>
+                <td class="@(Model.Keys.First().Remarks != Model.Values.First().Remarks ? "color" : "")">@Model.Values.First().Remarks</td>
+            </tr>
+            <tr>
+                <td>∨基础扩展字段</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>需求部门(*):</td>
+                <td class="@(Model.Keys.First().DeptId != Model.Values.First().DeptId ? "color" : "")">
+                    @{
+                var deptName1 = "";
+                var list1 = BaseCouponConfigClient.Instance.GetDeptList().Where(m => m.Key == Model.Keys.First().DeptId);
+                if (list1 != null && list1.Any())
+                {
+                    deptName1 = list1.First().Value;
+                }
+                    }
+                    @deptName1
+
+                </td>
+                <td class="@(Model.Keys.First().DeptId != Model.Values.First().DeptId ? "color" : "")">
+
+                    @{
+                var deptName2 = "";
+                var list2 = BaseCouponConfigClient.Instance.GetDeptList().Where(m => m.Key == Model.Values.First().DeptId);
+                if (list2 != null && list2.Any())
+                {
+                    deptName2 = list2.First().Value;
+                }
+                    }
+                    @deptName2
+                </td>
+            </tr>
+            <tr>
+                <td>每个会员限制发送张数 默认为 1(*):</td>
+                <td class="@(Model.Keys.First().SendLimitUserCount != Model.Values.First().SendLimitUserCount ? "color" : "")">@Model.Keys.First().SendLimitUserCount</td>
+                <td class="@(Model.Keys.First().SendLimitUserCount != Model.Values.First().SendLimitUserCount ? "color" : "")">@Model.Values.First().SendLimitUserCount</td>
+            </tr>
+            <tr>
+                <td>限制发送张数(*):</td>
+                <td class="@(Model.Keys.First().SendLimitCount != Model.Values.First().SendLimitCount ? "color" : "")">@Model.Keys.First().SendLimitCount</td>
+                <td class="@(Model.Keys.First().SendLimitCount != Model.Values.First().SendLimitCount ? "color" : "")">@Model.Values.First().SendLimitCount</td>
+            </tr>
+            <tr>
+                <td>将要达到限制数量报警值(%):</td>
+                <td class="@(Model.Keys.First().WillReachWarning != Model.Values.First().WillReachWarning ? "color" : "")">@Model.Keys.First().WillReachWarning</td>
+                <td class="@(Model.Keys.First().WillReachWarning != Model.Values.First().WillReachWarning ? "color" : "")">@Model.Values.First().WillReachWarning</td>
+            </tr>
+            <tr>
+                <td>设置天数(0不设置)(*):</td>
+                <td class="@(Model.Keys.First().UseSetDays != Model.Values.First().UseSetDays ? "color" : "")">@Model.Keys.First().UseSetDays</td>
+                <td class="@(Model.Keys.First().UseSetDays != Model.Values.First().UseSetDays ? "color" : "")">@Model.Values.First().UseSetDays</td>
+            </tr>
+            <tr>
+                <td>批次使用条件:</td>
+                @{
+                var flag = true;
+
+
+                var jss = new JavaScriptSerializer();
+                var m1 = jss.Serialize(Model.Keys.First().BatchUses).Trim();
+                var m2 = jss.Serialize(Model.Values.First().BatchUses).Trim();
+                if (Model.Keys.First().BatchUses == null)
+                {
+                    m1 = "";
+                }
+                if (Model.Values.First().BatchUses == null)
+                {
+                    m2 = "";
+                }
+                if (Model.Keys.First().BatchUses != null && Model.Keys.First().BatchUses.Count == 0)
+                {
+                    m1 = "";
+                }
+                if (Model.Values.First().BatchUses != null && Model.Values.First().BatchUses.Count == 0)
+                {
+                    m2 = "";
+                }
+                flag = m1.Equals(m2);
+
+                
+               
+                }
+                <td class="@(flag ? "" : "color")">
+                    @if (Model.Keys.First().BatchUses != null)
+                    {
+                        <table id="dataStr">
+                            @{
+                        var html = "";
+                        var useBatch = Model.Keys.First().BatchUses;
+                        if (useBatch != null)
+                        {
+                            foreach (var item in useBatch)
+                            {
+                                html += "<tr>";
+                                html += "<td>当前批次开始时间：<input id='BatchStartTime' placeholder='必填'  value=\"" + @item.BatchStartTime + "\" onfocus=\"" + "WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" + "\" type='text'>";
+                                html += "<br> 当前批次结束时间：<input id='BatchEndTime' placeholder='必填'   value=\"" + @item.BatchEndTime + "\" onfocus=\"" + "WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" + "\" type='text'>";
+                                html += "<br> 当前批次单个会员领取数量：<input id='BatchSendUserCount'  placeholder='必填' value=\"" + @item.BatchSendUserCount + "\" type='text'>";
+                                html += "<br> 当前批次总数量：<input id='BatchSendCount'  placeholder='必填' value=\"" + @item.BatchSendCount + "\" type='text'>";
+                                html += "</tr>";
+                            }
+                        }
+                            }
+                            @Html.Raw(html)
+                        </table>
+                    }
+                </td>
+                <td class="@(flag ? "" : "color")">
+                    @if (Model.Values.First().BatchUses != null)
+                    {
+                        string.Join(",", Model.Values.First().BatchUses);
+                        <table>
+                            @{
+                        var html = "";
+                        var useBatch = Model.Values.First().BatchUses;
+                        if (useBatch != null)
+                        {
+                            foreach (var item in useBatch)
+                            {
+                                html += "<tr>";
+                                html += "<td>当前批次开始时间：<input id='BatchStartTime' placeholder='必填'  value=\"" + @item.BatchStartTime + "\" onfocus=\"" + "WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" + "\" type='text'>";
+                                html += "<br> 当前批次结束时间：<input id='BatchEndTime' placeholder='必填'   value=\"" + @item.BatchEndTime + "\" onfocus=\"" + "WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" + "\" type='text'>";
+                                html += "<br> 当前批次单个会员领取数量：<input id='BatchSendUserCount'  placeholder='必填' value=\"" + @item.BatchSendUserCount + "\" type='text'>";
+                                html += "<br> 当前批次总数量：<input id='BatchSendCount'  placeholder='必填' value=\"" + @item.BatchSendCount + "\" type='text'>";
+                                html += "</tr>";
+                            }
+                        }
+                            }
+                            @Html.Raw(html)
+                        </table>
+                    }
+                </td>
+
+            </tr>
+            <tr>
+                <td>是否启用领券：</td>
+                @if (Model.Keys.First().IsGetCoupon)
+                {
+                    <td class="@(Model.Keys.First().IsGetCoupon != Model.Values.First().IsGetCoupon ? "color" : "")">是</td>
+                }
+                else
+                {
+                    <td class="@(Model.Keys.First().IsGetCoupon != Model.Values.First().IsGetCoupon ? "color" : "")">否</td>
+                }
+                @if (Model.Values.First().IsGetCoupon)
+                {
+                    <td class="@(Model.Keys.First().IsGetCoupon != Model.Values.First().IsGetCoupon ? "color" : "")">是</td>
+                }
+                else
+                {
+                    <td class="@(Model.Keys.First().IsGetCoupon != Model.Values.First().IsGetCoupon ? "color" : "")">否</td>
+                }
+            </tr>
+            <tr>
+                <td>是否在详情页显示：</td>
+                @if (Model.Keys.First().IsShowOnDetail)
+                {
+                    <td class="@(Model.Keys.First().IsShowOnDetail != Model.Values.First().IsShowOnDetail ? "color" : "")">是</td>
+                }
+                else
+                {
+                    <td class="@(Model.Keys.First().IsShowOnDetail != Model.Values.First().IsShowOnDetail ? "color" : "")">否</td>
+                }
+                @if (Model.Values.First().IsShowOnDetail)
+                {
+                    <td class="@(Model.Keys.First().IsShowOnDetail != Model.Values.First().IsShowOnDetail ? "color" : "")">是</td>
+                }
+                else
+                {
+                    <td class="@(Model.Keys.First().IsShowOnDetail != Model.Values.First().IsShowOnDetail ? "color" : "")">否</td>
+                }
+            </tr>
+            <tr>
+                <td>券的分类来源:</td>
+                <td class="@(Model.Keys.First().CouponCategorySource != Model.Values.First().CouponCategorySource ? "color" : "")">
+                    @{
+                var source1 = BaseCouponConfigClient.Instance.GetCouponCategorySource().Where(m => m.Key == (Model.Keys.First().CouponCategorySource??0)).FirstOrDefault();
+                        <span>@source1.Value</span>
+                    }
+                </td>
+                <td class="@(Model.Keys.First().CouponCategorySource != Model.Values.First().CouponCategorySource ? "color" : "")">
+                    @{
+                var source2 = BaseCouponConfigClient.Instance.GetCouponCategorySource().Where(m => m.Key == (Model.Values.First().CouponCategorySource??0)).FirstOrDefault();
+                        <span>@source2.Value</span>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td>∨使用规则扩展</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>应用平台(*):</td>
+                <td class="@(string.Join(",", Model.Keys.First().Platform) != string.Join(",", Model.Values.First().Platform) ? "color" : "")">
+                    @{
+                var plat0 = "";
+                var plat1 = "";
+                var plat2 = "";
+                var plat4 = "";
+                var plat5 = "";
+                var plat8 = "";
+
+                if (Model.Keys.First().Platform != null && !string.IsNullOrEmpty(string.Join(",", Model.Keys.First().Platform)))
+                {
+                    var platlist = string.Join(",", Model.Keys.First().Platform).Replace("][", ",").Replace("[", "").Replace("]", "").Split(',');
+
+                    foreach (var v in platlist)
+                    {
+                        switch (v)
+                        {
+                            case "0":
+                                plat0 = "checked='checked'";
+                                break;
+                            case "1":
+                                plat1 = "checked='checked'";
+                                break;
+                            case "2":
+                                plat2 = "checked='checked'";
+                                break;
+                            case "4":
+                                plat4 = "checked='checked'";
+                                break;
+                            case "5":
+                                plat5 = "checked='checked'";
+                                break;
+                            case "8":
+                                plat8 = "checked='checked'";
+                                break;
+                        }
+                    }
+                }
+                    }
+                    <input type="checkbox" @plat0 name="chkPlatform" id="chkPlat_0" value="0">
+                    全部
+                        <input type="checkbox" @plat1 name="chkPlatform" id="chkPlat_1" value="1">
+                    PC网站
+                        <input type="checkbox" @plat2 name="chkPlatform" id="chkPlat_2" value="2">
+                    Wap网站
+                        <input type="checkbox" @plat4 name="chkPlatform" id="chkPlat_4" value="4">
+                    安卓APP
+                        <input type="checkbox" @plat5 name="chkPlatform" id="chkPlat_5" value="5">
+                    苹果APP
+                        <input type="checkbox" @plat8 name="chkPlatform" id="chkPlat_8" value="8">
+                    Ipad
+
+                </td>
+                <td class="@(string.Join(",", Model.Keys.First().Platform) != string.Join(",", Model.Values.First().Platform) ? "color" : "")">
+                    @{
+                var plat9 = "";
+                var plat10 = "";
+                var plat11 = "";
+                var plat12 = "";
+                var plat13 = "";
+                var plat14 = "";
+
+                if (Model.Values.First().Platform != null && !string.IsNullOrEmpty(string.Join(",", Model.Values.First().Platform)))
+                {
+                    var platlist = string.Join(",", Model.Values.First().Platform).Replace("][", ",").Replace("[", "").Replace("]", "").Split(',');
+
+                    foreach (var v in platlist)
+                    {
+                        switch (v)
+                        {
+                            case "0":
+                                plat9 = "checked='checked'";
+                                break;
+                            case "1":
+                                plat10 = "checked='checked'";
+                                break;
+                            case "2":
+                                plat11 = "checked='checked'";
+                                break;
+                            case "4":
+                                plat12 = "checked='checked'";
+                                break;
+                            case "5":
+                                plat13 = "checked='checked'";
+                                break;
+                            case "8":
+                                plat14 = "checked='checked'";
+                                break;
+                        }
+                    }
+                }
+                    }
+                    <input type="checkbox" @plat9 name="chkPlatform" id="chkPlat_9" value="0">
+                    全部
+                    <input type="checkbox" @plat10 name="chkPlatform" id="chkPlat_10" value="1">
+                    PC网站
+                    <input type="checkbox" @plat11 name="chkPlatform" id="chkPlat_11" value="2">
+                    Wap网站
+                    <input type="checkbox" @plat12 name="chkPlatform" id="chkPlat_12" value="4">
+                    安卓APP
+                    <input type="checkbox" @plat13 name="chkPlatform" id="chkPlat_13" value="5">
+                    苹果APP
+                    <input type="checkbox" @plat14 name="chkPlatform" id="chkPlat_14" value="8">
+                    Ipad
+                </td>
+            </tr>
+            <tr>
+                <td>可使用一级分类:</td>
+                <td class="@(Model.Keys.First().C_ApplicableFirstCategory != Model.Values.First().C_ApplicableFirstCategory ? "color" : "")">
+                    @Model.Keys.First().C_ApplicableFirstCategory
+                </td>
+                <td class="@(Model.Keys.First().C_ApplicableFirstCategory != Model.Values.First().C_ApplicableFirstCategory ? "color" : "")">
+                    @Model.Values.First().C_ApplicableFirstCategory
+                </td>
+            </tr>
+            <tr>
+                <td>可使用二级分类:</td>
+                <td class="@(Model.Keys.First().C_ApplicableSecondCategory != Model.Values.First().C_ApplicableSecondCategory ? "color" : "")">
+                    @Model.Keys.First().C_ApplicableSecondCategory
+                </td>
+                <td class="@(Model.Keys.First().C_ApplicableSecondCategory != Model.Values.First().C_ApplicableSecondCategory ? "color" : "")">
+                    @Model.Values.First().C_ApplicableSecondCategory
+                </td>
+            </tr>
+            <tr>
+                <td>可使用三级分类:</td>
+                <td class="@(Model.Keys.First().C_ApplicableThreeCategory != Model.Values.First().C_ApplicableThreeCategory ? "color" : "")">
+                    @Model.Keys.First().C_ApplicableThreeCategory
+                </td>
+                <td class="@(Model.Keys.First().C_ApplicableThreeCategory != Model.Values.First().C_ApplicableThreeCategory ? "color" : "")">
+                    @Model.Values.First().C_ApplicableThreeCategory
+                </td>
+            </tr>
+            <tr>
+                <td>排除一级分类:</td>
+                <td class="@(Model.Keys.First().C_ExcludeFirstCategory != Model.Values.First().C_ExcludeFirstCategory ? "color" : "")">
+                    @Model.Keys.First().C_ExcludeFirstCategory
+                </td>
+                <td class="@(Model.Keys.First().C_ExcludeFirstCategory != Model.Values.First().C_ExcludeFirstCategory ? "color" : "")">
+                    @Model.Values.First().C_ExcludeFirstCategory
+                </td>
+            </tr>
+            <tr>
+                <td>排除二级分类:</td>
+                <td class="@(Model.Keys.First().C_ExcludeSecondCategory != Model.Values.First().C_ExcludeSecondCategory ? "color" : "")">
+                    @Model.Keys.First().C_ExcludeSecondCategory
+                </td>
+                <td class="@(Model.Keys.First().C_ExcludeSecondCategory != Model.Values.First().C_ExcludeSecondCategory ? "color" : "")">
+                    @Model.Values.First().C_ExcludeSecondCategory
+                </td>
+            </tr>
+            <tr>
+                <td>排除三级分类:</td>
+                <td class="@(Model.Keys.First().C_ExcludeThreeCategory != Model.Values.First().C_ExcludeThreeCategory ? "color" : "")">
+                    @Model.Keys.First().C_ExcludeThreeCategory
+                </td>
+                <td class="@(Model.Keys.First().C_ExcludeThreeCategory != Model.Values.First().C_ExcludeThreeCategory ? "color" : "")">
+                    @Model.Values.First().C_ExcludeThreeCategory
+                </td>
+            </tr>
+            <tr>
+                <td>可使用商品Id:</td>
+                <td class="@(string.Join(",", Model.Keys.First().ApplicableGoodsId) != string.Join(",", Model.Values.First().ApplicableGoodsId) ? "color" : "")">
+                    @if (Model.Keys.First().ApplicableGoodsId != null && Model.Keys.First().ApplicableGoodsId[0] != null)
+                    {
+                        @string.Join(",", Model.Keys.First().ApplicableGoodsId)
+                    }
+                </td>
+                <td class="@(string.Join(",", Model.Keys.First().ApplicableGoodsId) != string.Join(",", Model.Values.First().ApplicableGoodsId) ? "color" : "")">
+                    @if (Model.Values.First().ApplicableGoodsId != null && Model.Values.First().ApplicableGoodsId[0] != null)
+                    {
+                        @string.Join(",", Model.Values.First().ApplicableGoodsId)
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td>排除商品Id:</td>
+                <td class="@(string.Join(",", Model.Keys.First().ExcludeGoodsId) != string.Join(",", Model.Values.First().ExcludeGoodsId) ? "color" : "")">
+                    @if (Model.Keys.First().ExcludeGoodsId != null && Model.Keys.First().ExcludeGoodsId[0] != null)
+                    {
+                        @string.Join(",", Model.Keys.First().ExcludeGoodsId)
+                    }
+                </td>
+                <td class="@(string.Join(",", Model.Keys.First().ExcludeGoodsId) != string.Join(",", Model.Values.First().ExcludeGoodsId) ? "color" : "")">
+                    @if (Model.Values.First().ExcludeGoodsId != null && Model.Values.First().ExcludeGoodsId[0] != null)
+                    {
+                        @string.Join(",", Model.Values.First().ExcludeGoodsId)
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td>可使用促销Id:</td>
+                <td class="@(string.Join(",", Model.Keys.First().ApplicablePromotion) != string.Join(",", Model.Values.First().ApplicablePromotion) ? "color" : "")">
+                    @string.Join(",", Model.Keys.First().ApplicablePromotion)
+                </td>
+                <td class="@(string.Join(",", Model.Keys.First().ApplicablePromotion) != string.Join(",", Model.Values.First().ApplicablePromotion) ? "color" : "")">
+                    @string.Join(",", Model.Values.First().ApplicablePromotion)
+                </td>
+            </tr>
+            <tr>
+                <td>排除促销Id:</td>
+                <td class="@(string.Join(",", Model.Keys.First().ExcludePromotion) != string.Join(",", Model.Values.First().ExcludePromotion) ? "color" : "")">
+                    @string.Join(",", Model.Keys.First().ExcludePromotion)
+                </td>
+                <td class="@(string.Join(",", Model.Keys.First().ExcludePromotion) != string.Join(",", Model.Values.First().ExcludePromotion) ? "color" : "")">
+                    @string.Join(",", Model.Values.First().ExcludePromotion)
+                </td>
+            </tr>
+            <tr>
+                <td>会员等级(*):</td>
+                <td class="@(string.Join(",", Model.Keys.First().ApplicableMemberLevel) != string.Join(",", Model.Values.First().ApplicableMemberLevel) ? "color" : "")">
+
+                    @{
+                    var lev0 = "";
+                    var lev1 = "";
+                    var lev2 = "";
+                    var lev3 = "";
+                    var lev4 = "";
+                    var lev5 = "";
+                    //var lev18 = "";
+
+                    if (Model.Keys.First().ApplicableMemberLevel != null && !string.IsNullOrEmpty(string.Join(",", Model.Keys.First().ApplicableMemberLevel)))
+                    {
+                        var memlevel = string.Join(",", Model.Keys.First().ApplicableMemberLevel).Replace("][", ",").Replace("[", "").Replace("]", "").Split(',');
+
+                        foreach (var v in memlevel)
+                        {
+                            switch (v)
+                            {
+                                case "0":
+                                    lev0 = "checked='checked'";
+                                    break;
+                                case "1":
+                                    lev1 = "checked='checked'";
+                                    break;
+                                case "2":
+                                    lev2 = "checked='checked'";
+                                    break;
+                                case "3":
+                                    lev3 = "checked='checked'";
+                                    break;
+                                case "4":
+                                    lev4 = "checked='checked'";
+                                    break;
+                                case "5":
+                                    lev5 = "checked='checked'";
+                                    break;
+                                //case "18":
+                                //    lev18 = "checked='checked'";
+                                //    break;
+                            }
+                        }
+                    }
+                    }
+
+                    <input type="checkbox" @lev0 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_0"  value="0">
+                    全部 
+                                <input type="checkbox" @lev1 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_1"  value="1">
+                    普通会员 
+                                <input type="checkbox" @lev2 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_2" value="2">
+                    银卡会员
+                                <input type="checkbox" @lev3 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_3" value="3">
+                    金卡会员
+                                <input type="checkbox" @lev4 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_4" value="4">
+                    白金卡会员
+                                <input type="checkbox" @lev5 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_5" value="5">
+                    至尊会员
+                             @*   <input type="checkbox" @lev18 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_6" value="18">
+                    信用卡太阳宝宝*@
+
+                </td>
+                <td class="@(string.Join(",", Model.Keys.First().ApplicableMemberLevel) != string.Join(",", Model.Values.First().ApplicableMemberLevel) ? "color" : "")">
+
+                    @{
+                    var lev51 = "";
+                    var lev6 = "";
+                    var lev7 = "";
+                    var lev8 = "";
+                    var lev9 = "";
+                    var lev10 = "";
+                    //var lev11 = "";
+
+                    if (Model.Values.First().ApplicableMemberLevel != null && !string.IsNullOrEmpty(string.Join(",", Model.Values.First().ApplicableMemberLevel)))
+                    {
+                        var memlevel = string.Join(",", Model.Values.First().ApplicableMemberLevel).Replace("][", ",").Replace("[", "").Replace("]", "").Split(',');
+
+                        foreach (var v in memlevel)
+                        {
+                            switch (v)
+                            {
+                                case "0":
+                                    lev51 = "checked='checked'";
+                                    break;
+                                case "1":
+                                    lev6 = "checked='checked'";
+                                    break;
+                                case "2":
+                                    lev7 = "checked='checked'";
+                                    break;
+                                case "3":
+                                    lev8 = "checked='checked'";
+                                    break;
+                                case "4":
+                                    lev9 = "checked='checked'";
+                                    break;
+                                case "5":
+                                    lev10 = "checked='checked'";
+                                    break;
+                                //case "18":
+                                //    lev11 = "checked='checked'";
+                                //    break;
+                            }
+                        }
+                    }
+                    }
+
+                    <input type="checkbox" @lev5 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_12"  value="0">
+                    全部 
+                                <input type="checkbox" @lev6 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_13"  value="1">
+                    普通会员 
+                                <input type="checkbox" @lev7 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_7" value="2">
+                    银卡会员
+                                <input type="checkbox" @lev8 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_8" value="3">
+                    金卡会员
+                                <input type="checkbox" @lev9 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_9" value="4">
+                    白金卡会员
+                                <input type="checkbox" @lev10 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_10" value="5">
+                    至尊会员
+                              @*  <input type="checkbox" @lev11 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_11" value="18">
+                    信用卡太阳宝宝*@
+
+                </td>
+            </tr>
+            <tr>
+                <td>应用保税仓(*):</td>
+                <td class="@(string.Join(",", Model.Keys.First().ApplicablePosition) != string.Join(",", Model.Values.First().ApplicablePosition) ? "color" : "")">
+
+                    @{
+                    var sele1 = "";
+                    var modelCang = new string[] { };
+                    if (Model.Keys.First().ApplicablePosition != null && !string.IsNullOrEmpty(string.Join(",", Model.Keys.First().ApplicablePosition)))
+                    {
+                        modelCang = string.Join(",", Model.Keys.First().ApplicablePosition).Replace("][", ",").Replace("[", "").Replace("]", "").Split(',');
+
+                        foreach (var s in modelCang)
+                        {
+                            if (s.Equals("0"))
+                            {
+                                sele1 = "checked='checked'";
+                                break;
+                            }
+                            else
+                            {
+                                sele1 = "";
+                            }
+                        }
+
+                    }
+                    }
+
+                    <input type="checkbox" @sele1 name="chkApplicablePosition" id="chkApplicablePosition_0" value="0">全部 
+                        @{
+                    if (floorItem != null)
+                    {
+                        var i = 0;
+                        foreach (var item in floorItem)
+                        {
+                            i += 1;
+                            var select = "";
+                            foreach (var s in modelCang)
+                            {
+                                if (item.Id.ToString().Equals(s))
+                                {
+                                    select = "checked='checked'";
+                                    break;
+                                }
+                                else
+                                {
+                                    select = "";
+                                }
+                            }
+                            <input type="checkbox" @select name="chkApplicablePosition" id="chkApplicablePosition_"@item.Id value="@item.Id" />@item.WarehouseName
+                            if (i % 6 == 0)
+                            {
+                            <br />
+                            <span style="margin-left: 29px; width: 37px; height: 3px;"></span>
+                            }
+                        }
+                    }
+                        }
+                </td>
+                <td class="@(string.Join(",", Model.Keys.First().ApplicablePosition) != string.Join(",", Model.Values.First().ApplicablePosition) ? "color" : "")">
+
+                    @{
+                    var sele2 = "";
+                    var modelCang2 = new string[] { };
+                    if (Model.Values.First().ApplicablePosition != null && !string.IsNullOrEmpty(string.Join(",", Model.Values.First().ApplicablePosition)))
+                    {
+                        modelCang2 = string.Join(",", Model.Values.First().ApplicablePosition).Replace("][", ",").Replace("[", "").Replace("]", "").Split(',');
+
+                        foreach (var s in modelCang2)
+                        {
+                            if (s.Equals("0"))
+                            {
+                                sele2 = "checked='checked'";
+                                break;
+                            }
+                            else
+                            {
+                                sele2 = "";
+                            }
+                        }
+
+                    }
+                    }
+
+                    <input type="checkbox" @sele2 name="chkApplicablePosition" id="chkApplicablePosition_1" value="0">全部 
+                        @{
+                    if (floorItem != null)
+                    {
+                        var i = 0;
+                        foreach (var item in floorItem)
+                        {
+                            i += 1;
+                            var select = "";
+                            foreach (var s in modelCang2)
+                            {
+                                if (item.Id.ToString().Equals(s))
+                                {
+                                    select = "checked='checked'";
+                                    break;
+                                }
+                                else
+                                {
+                                    select = "";
+                                }
+                            }
+                            <input type="checkbox" @select name="chkApplicablePosition" id="chkApplicablePosition_2"@item.Id value="@item.Id" />@item.WarehouseName
+                            if (i % 6 == 0)
+                            {
+                            <br />
+                            <span style="margin-left: 29px; width: 37px; height: 3px;"></span>
+                            }
+                        }
+                    }
+                        }
+                </td>
+            </tr>
+            <tr>
+                <td>应用商城(*):</td>
+                <td class="@(string.Join(",", Model.Keys.First().MallType) != string.Join(",", Model.Values.First().MallType) ? "color" : "")">
+                    @{
+                    var mall0 = "";
+                    var mall1 = "";
+                    var mall2 = "";
+                    var mall3 = "";
+                    var mall4 = "";
+                    var mall5 = "";
+
+                    if (Model.Keys.First().MallType != null && !string.IsNullOrEmpty(string.Join(",", Model.Keys.First().MallType)))
+                    {
+                        var malllist = string.Join(",", Model.Keys.First().MallType).Replace("][", ",").Replace("[", "").Replace("]", "").Split(',');
+
+                        foreach (var v in malllist)
+                        {
+                            switch (v)
+                            {
+                                case "0":
+                                    mall0 = "checked='checked'";
+                                    break;
+                                case "1":
+                                    mall1 = "checked='checked'";
+                                    break;
+                                case "2":
+                                    mall2 = "checked='checked'";
+                                    break;
+                                case "3":
+                                    mall3 = "checked='checked'";
+                                    break;
+                                case "4":
+                                    mall3 = "checked='checked'";
+                                    break;
+                                case "5":
+                                    mall5 = "checked='checked'";
+                                    break;
+                            }
+                        }
+                    }
+                   
+                    }
+                    <input type="checkbox" @mall0 name="chkMallType" id="chkMallType_10" value="0">
+                    全部 
+                    <input type="checkbox" @mall1 name="chkMallType" id="chkMallType_11" value="1">
+                    商城类型-自营 
+                      
+                    <input type="checkbox" @mall3 name="chkMallType" id="chkMallType_13" value="3">
+                    海淘（自贸、直邮）
+                  @*  <input type="checkbox" @mall4 name="chkMallType" id="chkMallType_14" value="4">
+                    海淘 直邮*@
+                    <input type="checkbox" @mall5 name="chkMallType" id="chkMallType_15" value="5">
+                    新特卖(*选择 新特卖 时，指定商品、分类、品牌功能将无效)
+                </td>
+                <td class="@(string.Join(",", Model.Keys.First().MallType) != string.Join(",", Model.Values.First().MallType) ? "color" : "")">
+                    @{
+                    var mall6 = "";
+                    var mall7 = "";
+                    var mall8 = "";
+                    var mall9 = "";
+                    var mall10 = "";
+                    var mall11 = "";
+
+                    if (Model.Values.First().MallType != null && !string.IsNullOrEmpty(string.Join(",", Model.Values.First().MallType)))
+                    {
+                        var malllist = string.Join(",", Model.Values.First().MallType).Replace("][", ",").Replace("[", "").Replace("]", "").Split(',');
+
+                        foreach (var v in malllist)
+                        {
+                            switch (v)
+                            {
+                                case "0":
+                                    mall6 = "checked='checked'";
+                                    break;
+                                case "1":
+                                    mall7 = "checked='checked'";
+                                    break;
+                                case "2":
+                                    mall8 = "checked='checked'";
+                                    break;
+                                case "3":
+                                    mall9 = "checked='checked'";
+                                    break;
+                                case "4":
+                                    mall9 = "checked='checked'";
+                                    break;
+                                case "5":
+                                    mall11 = "checked='checked'";
+                                    break;
+
+                            }
+                        }
+                    }
+                   
+                    }
+                    <input type="checkbox" @mall6 name="chkMallType" id="chkMallType_0" value="0">
+                    全部 
+                    <input type="checkbox" @mall7 name="chkMallType" id="chkMallType_1" value="1">
+                    商城类型-自营 
+                    <input type="checkbox" @mall9 name="chkMallType" id="chkMallType_3" value="3">
+                    海淘（自贸、直邮）
+                   @* <input type="checkbox" @mall10 name="chkMallType" id="chkMallType_4" value="4">
+                    海淘 直邮*@
+                    <input type="checkbox" @mall11 name="chkMallType" id="chkMallType_5" value="5">
+                    新特卖(*选择 新特卖 时，指定商品、分类、品牌功能将无效)
+                </td>
+            </tr>
+            <tr>
+                @{
+                    var promTypeList = BaseCouponConfigClient.Instance.GetPromotionList();
+                }
+                <td>排促销类型(*):</td>
+                <td class="@(Model.Keys.First().PromType == null ? "" : (string.Join(",", Model.Keys.First().PromType)) != (Model.Values.First().PromType == null ? "" : string.Join(",", Model.Values.First().PromType)) ? "color" : "")">
+                    @{
+                       
+                    int a = 0;
+
+                    foreach (var prom in promTypeList)
+                    {
+                        a++;
+
+                        if (Model.Keys.First().PromType != null && Model.Keys.First().PromType.Count > 0)
+                        {
+
+                            if (Model.Keys.First().PromType.Contains(prom.Key))
+                            {
+                        <input type="checkbox" name="ckProm" value="@prom.Key" checked="checked" />
+                            }
+                            else
+                            {
+                        <input type="checkbox" name="ckProm" value="@prom.Key" />
+                            }
+
+                        }
+                        else
+                        {
+                            if (prom.Value.Contains("秒杀"))
+                            {
+                        <input type="checkbox" name="ckProm" value="@prom.Key" checked="checked" />
+                            }
+                            else
+                            {
+                        <input type="checkbox" name="ckProm" value="@prom.Key" />
+                            }
+
+                        }
+                        @prom.Value
+                        if (a % 10 == 0)
+                        {
+                        <br />
+                        }
+
+                    }
+
+
+                    }
+                </td>
+                <td class="@(Model.Keys.First().PromType == null ? "" : (string.Join(",", Model.Keys.First().PromType)) != (Model.Values.First().PromType == null ? "" : string.Join(",", Model.Values.First().PromType)) ? "color" : "")">
+                    @{
+                       
+                    int a2 = 0;
+
+                    foreach (var prom in promTypeList)
+                    {
+                        a2++;
+
+                        if (Model.Values.First().PromType != null && Model.Values.First().PromType.Count > 0)
+                        {
+
+                            if (Model.Values.First().PromType.Contains(prom.Key))
+                            {
+                        <input type="checkbox" name="ckProm" value="@prom.Key" checked="checked" />
+                            }
+                            else
+                            {
+                        <input type="checkbox" name="ckProm" value="@prom.Key" />
+                            }
+
+                        }
+                        else
+                        {
+                            if (prom.Value.Contains("秒杀"))
+                            {
+                        <input type="checkbox" name="ckProm" value="@prom.Key" checked="checked" />
+                            }
+                            else
+                            {
+                        <input type="checkbox" name="ckProm" value="@prom.Key" />
+                            }
+
+                        }
+                        @prom.Value
+                        if (a2 % 10 == 0)
+                        {
+                        <br />
+                        }
+
+                    }
+
+
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td>供应商ID:</td>
+                <td class="@(string.Join(",", Model.Keys.First().Supplier) != string.Join(",", Model.Values.First().Supplier) ? "color" : "")">
+                    @string.Join(",", Model.Keys.First().Supplier)
+                </td>
+                <td class="@(string.Join(",", Model.Keys.First().Supplier) != string.Join(",", Model.Values.First().Supplier) ? "color" : "")">
+                    @string.Join(",", Model.Values.First().Supplier)
+                </td>
+            </tr>
+            <tr>
+                <td>新特卖供应商专场ID:</td>
+                <td class="@(string.Join(",", Model.Keys.First().Special) != string.Join(",", Model.Values.First().Special) ? "color" : "")">
+                    @string.Join(",", Model.Keys.First().Special)
+                </td>
+                <td class="@(string.Join(",", Model.Keys.First().Special) != string.Join(",", Model.Values.First().Special) ? "color" : "")">
+                    @string.Join(",", Model.Values.First().Special)
+                </td>
+            </tr>
+            <tr>
+                <td>优惠券使用品牌ID:</td>
+                <td class="@(string.Join(",", Model.Keys.First().ApplicableBrand) != string.Join(",", Model.Values.First().ApplicableBrand) ? "color" : "")">
+                    @string.Join(",", Model.Keys.First().ApplicableBrand)
+                </td>
+                <td class="@(string.Join(",", Model.Keys.First().ApplicableBrand) != string.Join(",", Model.Values.First().ApplicableBrand) ? "color" : "")">
+                    @string.Join(",", Model.Values.First().ApplicableBrand)
+                </td>
+            </tr>
+            <tr>
+                <td>优惠券排除品牌ID:</td>
+                <td class="@(string.Join(",", Model.Keys.First().ExcludeBrand) != string.Join(",", Model.Values.First().ExcludeBrand) ? "color" : "")">
+                    @string.Join(",", Model.Keys.First().ExcludeBrand)
+                </td>
+                <td class="@(string.Join(",", Model.Keys.First().ExcludeBrand) != string.Join(",", Model.Values.First().ExcludeBrand) ? "color" : "")">
+                    @string.Join(",", Model.Values.First().ExcludeBrand)
+                </td>
+            </tr>
+            <tr>
+                <td>操作人</td>
+                <td>@Model.Keys.First().UpdatePeople</td>
+                <td>@ViewBag.operatorId</td>
+            </tr>
+            <tr>
+                <td>操作类型</td>
+                <td class="color">@BaseCouponConfigClient.Instance.GetAuditStatus(Model.Keys.First().AuditState)</td>
+                <td class="color">@BaseCouponConfigClient.Instance.GetStatus(ViewBag.operationType)</td>
+            </tr>
+            <tr>
+                <td>操作时间</td>
+                <td>@Model.Keys.First().UpdateTime</td>
+                <td>@ViewBag.rowCreateDate</td>
+            </tr>
+        </tbody>
+    </table>
+}
+<script type="text/javascript">
+    $("input").attr("disabled", "disabled");
+</script>

@@ -1,0 +1,91 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.SaleHotStyle
+@model Myzj.OPC.UI.Model.OrderProductState.OrderProductStateRefer
+<h2>订单扭转物流信息管理</h2>
+
+<script type="text/javascript">
+    //绑定状态
+    //name 名称
+    //val 值
+    function bingSate(name, val) {
+        $("#" + name).val(val);
+    }
+</script>
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable">
+        <tbody>
+            <tr>
+                <td>状态:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.SearchDetail.IsDeleted, new KvSelectList(typeof(AppEnum.IsVisibleIndex).GetEnumList()), true)
+                </td>
+                <td>订单状态:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.SearchDetail.FlowStatus, new KvSelectList(typeof(AppEnum.FlowStatus).GetEnumList()), true)
+                </td>
+            </tr>
+            <tr>
+                <td> 商城类型:</td>
+                <td colspan="3">
+                    @Html.DropDownListFor(m => m.SearchDetail.MallType, new KvSelectList(typeof(AppEnum.MallType).GetEnumList()), true)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    var success = @ViewData["SuccessMsg"];
+    if (null != success)
+    { 
+    <span style="color: green">@success</span>
+    }
+    var notice = @ViewData["ErrorMsg"];
+    if (null != notice)
+    {
+    <span style="color: red">@notice</span>
+    }
+    @Html.Partial("Item", @Model.List)
+    
+    @Html.Partial("Pager", @Model)
+}
+<script type="text/javascript">
+    $(function () {
+        //修改排序
+        $(".Sort").change(function () {
+            var id = $(this).attr("pvalue");
+            var number = $(this).val();
+            $.ajax({
+                url: "/OrderProductState/UpdateSort",
+                data: { "id": id, "sort": number },
+                success: function (res) {
+                    if (res.DoFlag) {
+                        alert(res.DoResult);
+                        location.reload();
+                    } else {
+                        alert(res.DoResult);
+                    }
+                }
+            });
+        });
+    });
+    //修改状态
+    function updateState(obj) {
+        var id = $(obj).data("id");
+        var state = 0;
+        if (obj.checked) {
+            state = 1;
+        }
+        $.ajax({
+            url: "/OrderProductState/UpdateState?id=" + id + "&state=" + state,
+            type: "Post",
+            success: function (res) {
+                if (res.DoFlag) {
+                    alert(res.DoResult);
+                    location.reload();
+                } else {
+                    alert(res.DoResult);
+                }
+            }
+        });
+    }
+</script>

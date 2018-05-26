@@ -1,0 +1,99 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.WebUserBe.UserBehaviorRefer
+<h2>用户行为管理</h2>
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable">
+        <tbody>
+            <tr>
+                <td>限制类型:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.SearchDetail.ObjectType, new KvSelectList(typeof(AppEnum.ObjectType).GetEnumList()), true)
+                </td>
+                <td>限制状态:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.SearchDetail.IsEnable, new KvSelectList(typeof(AppEnum.IsEnable).GetEnumList()), true)
+                </td>
+            </tr>
+            <tr>
+                <td>Ip开始段:</td>
+                <td>@Html.TextBoxFor(m => m.SearchDetail.BegionIp)</td>
+                <td>Ip结束段:</td>
+                <td>@Html.TextBoxFor(m => m.SearchDetail.EndIp)</td>
+            </tr>
+            <tr>
+                <td>限制开始时间:</td>
+                <td>@Html.TextBoxFor(m => m.SearchDetail.LimitBegionTime)</td>
+                <td>限制结束时间:</td>
+                <td>@Html.TextBoxFor(m => m.SearchDetail.LimitEndTime)</td>
+
+            </tr>
+            <tr>
+                <td>提示信息:</td>
+                <td>@Html.TextAreaFor(m => m.SearchDetail.ShowMesage)</td>
+                <td>备注信息:</td>
+                <td>@Html.TextAreaFor(m => m.SearchDetail.Remarks)</td>
+            </tr>
+            <tr>
+                <td>会员ID(多个以“,”分割):</td>
+                <td colspan="3">
+                    @Html.TextAreaFor(m => m.SearchDetail.TempUserId)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    var success = @ViewData["SuccessMsg"];
+    if (null != success)
+    {
+    <span style="color: green">@success</span>
+    }
+    var notice = @ViewData["ErrorMsg"];
+    if (null != notice)
+    {
+    <span style="color: red">@notice</span>
+    }
+    @Html.Partial("Item", @Model.List)
+    
+    @Html.Partial("Pager", @Model)
+}
+<script type="text/javascript">
+    $(function () {
+        //删除
+        $(".delUserBehavior").click(function () {
+            var id = $(this).attr("pvalue");
+            $.ajax({
+                url: "/WebLimitUserBehavior/Del",
+                data: { "id": id },
+                dataType: 'json',
+                type: 'POST',
+                success: function (res) {
+                    if (res.DoFlag) {
+                        location.reload();
+                    } else {
+                        alert(res.DoResult);
+                    }
+                }
+            });
+        });
+    });
+    //更新状态
+    function updateState(obj) {
+        var id = $(obj).data("id");
+        var state = 0;
+        if (obj.checked) {
+            state = 1;
+        }
+        $.ajax({
+            url: "/WebLimitUserBehavior/UpdateSate?id=" + id + "&state=" + state,
+            type: "Post",
+            success: function (res) {
+                if (res.DoFlag) {
+                    location.reload();
+                } else {
+                    alert("修改失败");
+                }
+            }
+        });
+    }
+</script>

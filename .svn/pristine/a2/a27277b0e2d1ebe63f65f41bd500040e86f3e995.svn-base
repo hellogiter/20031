@@ -1,0 +1,220 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Web.Mvc;
+using Business.PanGu;
+using Myzj.OPC.UI.Model.Base;
+using Myzj.OPC.UI.Model.SearchManagement;
+using Myzj.OPC.UI.ServiceClient;
+
+namespace Myzj.OPC.UI.Portal.Controllers
+{
+    public class SearchManagementController : BaseController
+    {
+        // GET: /SearchManagement/
+
+        #region  商品搜索词列表
+        public ActionResult Index(SearchManagementRefer search)
+        {
+            var result = new SearchManagementRefer();
+            result = SearchManagementClient.Instance.QueryWebSearchManagement(search);
+
+            List<SearchManagementDetail> list = result.List;
+            if (list.Count > 0)
+            {
+                for (int i = 0; i < list.Count; i++)
+                {
+                    //根据商品Id查询商品名称
+                    string productName = SaleHotStyleClient.Instance.QueryPdtBaseInfoById(list[i].ProductId.Value);
+                    list[i].vchProductName = productName;
+                }
+            }
+            return View(result);
+        }
+
+        public ActionResult Item()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 根据批量SId查询详细信息
+        public ActionResult Detail(String[] id)
+        {
+            var result = new List<SearchManagementDetail>();
+            string tempId = "";
+            for (int i = 0; i < id.Length; i++)
+            {
+                tempId = id[i];
+            }
+            result = SearchManagementClient.Instance.QueryWebSearchManagementListById(tempId);
+            return View(result);
+        }
+        #endregion
+
+        #region  批量新增/批量修改商品搜索词
+        [HttpPost]
+        public JsonResult UpdateWebSearchManagement(SearchManagementBody search, int? sId)
+        {
+            var result = new BaseResponse();
+            string str = "";
+            try
+            {
+                if (sId == 0)
+                {
+                    #region 新增
+                    search.CreateBy = UserInfo.UserSysNo;
+                    var res = SearchManagementClient.Instance.AddWebSearchManagement(search, out str);
+
+                    if (res)
+                    {
+                        result.DoFlag = true;
+                        result.DoResult = str;
+                    }
+                    else
+                    {
+                        result.DoResult = str;
+                    }
+                }
+                    #endregion
+                //}
+                //else
+                //{
+                //    #region 修改
+                //    if (search.SearchList != null)
+                //    {
+                //        foreach (var item in search.SearchList)
+                //        {
+                //            item.UpdateBy = UserInfo.UserSysNo;
+                //            item.UpdateDate = DateTime.Now;
+                //        }
+
+                //        var res = SearchManagementClient.Instance.Update(search, out str);
+                //        if (res)
+                //        {
+                //            result.DoFlag = true;
+                //            result.DoResult = "批量修改成功!";
+                //        }
+                //        else
+                //        {
+                //            result.DoResult = str;
+                //        }
+                //    }
+
+                //    #endregion
+                //}
+
+            }
+            catch (Exception ex)
+            {
+                result.DoResult = "提交异常，请稍后重试... ...";
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
+        #region 商品搜索词审核列表
+        public ActionResult ExamineIndex(SearchManagementItemRefer searchItem)
+        {
+            var result = new SearchManagementItemRefer();
+            result = SearchManagementClient.Instance.QueryWebSearchManagementItem(searchItem);
+
+            List<SearchManagementItemDetail> list = result.List;
+            if (list.Count > 0)
+            {
+                for (int i = 0; i < list.Count; i++)
+                {
+                    //根据商品Id查询商品名称
+                    string productName = SaleHotStyleClient.Instance.QueryPdtBaseInfoById(list[i].ProductId.Value);
+                    list[i].vchProductName = productName;
+                }
+            }
+            return View(result);
+        }
+
+        public ActionResult ExamineItem()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 批量审核商品搜索词
+        [HttpPost]
+        public JsonResult WebSearchManagementItemExamine(ExamineSearch examine)
+        {
+            var result = new BaseResponse();
+            string str = "";
+            try
+            {
+                if (examine.SearchManagement != null)
+                {
+                    foreach (var item in examine.SearchManagement)
+                    {
+                        item.UpdateBy = UserInfo.UserSysNo; //审核人
+                        item.UpdateDate = DateTime.Now; //审核时间
+                    }
+                }
+
+                var res = SearchManagementClient.Instance.UpdateExamineSearchManage(examine, out str);
+                if (res)
+                {
+                    result.DoFlag = true;
+                    result.DoResult = str;
+                }
+                else
+                {
+                    result.DoResult = str;
+                }
+            }
+            catch (Exception)
+            {
+                result.DoResult = "批量审核异常，请稍后重试... ...";
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
+        #region 检测商品Id是否存在商品表中
+        public JsonResult CheckPdtInfoById(int productId)
+        {
+            var result = new BaseResponse();
+            string str = "";
+            try
+            {
+                var res = SearchManagementClient.Instance.CheckPdtInfoById(productId, out str);
+                // WebAwardClient.Instance.CheckPdtInfoById(productId, out str);
+                if (res)
+                {
+                    result.DoFlag = true;
+                    result.DoResult = str;
+                }
+                else
+                {
+                    result.DoResult = "错误：系统未在商品表中找到商品Id:" + productId + "，请检查";
+                }
+            }
+            catch (Exception ex)
+            {
+                result.DoResult = "检测异常，请稍后重试... ...";
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
+        #region 批量新增/批量修改
+        public ActionResult PlDetail(String id)
+        {
+            var result = new List<SearchManagementDetail>();
+
+            if (!string.IsNullOrEmpty(id))
+            {
+                result = SearchManagementClient.Instance.QueryWebSearchManagementListById(id);
+            }
+            return View(result);
+        }
+        #endregion
+    }
+}

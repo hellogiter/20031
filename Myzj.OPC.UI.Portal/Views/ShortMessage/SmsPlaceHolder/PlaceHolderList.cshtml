@@ -1,0 +1,36 @@
+﻿@using Myzj.OPC.UI.Model.ShortMessage
+@{
+    ViewBag.Title = "PlaceHolderList";
+    Layout = null;
+
+    var list = (List<SmsPlaceHolderModel>)ViewBag.PlaceHolderList;
+}
+
+
+@if (list != null && list.Any())
+{
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount" style="width: 50%; margin-left: 80px">
+            <thead>
+                <tr class="gl-title">
+                    <th>占位符</th>
+                    <th>占位符说明</th>
+                    <th>创建日期</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in list)
+                {
+                    <tr class="gl-title">
+                        <td>@item.PlaceHolder</td>
+                        <td>@item.Description</td>
+                        <td>@item.RowCreateDate</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+}

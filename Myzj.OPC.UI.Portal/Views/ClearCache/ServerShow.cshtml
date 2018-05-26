@@ -1,0 +1,25 @@
+﻿@{
+    Layout = null;
+}
+@model Myzj.OPC.UI.Model.ClearCacheServers
+           <table class="showDetailTable" >
+    <tr>
+        <td>SysNo</td>
+        <td>服务器名称</td>
+        <td>状态</td>
+        <td>操作</td>
+    </tr>
+    
+@foreach (var server in Model.ClearCacheServerList)
+{
+    <tr>
+    <td>@server.SysNo</td>
+    <td>@server.ServerIp</td>
+    <td>@(server.IsEnable=="True"?"启用":"禁用")</td>
+    <td>
+        <a   class="xiugai" href='javascript:modifyserver(@server.SysNo,"@server.IsEnable");'>@(server.IsEnable=="True"?"禁用":"启用")</a>
+    </td>
+         </tr>
+}
+       
+    </table>

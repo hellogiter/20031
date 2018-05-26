@@ -1,0 +1,147 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.ReportRecord
+@model Myzj.OPC.UI.Model.ReportRecord.GetReportRecord
+@{
+    var reportRecord = (GetReportRecord)ViewBag.ReportRecord;
+    reportRecord.ReportRecordType = -1;
+    reportRecord.ReportRecordState = -1;
+    
+    reportRecord.PageSize = 2;
+
+    reportRecord.Fun = "loadList";
+}
+
+<h2>投诉管理</h2>
+<script type="text/javascript">
+    //绑定状态
+    //name 名称
+    //val 值
+    function bingSate(name, val) {
+        $("#" + name).val(val);
+    }
+</script>
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable">
+        <tbody>
+            <tr>
+                <td>ID:</td>
+                <td>
+                    <input id="txtReportRecordId" type="text"  />
+                </td>
+                <td>举报人ID:</td>
+                <td>
+                    <input id="txtReportMotherUserId" type="text" />
+                </td>
+            </tr>
+            <tr>
+                <td>被举报人ID</td>
+                <td>
+                    <input id="txtByReportMotherUserId" type="text" />
+                </td>
+                <td>被举报ID:</td>
+                <td>
+                    <input id="txtByReportProjectId" type="text" />
+                </td>
+            </tr>
+            <tr>
+                <td>举报类型:</td>
+                <td>
+                    @HtmlHelperExt.GetDropDownList("select_recordType", typeof(AppEnum.ReportRecordType).GetEnumList())
+                </td>
+                <td>举报状态:</td>
+                <td>
+                    @HtmlHelperExt.GetDropDownList("select_recordState", typeof(AppEnum.ReportRecordState).GetEnumList())
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="rowButton">
+        <input type="button" name="Query" id="Query" value="查询" onclick="loadList(1)" />
+    </div>
+
+    <div id="item">
+        @Html.Action("Item", "ReportRecord", @reportRecord)
+    </div>
+}
+
+
+
+
+
+<script type="text/javascript">
+
+    //加载列表
+    function loadList(index) {
+
+        var model = {};
+        model.ReportRecordId = $("#txtReportRecordId").val();
+        model.ReportMotherUserId = $("#txtReportMotherUserId").val();
+        model.ByReportMotherUserId = $("#txtByReportMotherUserId").val();
+        model.ByReportProjectId = $("#txtByReportProjectId").val();
+        model.ReportRecordType = $("#select_recordType").val();
+        model.ReportRecordState = $("#select_recordState").val();
+        model.Fun = "loadList";
+
+        model.PageIndex = index;
+        model.PageSize = '@reportRecord.PageSize';
+        
+        $.ajax({
+            url: '@Url.Action("Item", "ReportRecord")',
+            type: 'post',
+            dataType: 'html',
+            contentType: 'application/json',
+            data: JSON.stringify(model),
+            success: function (result) {
+                $("#item").html(result);
+            }
+        });
+
+    }
+
+
+    $(function () {
+        //修改投诉状态
+        $(".selState").change(function () {
+            var id = $(this).attr("pvalue");
+            var state = $(this).val();
+
+            $.ajax({
+                url: "/ReportRecord/UpRecordState",
+                data: { "id": id, "state": state },
+                dataType: 'json',
+                type: 'POST',
+                success: function (res) {
+                    if (res.DoFlag) {
+                        alert("修改成功");
+                        location.reload();
+                    } else {
+                        alert(res.DoResult);
+                    }
+                }
+            });
+        });
+
+        //删除投诉
+        $(".delRecord").click(function () {
+            var id = $(this).attr("pvalue");
+
+            $.ajax({
+                url: "/ReportRecord/DelRecord",
+                data: { "id": id },
+                dataType: 'json',
+                type: 'POST',
+                success: function (res) {
+                    if (res.DoFlag) {
+                        alert("删除成功");
+                        location.reload();
+                    } else {
+                        alert(res.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>

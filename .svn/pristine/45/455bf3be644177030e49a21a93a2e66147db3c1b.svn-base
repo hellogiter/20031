@@ -1,0 +1,101 @@
+﻿@model  Myzj.OPC.UI.Model.ExpressModel.ExpressInfoModel
+<h2>修改物流信息</h2>
+<style type="text/css">
+    .showDetailTableMultiColumnm .manjian textarea {
+        width: 500px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .showDetailTableMultiColumnm .tickename input {
+        width: 200px;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+    if (Model != null)
+    {
+        <div id="tableContainer">
+            <table class="showDetailTableMultiColumnm">
+                <tbody>
+                    <input id="sysNo" type="hidden" value="@Model.SysNo"  style="width: 200px;" />
+                    <tr>
+                        <td>订单号</td>
+                        <td colspan="3">
+                            <input id="txtOrderCode" type="text" value="@Model.OrderCode" readonly="readonly"  placeholder="必填" style="width: 200px; " />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>配送商ID</td>
+                        <td colspan="3">
+                            <input id="txtLogiscticId" type="text" value="@Model.LogiscticId" style="width: 200px;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>物流单号</td>
+                        <td colspan="3">
+                            <input id="txtLogiscticNo" type="text" value="@Model.LogiscticNo" placeholder="必填" style="width: 200px;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>物流信息</td>
+                        <td>
+                            <textarea id="txtLogiscticContent">@Model.LogiscticContent</textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>备注</td>
+                        <td>
+                            <input id="txtRemark" type="text" value="@Model.Remark" placeholder="必填" style="width: 200px;" /></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="rowButton">
+                  <input type="button" value="关闭" id="btnDel" onclick="history.back(-1);" />
+                <input type="button" value="保存修改" id="btnSave" /> <span>非必要情况下执行修改请谨慎操作！！！</span>
+            </div>
+        </div>
+        
+    }
+    else
+    {
+    @Html.Partial("Error");
+    }
+}
+
+<script type="text/javascript">
+
+
+
+    $("#btnSave").click(function () {
+
+        var model = {};
+        model.SysNo = $.trim($("#sysNo").val());
+        model.OrderCode = $.trim($("#txtOrderCode").val());
+        model.LogiscticId = $.trim($("#txtLogiscticId").val());
+        model.LogiscticNo = $.trim($("#txtLogiscticNo").val());
+        model.LogiscticContent = $.trim($("#txtLogiscticContent").val());
+        model.Remark = $.trim($("#txtRemark").val());
+        
+        if (confirm("你确定修改吗？")) {
+            $.ajax({
+                url: '@Url.Action("UpdateExpressInfo", "Exec")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("更新成功！");
+                        window.location.href = '@Url.Action("Index", "Express")';
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        }
+    });
+
+
+</script>

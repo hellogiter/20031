@@ -1,0 +1,61 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model List<Myzj.OPC.UI.Model.ExpressModel.OrderStatusModel>
+<style>
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+
+    table {
+        table-layout: fixed;
+        word-wrap: break-word;
+    }
+
+    div {
+        word-wrap: break-word;
+    }
+</style>
+
+
+@if (Model != null && Model.Any())
+{
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>SysNo</th>
+                    <th>订单号</th>
+                    <th>订单扭转信息</th>
+                    <th>商城类型</th>
+                    <th>订单状态编号</th>
+                    <th>排序</th>
+                    <th>创建时间</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @{
+    var logTypeArr = typeof(AppEnum.ExpressLogType).GetEnumList();
+    var businessTypeArr = typeof(AppEnum.ExpressBusinessType).GetEnumList();
+                }
+
+                @foreach (var item in Model)
+                {
+                    <tr class="gl-title">
+                        <td>@item.SysNo</td>
+                        <td>@item.OrderCode</td>
+                        <td>@item.OrderStatusContent</td>
+                        <td>@item.MallType</td>
+                        <td>@item.OrderStatusNo</td>
+                        <td>@item.Sort</td>
+                        <td>@item.CreateDate</td>
+                    </tr>
+                }
+
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+}
+

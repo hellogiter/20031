@@ -1,0 +1,113 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.WebAward.WebAwardUserTagsRefer
+<h2>[@ViewBag.strName] [用户标签组配置管理]</h2>
+
+<form id="WebTagsFrom" action="/WebAward/WebAwardUserTagsDetail" target="_blank" method="POST">
+
+    <div class="rowButton">
+        <input type="hidden" value="@ViewBag.strName" name="awardName"/>
+        <input type="hidden" value="@ViewBag.AwardID" name="awardId"/>
+        <input type="button" id="BtnAdd" value="新增" />
+    </div>
+</form>
+@if (Model != null)
+{
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>操作</th>
+                    <th>活动名称</th>
+                    <th>标签组名</th>
+                    <th>标签</th>
+                    <th>优先级</th>
+                    <th>默认</th>
+                    <th>创建时间</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.List)
+                {
+                   
+                    <tr>
+                        <td>@item.IntTagsId</td>
+                        <td>
+                            <a  style="color: #191970" target="_blank" href="@Url.Action("WebAwardUserTagsDetail", "WebAward", new { id = item.IntTagsId, awardId = item.IntAwardId, awardName = item.vchAwardName })" >修改</a>
+                            
+                            @* <a  style="color: #191970" target="_blank" href="@Url.Action("WebLotteryNumberItem", "WebAward", new { id = item.IntTagsId, tagsName = item.VchTagsName, strName = ViewBag.strName })">次数配置</a>*@
+                            <form id="FormWebNumber" action="/WebAward/WebLotteryNumberItem" target="_blank" method="POST">
+                                <input type="hidden" value="@ViewBag.strName" id="HidStrName" name="strName" />
+                                <a style="color: #191970" href="javascript:(0);" class="BtnWebNumber" pvalue="@item.IntTagsId" tagsName="@item.VchTagsName">次数配置</a>
+                            </form>
+                        </td>
+                        <td>@item.vchAwardName</td>
+                        <td>@item.VchTagsName</td>
+                        <td>@item.VchTagsLabels</td>
+                        <td>@item.IntPriority</td>
+                        <td>@(item.BitIsDefault.ToString() == "True" ? "是" : "否")</td>
+                        <td>@item.DtCreateTime</td>
+                        <td>
+                            @{
+                            var checkStr = "";
+                            if (item.IntStatus == 1)
+                            {
+                                checkStr = "checked='checked'";
+                            }
+                            }
+                            <input id="cbkState-@item.IntTagsId" type="checkbox" @checkStr data-id="@item.IntTagsId" onclick="updateState(this)" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+}
+
+<script type="text/javascript">
+    $(function () {
+        //新增
+        $("#BtnAdd").click(function () {
+            $("#WebTagsFrom").submit();
+        });
+        //次数配置
+        $(".BtnWebNumber").click(function () {
+            var id = $(this).attr("pvalue");//点击行的Id
+            var tagName = $(this).attr("tagsName");
+            var inputId = $("<input type='hidden' value='" + id + "' name='tageId' id='HidTagsId'/>");
+            var inputTagName = $("<input type='hidden' value='" + tagName + "' name='tagsName' id='HidTagsName'/>");
+            $("#FormWebNumber").append(inputId);
+            $("#FormWebNumber").append(inputTagName);
+            $("#HidTagsId").val(id);
+            $("#HidTagsName").val(tagName);
+
+            $("#FormWebNumber").submit();
+
+            $("#HidTagsId").clear();
+            $("#HidTagsName").clear();
+        });
+    });
+
+    //修改状态
+    function updateState(obj) {
+        var id = $(obj).data("id");
+        var state = 0;
+        if (obj.checked) {
+            state = 1;
+        }
+        $.ajax({
+            url: "/WebAward/UpdateUserTagsState?id=" + id + "&state=" + state,
+            type: "Post",
+            success: function (res) {
+                if (res.DoFlag) {
+                    location.reload();
+                } else {
+                    alert(res.DoResult);
+                }
+            }
+        });
+    }
+</script>

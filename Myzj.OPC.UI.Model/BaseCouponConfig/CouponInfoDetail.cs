@@ -1,0 +1,306 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Myzj.OPC.UI.Model.BaseCouponConfig
+{
+    public class CouponInfoDetail
+    {
+        public Nullable<int> SysNo { get; set; }
+        public string CouponKey { get; set; }
+        public string Belonging { get; set; }
+        public string CouponName { get; set; }
+        public string CouponDescription { get; set; }
+        public Nullable<System.DateTime> StartTime { get; set; }
+        public Nullable<System.DateTime> EndTime { get; set; }
+        public Nullable<decimal> FillMoney { get; set; }
+        public Nullable<decimal> SubtractMoney { get; set; }
+        public string BasicsExt { get; set; }
+        public string CouponRule { get; set; }
+        public string Remarks { get; set; }
+        public Nullable<System.DateTime> CreateTime { get; set; }
+        public Nullable<int> CreatePeople { get; set; }
+        public Nullable<System.DateTime> UpdateTime { get; set; }
+        public Nullable<int> UpdatePeople { get; set; }
+        public Nullable<int> AuditLevel { get; set; }
+        public Nullable<int> AuditState { get; set; }
+        public Nullable<System.DateTime> RowCreateDate { get; set; }
+        public Nullable<bool> IsEnable { get; set; }
+        public Nullable<bool> IsDelete { get; set; }
+        public int? ReceiveCount { get; set; }//领取数量
+
+        /// <summary>
+        /// 使用状态
+        /// </summary>
+        public int? Status { get; set; }
+
+        public int? CouponType { get; set; }
+        public int? IsCodeToCoupon { get; set; }
+
+        public int? IsGetCoupon { get; set; }  //是否启用领券
+        public int? IsShowOnDetail { get; set; }//是否在详情页显示
+    }
+
+
+    public class CouponInfoDetailExt
+    {
+        //基础字段
+        public Nullable<int> SysNo { get; set; }
+        public string CouponKey { get; set; }
+        public string Belonging { get; set; }
+        public string CouponName { get; set; }
+        public string CouponDescription { get; set; }
+        public Nullable<System.DateTime> StartTime { get; set; }
+        public Nullable<System.DateTime> EndTime { get; set; }
+        public Nullable<decimal> FillMoney { get; set; }
+        public Nullable<decimal> SubtractMoney { get; set; }
+        public decimal? Discount { get; set; } //折扣
+        public decimal? DiscountUpperLimit { get; set; }//折扣上限金额
+        public int? IsCodeToCoupon { get; set; }//优惠券是否是码转券
+        public string Remarks { get; set; }
+        public Nullable<System.DateTime> CreateTime { get; set; }
+        public Nullable<int> CreatePeople { get; set; }
+        public Nullable<System.DateTime> UpdateTime { get; set; }
+        public Nullable<int> UpdatePeople { get; set; }
+        public Nullable<int> AuditLevel { get; set; }
+        public Nullable<int> AuditState { get; set; }
+        public Nullable<System.DateTime> RowCreateDate { get; set; }
+        public Nullable<bool> IsEnable { get; set; }
+        public Nullable<bool> IsDelete { get; set; }
+        public string RejectReason { get; set; }
+        public Nullable<int> AuditPerson { get; set; }
+        public Nullable<System.DateTime> AuditDateTime { get; set; }
+        public int? ReceiveCount { get; set; }//领取数量
+        public int? auditer { get; set; }//审核进度
+
+        public int? CouponCategorySource { get; set; } //抵扣券分类来源 0  代表普通【普通券】 1、新妈【新客券】  2、推广类【线下活动券】 3、固定活动类【幸运星期一】  4、会员权益【会员券】
+
+        public string BasicsExt { get; set; }
+        public string CouponRule { get; set; }
+
+        //扩展的字段列表
+        public int? SendLimitUserCount { get; set; }
+        public int? SendLimitCount { get; set; }
+        public int? WillReachWarning { get; set; }
+        public int? UseSetDays { get; set; }
+        public List<M_BatchUse> BatchUses { get; set; }//list格式
+        public int DeptId { get; set; }//2015-11-11 新加 部门ID
+
+        public int? CouponType { get; set; }//2016-1-6 新加 优惠券类型  0代表 普通券  1代表码转券
+        public bool IsGetCoupon { get; set; }  //是否启用领券
+        public bool IsShowOnDetail { get; set; }//是否在详情页显示
+      
+
+        //高级扩展字段
+        public List<int?> Platform { get; set; }
+        public List<int?> ApplicableFirstCategory { get; set; }
+        public List<int?> ApplicableSecondCategory { get; set; }
+        public List<int?> ApplicableThreeCategory { get; set; }
+        public List<int?> ExcludeFirstCategory { get; set; }
+        public List<int?> ExcludeSecondCategory { get; set; }
+        public List<int?> ExcludeThreeCategory { get; set; }
+        public string C_ApplicableFirstCategory { get; set; }//匹配分类的中文名
+        public string C_ApplicableSecondCategory { get; set; }//匹配中文
+        public string C_ApplicableThreeCategory { get; set; }//匹配中文
+        public string C_ExcludeFirstCategory { get; set; }//匹配中文
+        public string C_ExcludeSecondCategory { get; set; }//匹配中文
+        public string C_ExcludeThreeCategory { get; set; }//匹配中文
+        public List<int?> ApplicableGoodsId { get; set; }
+        public List<int?> ExcludeGoodsId { get; set; }
+        public List<int?> ApplicablePromotion { get; set; }
+        public List<int?> ExcludePromotion { get; set; }
+        public List<int?> ApplicableMemberLevel { get; set; }
+        public List<int?> ApplicablePosition { get; set; }
+        public List<int?> MallType { get; set; }
+
+        public List<int?> PromType { get; set; }//促销类型
+        public List<int?> Supplier { get; set; }
+        public List<int?> Special { get; set; }
+        public List<int?> ApplicableBrand { get; set; }
+        public List<int?> ExcludeBrand { get; set; }
+    }
+
+    /// <summary>
+    /// 基础扩展类
+    /// </summary>
+    public class M_BasicsExtInfo
+    {
+        //每个会员限制发送张数 默认为 1")]
+        public int? SendLimitUserCount { get; set; }
+        //发送的张数 默认为 1")]
+        public int? SendLimitCount { get; set; }
+        //将要达到限制数量报警值
+        public int? WillReachWarning { get; set; }
+        //优惠劵设置相对过期天数 0不设置")]
+        public int? UseSetDays { get; set; }
+        //批次使用条件")]
+        public List<M_BatchUse> BatchUses { get; set; }
+
+        public int DeptId { get; set; }//2015-11-11 新加 部门ID
+
+        public int? CouponType { get; set; }//2016-1-6 新加 优惠券类型  0代表 普通券  1代表码转券
+
+        public decimal? Discount { get; set; } //折扣
+        public decimal? DiscountUpperLimit { get; set; }//折扣上限金额
+        public int? IsCodeToCoupon { get; set; }//优惠券是否是码转券  0代表 普通券  1代表码转券
+        public bool IsGetCoupon { get; set; } // 是否启用领券
+        public bool IsShowOnDetail { get; set; } //是否在详情页显示
+      //  public int CouponCategorySource { get; set; } //抵扣券分类来源 0  代表普通【普通券】 1、新妈【新客券】  2、推广类【线下活动券】 3、固定活动类【幸运星期一】  4、会员权益【会员券】
+    }
+
+    /// <summary>
+    /// 批次使用条件
+    /// </summary>
+    public class M_BatchUse
+    {
+        //当前批次使用开始时间")]
+        public DateTime? BatchStartTime { get; set; }
+        //当前批次使用结束时间")]
+        public DateTime? BatchEndTime { get; set; }
+        //当前批次单个会员领取数量")]
+        public int? BatchSendUserCount { get; set; }
+        //当前批量总共数量")]
+        public int? BatchSendCount { get; set; }
+        //当前批次分组 唯一")]
+        public string BatchGroup { get; set; }
+    }
+
+    /// <summary>
+    /// 优惠劵使用规则扩展类
+    /// </summary>
+    public class M_CouponRuleInfo
+    {
+        //适用平台 默认为全部")]
+        public M_ApplicablePlatform PlatformEntity { get; set; }
+        //商品")]
+        public M_Goodss GoodsEntity { get; set; }
+        //促销")]
+        public M_Promotions PromotionEntity { get; set; }
+        //会员等级")]
+        public M_MemberLevels MemberLevelEntity { get; set; }
+        //仓位")]
+        public M_Positions PositionEntity { get; set; }
+        //商城")]
+        public M_MallTypes MallTypeEntity { get; set; }
+
+        public M_PromTypes PromTypeEntity { get; set; }
+        //供应商")]
+        public M_Suppliers SupplierEntity { get; set; }
+        //专场")]
+        public M_Specials SpecialEntity { get; set; }
+        //品牌")]
+        public M_Brands BrandEntity { get; set; }
+    }
+
+    /// <summary>
+    /// 适用平台
+    /// </summary>
+    public class M_ApplicablePlatform
+    {
+        //平台Id [1] PC网站 [2]wap网站 [3]安卓app [4]Ios [8]ipad")]
+        public List<int?> Platform { get; set; }
+    }
+
+
+    /// <summary>
+    /// 商品分类
+    /// </summary>
+    public class M_Goodss
+    {
+        //可使用一级分类")]
+        public List<int?> ApplicableFirstCategory { get; set; }
+        //可使用二级分类")]
+        public List<int?> ApplicableSecondCategory { get; set; }
+        //可使用三级分类")]
+        public List<int?> ApplicableThreeCategory { get; set; }
+
+        //排除一级分类")]
+        public List<int?> ExcludeFirstCategory { get; set; }
+        //排除二级分类")]
+        public List<int?> ExcludeSecondCategory { get; set; }
+        //排除三级分类")]
+        public List<int?> ExcludeThreeCategory { get; set; }
+
+        //可使用商品Id")]
+        public List<int?> ApplicableGoodsId { get; set; }
+        //排除商品Id")]
+        public List<int?> ExcludeGoodsId { get; set; }
+    }
+
+    /// <summary>
+    /// 促销
+    /// </summary>
+    public class M_Promotions
+    {
+        //可使用促销")]
+        public List<int?> ApplicablePromotion { get; set; }
+        //排除促销")]
+        public List<int?> ExcludePromotion { get; set; }
+    }
+
+    /// <summary>
+    /// 会员级别
+    /// </summary>
+    public class M_MemberLevels
+    {
+        //适用会员等级")]
+        public List<int?> ApplicableMemberLevel { get; set; }
+    }
+
+    /// <summary>
+    /// 仓位
+    /// </summary>
+    public class M_Positions
+    {
+        //适用仓位")]
+        public List<int?> ApplicablePosition { get; set; }
+    }
+
+    /// <summary>
+    /// 商城
+    /// </summary>
+    public class M_MallTypes
+    {
+        //商城类型Id")]
+        public List<int?> MallType { get; set; }
+    }
+
+    public class M_PromTypes
+    {
+        public List<int?> PromType { get; set; }
+    }
+
+    /// <summary>
+    /// 供应商
+    /// </summary>
+    public class M_Suppliers
+    {
+        //供应商Id")]
+        public List<int?> Supplier { get; set; }
+    }
+
+    /// <summary>
+    /// 专场
+    /// </summary>
+    public class M_Specials
+    {
+        //专场Id")]
+        public List<int?> Special { get; set; }
+    }
+
+    /// <summary>
+    /// 品牌
+    /// </summary>
+    public class M_Brands
+    {
+        //可使用品牌")]
+        public List<int?> ApplicableBrand { get; set; }
+        //排除品牌")]
+        public List<int?> ExcludeBrand { get; set; }
+    }
+
+
+
+
+}

@@ -1,0 +1,91 @@
+﻿@using Myzj.OPC.UI.ServiceClient
+@model IEnumerable<Myzj.OPC.UI.Model.MLTSYSProjectMannger.SysProjectImages>
+@{
+    if (Model != null && Model.Any())
+    {
+    <div class="rowButton">
+        <input type="button" onclick=" window.location.href = '/MLTSYSProject/AddMLTSYSProjectImage?id=@ViewBag.ProjectId'"  value="新建" />
+    </div>
+    <table class="resultTable" id="calcTotalAmount">
+        <thead>
+            <tr>
+                <th>操作</th>
+                <th>图片ID</th>
+                <th>专场ID</th>
+                <th>商品图片</th>
+                <th>图片标题</th>
+                <th>图片类型</th>
+                <th>排序</th>
+                <th>状态</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var orderRes in Model)
+            {
+                <tr>
+                    <td>
+                        @if (orderRes.ImageType != 1)
+                        {
+                           <a class="btnDelete"pvalue="@orderRes.ProjectId" href="javascript:;">删除</a>
+                        }
+                        <a href="/MLTSYSProject/EeitMLTSYSProjectImage?id=@orderRes.ImageId">修改</a>
+                    </td>
+                    <td>
+                        @orderRes.ImageId
+                    </td>
+                    <td>@orderRes.ProjectId</td>
+                    <td>
+                        @{
+                        var linkImg = "";
+                        }
+                        @if (orderRes.ImageUrl != null)
+                        {
+                            linkImg = (UrlFactory.FormatImgUrl(orderRes.ImageUrl));
+                        }
+                        else
+                        {
+                            linkImg = "javascript:;";
+                        }
+                        <a href="@linkImg" target="_blank">
+                            <img src="@(UrlFactory.FormatImgUrl(orderRes.ImageUrl))" width="50"/>
+                        </a>
+                    </td>
+                    <td>@orderRes.ImageTitle </td>
+
+                    @{
+                        var imaType = ""; }
+                    @if (orderRes.ImageType == 1)
+                    {
+                        imaType = "主图";
+                    }
+                    else
+                    {
+                        imaType = "副图";
+                    }
+
+                    <td>@imaType</td>
+                    <td>
+                        <input type="text"style="width: 30px;"  value="@orderRes.Sort" class="txtSort" pvalue="@orderRes.ImageId"/>
+                    </td>
+                    <td>
+                        @{
+                        var checkedStr = "";
+                        if (orderRes.ImageState == 1)
+                        {
+                            checkedStr = "checked='checked'";
+                        }
+                        }
+                        @if (orderRes.ImageType != 1)
+                        {
+                             <input id="cbkState" name="cbkState" pstate="@orderRes.ImageState" type="checkbox"  @checkedStr class="clProjectState" pvalue="@orderRes.ImageId" />
+                        }
+                    </td>
+                </tr>   
+            }
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    
+    }
+}

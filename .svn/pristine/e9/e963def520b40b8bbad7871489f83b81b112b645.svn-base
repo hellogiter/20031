@@ -1,0 +1,73 @@
+﻿@{
+    ViewBag.Title = "UserRoleIndex";
+}
+@model Myzj.OPC.UI.Model.Base.BaseRefer<Myzj.OPC.UI.Model.BaseCouponConfig.AuditRoleConfigDetail, Myzj.OPC.UI.Model.BaseCouponConfig.AuditRoleConfigDetailExt>
+<h2>用户角色列表</h2>
+<style>
+    .input-validation-error {
+        border: 1px solid #c0c0c0;
+        background-color: white;
+    }
+
+    .showDetailTable tbody tr.tk-guanli td {
+        width: 15%;
+    }
+
+        .showDetailTable tbody tr.tk-guanli td.tk-name {
+            width: 5%;
+            text-align: center;
+        }
+
+        .showDetailTable tbody tr.tk-guanli td input {
+            text-align: left;
+            width: 85%;
+        }
+
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+
+     .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+        <tbody>
+            <tr class="tk-guanli">
+                <td class="tk-name">会员ID:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.MemberId)
+                </td>
+               <td class="tk-name">会员名称:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.MemberName)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="rowButton">
+        <input type="button" value="创建" id="btnAdd" onclick="window.location.href = '/CouponAuditRole/EditUserRole';" />
+        <input type="submit" value="查询" id="btnSearch" />
+    </div>
+    @Html.Partial("UserRoleItem", @Model.List2)
+    
+    @Html.Partial("Pager", @Model)
+}
+
+<script type="text/javascript">
+
+    $("#SearchDetail_MemberId").keyup(function () {
+        var tmptxt = $(this).val();
+        $(this).val(tmptxt.replace(/\D|^0/g, ''));
+    }).bind("paste", function () {
+        var tmptxt = $(this).val();
+        $(this).val(tmptxt.replace(/\D|^0/g, ''));
+    }).css("ime-mode", "disabled");
+
+</script>

@@ -1,0 +1,199 @@
+﻿@{
+    ViewBag.Title = "SendRecorsIndex";
+}
+@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.ShortMessage.SendRecorsRefer 
+<h2>短信发送记录</h2>
+<style>
+    .input-validation-error {
+        border: 1px solid #c0c0c0;
+        background-color: white;
+    }
+
+    .showDetailTable tbody tr.tk-guanli td {
+        width: 15%;
+    }
+
+        .showDetailTable tbody tr.tk-guanli td.tk-name {
+            width: 5%;
+            text-align: center;
+        }
+
+        .showDetailTable tbody tr.tk-guanli td input {
+            text-align: left;
+            width: 85%;
+        }
+
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+
+        .rowButton input {
+            margin: 2px 15px;
+            height: 30px;
+            width: 11%;
+            text-align: center;
+        }
+
+    textarea {
+        min-height: 41px;
+        min-width: 94%;
+    }
+</style>
+
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+        <tbody>
+            <tr class="tk-guanli">
+                <td class="tk-name">会员Id</td>
+                <td>
+                    @Html.TextBoxFor(m => m.Search.UserId)
+                </td>
+                <td class="tk-name">会员手机号:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.Search.Mobile)
+                </td>
+                <td class="tk-name">短信内容:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.Search.SmsContent)
+                </td>
+            </tr>
+            <tr class="tk-guanli">
+                <td class="tk-name">模板Key:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.Search.TempKey)
+                </td>
+                <td class="tk-name">来源描述:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.Search.SendSource)
+                </td>
+
+                <td class="tk-name">发送结果:</td>
+                <td>
+                    @{
+    var sort = new SortedList<bool, string>();
+    sort.Add(true, "成功");
+    sort.Add(false, "失败");
+                    }
+                    @Html.DropDownListFor(m => m.Search.SmsSendRes, new KvSelectList(sort), true)
+                </td>
+            </tr>
+
+            <tr class="tk-guanli">
+
+                <td class="tk-name">短信供应商</td>
+                <td>
+                    @Html.DropDownListFor(m => m.Search.SmsProvider, new KvSelectList(typeof(AppEnum.SmsProvider).GetEnumList()), true)
+                </td>
+                <td class="tk-name">短信发送类型:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.Search.SmsSendMode, new KvSelectList(typeof(AppEnum.SmsSendMode).GetEnumList()), true)
+                </td>
+                <td class="tk-name">短信通道:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.Search.SmsChannel, new KvSelectList(typeof(AppEnum.SmsChannel).GetEnumList()), true)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="rowButton">
+        <input type="submit" value="查询" id="btnSearch" />
+    </div>
+    
+    if (Model.List != null && Model.List.Any())
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>SysNo</th>
+                    <th>会员Id</th>
+                    <th>手机号</th>
+                    <th>模板Key</th>
+                    <th>来源描述</th>
+                    <th>短信内容 注:(供应商会自动加上前缀)</th>
+                     <th>短信渠道</th>
+                    <th>结果</th>
+                    <th>短信返回码</th>
+                    <th>备注</th>
+                    <th>创建日期</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @{
+        var providerArr = typeof(AppEnum.SmsProvider).GetEnumList();
+        var sendModeArr = typeof(AppEnum.SmsSendMode).GetEnumList();
+        var channelArr = typeof(AppEnum.SmsChannel).GetEnumList();
+                }
+
+                @foreach (var item in Model.List)
+                {
+                    <tr class="gl-title">
+                        <td>@item.SysNo  </td>
+                        <td>@item.UserId</td>
+                        <td>@item.Mobile</td>
+                        <td>@item.TempKey</td>
+                        <td>@item.SendSource</td>
+                        <td>@item.SmsContent</td>
+                         @{
+                        var smsTd = "";
+
+                        if (providerArr.Any(c => c.Key.ToString().Equals(item.SmsProvider)))
+                        {
+                            smsTd += providerArr.First(c => c.Key.ToString().Equals(item.SmsProvider)).Value;
+                        }
+                        else
+                        {
+                            smsTd += item.SmsProvider;
+                        }
+
+                        if (sendModeArr.Any(c => c.Key == item.SmsSendMode))
+                        {
+                            smsTd += "-" + sendModeArr.First(c => c.Key == item.SmsSendMode).Value;
+                        }
+                        else
+                        {
+                            smsTd += "-" + item.SmsSendMode;
+                        }
+                        if (channelArr.Any(c => c.Key.ToString().Equals(item.SmsChannel)))
+                        {
+                            smsTd += "-" + channelArr.First(c => c.Key.ToString().Equals(item.SmsChannel)).Value;
+                        }
+                        else
+                        {
+                            smsTd += "-" + item.SmsChannel;
+                        } 
+                        }
+                        <td>@smsTd</td>
+
+                        @if (item.SmsSendRes == true)
+                        {
+                            <td>成功</td>
+                        }
+                        else
+                        {
+                            <td>失败</td>
+                        }
+                        <td>@item.ErrorCode</td>
+                        <td>@item.Remark</td>
+
+                       
+                        <td>@item.RowCreateDate</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+
+ 
+    
+    @Html.Partial("Pager", @Model)
+}

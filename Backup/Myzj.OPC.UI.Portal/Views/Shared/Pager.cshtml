@@ -1,0 +1,10 @@
+﻿@using Myzj.OPC.UI.Model
+@model Myzj.OPC.UI.Model.Pager
+@{
+    if (Pager.IsShow(Model))
+    {
+        <div class="paginator">
+            @Html.PageNative(Model.PageIndex, Model.PageSize, Model.Total, Model.RedirectUrl,Model.Fun)
+        </div>
+    }
+}

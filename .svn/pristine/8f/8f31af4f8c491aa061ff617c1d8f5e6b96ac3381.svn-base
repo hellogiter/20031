@@ -1,0 +1,95 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model  Myzj.OPC.UI.Model.ExpressModel.OrderStatusConfigModel
+<h2>添加配置</h2>
+<style type="text/css">
+    .showDetailTableMultiColumnm .manjian textarea {
+        width: 500px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .showDetailTableMultiColumnm .tickename input {
+        width: 200px;
+    }
+</style>
+
+
+@using (Html.BeginForm())
+{
+    <div id="tableContainer">
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>订单类型</td>
+                    <td colspan="3">
+                        @Html.DropDownListFor(m => m.OrderType, new KvSelectList(typeof(AppEnum.ExpressOrderStatusMallType).GetEnumList()), false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>订单状态</td>
+                    <td colspan="3">
+                        @Html.DropDownListFor(m => m.OrderStatus, new KvSelectList(typeof(AppEnum.ExpressOrderStatusType).GetEnumList()), false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>订单状态信息</td>
+                    <td colspan="3">
+                        <input id="txtStatusDesc" type="text" placeholder="必填" style="width: 200px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>时间间隔(分钟)</td>
+                    <td colspan="3">
+                        <input id="txtDisplayTime" type="text" placeholder="必填" value="0" style="width: 200px;" />
+                        <span style="width: 5px">Tips：当一个状态多条记录时，间隔时间须大于0,否则可能会导致订单扭转顺序不准确</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>排序</td>
+                    <td colspan="3">
+                        <input id="txtSort" type="text" placeholder="必填" value="0" style="width: 200px;" />
+                        <span style="width: 5px">Tips：当一个状态多条记录时，建议填写排序值,否则可能会导致订单扭转顺序不准确</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="rowButton">
+            <input type="button" value="添加" id="btnSave" />
+            <input type="button" value="关闭" id="btnDel" onclick="window.close();" />
+        </div>
+    </div>
+    
+}
+
+<script type="text/javascript">
+
+    $("#btnSave").click(function () {
+        var model = {};
+        model.OrderType = $.trim($("#OrderType").val());
+        model.OrderStatus = $.trim($("#OrderStatus").val());
+        model.StatusCode = '0';//可以为空
+        model.StatusName = $("#OrderStatus").find("option:selected").text();//读取key
+        model.StatusDesc = $.trim($("#txtStatusDesc").val());
+        model.DisplayTime = $.trim($("#txtDisplayTime").val());
+        model.Sort = $.trim($("#txtSort").val());
+
+        if (confirm("你确定保存吗？")) {
+            $.ajax({
+                url: '@Url.Action("AddOrderStatusConfig", "Exec")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("添加成功！");
+                        window.location.href = '@Url.Action("OrderStatusConfigIndex", "Express")';
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        }
+    });
+
+</script>

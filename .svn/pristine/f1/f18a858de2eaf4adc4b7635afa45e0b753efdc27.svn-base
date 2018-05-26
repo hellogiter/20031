@@ -1,0 +1,40 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Myzj.OPC.UI.Model.SearchManagement
+{
+    public class SearchManagementDetail
+    {
+        //public Nullable<int> SItemId { get; set; }
+        //public string vchProductName { get; set; }
+        //public string SearchWord { get; set; }
+        //public string ExcludeWord { get; set; }
+        //public Nullable<int> CreateBy { get; set; }
+        //public string userName { get; set; }
+        //public Nullable<System.DateTime> CreateDate { get; set; }
+        //public Nullable<int> UpdateBy { get; set; }
+        //public Nullable<System.DateTime> UpdateDate { get; set; }
+        //public Nullable<int> State { get; set; }
+        //public string UpSearchWord { get; set; }
+        //public string UpExcludeWord { get; set; }
+        //public string UpUpdate { get; set; }
+        //public string UpUpDateBy { get; set; }
+        //public Nullable<int> ProductId { get; set; }
+        //public string TempProductId { get; set; }
+
+        public Nullable<int> SId { get; set; }
+        public Nullable<int> ProductId { get; set; }
+        public string SearchWord { get; set; }
+        public string ExcludeWord { get; set; }
+        public Nullable<int> CreateBy { get; set; }
+        public Nullable<System.DateTime> CreateDate { get; set; }
+        public Nullable<int> UpdateBy { get; set; }
+        public Nullable<System.DateTime> UpdateDate { get; set; }
+        public Nullable<int> State { get; set; }
+        public Nullable<int> SItemId { get; set; }
+        public string TempProductId { get; set; }
+        public string vchProductName { get; set; }
+    }
+}

@@ -1,0 +1,12 @@
+E:\ysx2012\svn\20031\Business.PanGu\bin\Debug\Business.PanGu.dll
+E:\ysx2012\svn\20031\Business.PanGu\bin\Debug\Business.PanGu.pdb
+E:\ysx2012\svn\20031\Business.PanGu\bin\Debug\PanGu.dll
+E:\ysx2012\svn\20031\Business.PanGu\bin\Debug\SearchEngine.Helper.dll
+E:\ysx2012\svn\20031\Business.PanGu\bin\Debug\SearchEngine.Model.dll
+E:\ysx2012\svn\20031\Business.PanGu\bin\Debug\ServiceStack.Common.dll
+E:\ysx2012\svn\20031\Business.PanGu\bin\Debug\ServiceStack.Interfaces.dll
+E:\ysx2012\svn\20031\Business.PanGu\bin\Debug\ServiceStack.Common.xml
+E:\ysx2012\svn\20031\Business.PanGu\bin\Debug\ServiceStack.Interfaces.xml
+E:\ysx2012\svn\20031\Business.PanGu\obj\Debug\Business.PanGu.csprojResolveAssemblyReference.cache
+E:\ysx2012\svn\20031\Business.PanGu\obj\Debug\Business.PanGu.dll
+E:\ysx2012\svn\20031\Business.PanGu\obj\Debug\Business.PanGu.pdb

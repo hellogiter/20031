@@ -1,0 +1,105 @@
+﻿@using Myzj.OPC.UI.Model.MotherUser
+@{
+    ViewBag.Title = "Item";
+    var list = (List<MotherUserDetail>)ViewBag.List;
+    Layout = null;
+}
+
+
+<div class="resultDiv">
+    <table class="resultTable" id="calcTotalAmount">
+        <thead>
+            <tr>
+                <th>用户ID</th>
+                <th>手机</th>
+                <th>头像</th>
+                <th>妈妈秀总数</th>
+                <th>关注数</th>
+                <th>关注话题数</th>
+                <th>粉丝数</th>
+                <th>被赞数</th>
+                <th>系统账号</th>
+                <th>关注账户</th>
+                <th>推荐妈妈</th>
+                <th>排序</th>
+                <th>状态</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var item in list)
+            {
+                var checkedStr = "checked='checked'";
+
+                //是否是系统用户
+                var sysUserChenk = "";
+                if (item.SysUserId > 0)
+                {
+                    sysUserChenk = checkedStr;
+                }
+
+                //是否关联账户
+                var focusChenk = "";
+                if (item.SysUserId > 0)
+                {
+                    if (item.IsDefaultFocus > 0)
+                    {
+                        focusChenk = checkedStr;
+                    }
+                }
+                else
+                {
+                    focusChenk = "disabled='disabled'";
+                }
+
+
+                var recommend = "";//是否推荐妈妈
+                var isSort = "";//是否能排序
+                if (item.RUserId > 0)
+                {
+                    recommend = checkedStr;
+                }
+                else
+                {
+                    isSort = "disabled='disabled'";
+                }
+                    
+                    
+                <tr>
+                    <td>
+                        @item.MUserId
+                    </td>
+                    <td>@item.Mobile</td>
+                    <td><img src="@item.HeadImg" width="35"/></td>
+                    <td>@item.MShowCount</td>
+                    <td>@item.FocusMCount</td>
+                    <td>@item.FocusTopicCount</td>
+                    <td>@item.FansCount</td>
+                    <td>@item.MUserPraiseCount</td>
+                    <td>
+                        <input class="system" id="cbkSys-@item.SysUserId" @sysUserChenk type="checkbox" data-muserid="@item.MUserId" data-sysid="@item.SysUserId" />
+                    </td>
+                    <td>
+                        <input id="cbkFocus" @focusChenk type="checkbox" class="focus" data-sysid="@item.SysUserId" /></td>
+                    <td>
+                        <input id="cbkRecommend" @recommend class="recommend" type="checkbox" data-rid ="@item.RUserId"  data-muserid="@item.MUserId" /></td>
+                    <td>
+                        <input id="txtSort" class="sort" style="width: 30px" @isSort type="text" value="@item.Sort"  data-rid ="@item.RUserId" /></td>
+                    <td>
+                        <select id="select-@item.MUserId" class="selectState" data-userid="@item.MUserId">
+                            <option value="1">启用</option>
+                            <option value="0">禁用</option>
+                            <option value="2">被举报</option>
+                        </select>
+                        <script>
+                            selectVal("select-@item.MUserId", "@item.MUserState");
+                        </script>
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</div>
+
+   

@@ -1,0 +1,6 @@
+E:\ysx2012\svn\20031\Myzj.OPC.UI.Library\Myzj.OPC.UI.ServiceClient.XML
+E:\ysx2012\svn\20031\Myzj.OPC.UI.Library\Myzj.OPC.UI.ServiceClient.dll
+E:\ysx2012\svn\20031\Myzj.OPC.UI.Library\Myzj.OPC.UI.ServiceClient.pdb
+E:\ysx2012\svn\20031\Myzj.OPC.UI.ServiceClient\obj\Debug\Myzj.OPC.UI.ServiceClient.csprojResolveAssemblyReference.cache
+E:\ysx2012\svn\20031\Myzj.OPC.UI.ServiceClient\obj\Debug\Myzj.OPC.UI.ServiceClient.dll
+E:\ysx2012\svn\20031\Myzj.OPC.UI.ServiceClient\obj\Debug\Myzj.OPC.UI.ServiceClient.pdb

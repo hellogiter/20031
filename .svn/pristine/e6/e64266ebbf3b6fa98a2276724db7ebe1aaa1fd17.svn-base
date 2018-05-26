@@ -1,0 +1,94 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.SearchManagement.SearchManagementRefer
+@{
+	ViewBag.Title = "商品搜索词管理";
+}
+<style>
+	.showDetailTable tr td:nth-child(2n+1) {
+		width: 15%;
+		text-align: right;
+	}
+
+	.showDetailTable tr td:nth-child(2n) {
+		width: 85%;
+	}
+
+	.showDetailTable select[name=ForbiddenType], .showDetailTable select[name=Type] {
+		width: 200px;
+	}
+
+	.showDetailTable .sBtn {
+		width: 15%;
+		height: 30px;
+		margin-top: 10px;
+		margin-bottom: 10px;
+		cursor: pointer;
+	}
+
+</style>
+
+<h2>商品搜索词管理</h2>
+
+@using (Html.BeginForm())
+{
+	var success = @ViewData["SuccessMsg"];
+    if (null != success)
+    {
+		<span style="color: green">@success</span>
+    }
+   
+    <table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+	<tbody>
+		<tr>
+			<td>商品ID:</td>
+			<td colspan="2">
+				@Html.TextAreaFor(m => m.SearchDetail.TempProductId)<span style="width: 240px;padding-top:60px">*输入数值类型商品id,用逗号或回车分割</span>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="10">
+				<input style="margin-left: 40%" type="submit" value="查询" id="btnSearch" class="sBtn" />
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+    @Html.Partial("Item", @Model.List)
+
+}
+<script type="text/javascript">
+	//$.fn.onlyNum = function () {
+	//	$(this).focus(function () {
+	//		this.value = this.value.replace(/\D/g, '');
+	//	}).blur(function () {
+	//		this.value = this.value.replace(/\D/g, '');
+	//	}).bind("cut copy paste", function (e) {
+	//		alert('此选项复制粘贴功能被禁用');
+	//		e.preventDefault();
+	//		//this.value = this.value.replace(/\D/g, '');
+	//	});
+	//};
+	//// 限制使用了onlyNum类样式的控件只能输入数字
+	//$("#SearchDetail_TempProductId").onlyNum();
+
+	//全选和反选
+	$("#CheckAll").click(function () {
+		var flag = $("#CheckAll").is(":checked"); //判断全选按钮的状态
+		$("input[name=checkitem]").prop("checked", flag);
+	});
+
+	function RedirctToAdd() {
+		var array = new Array();
+		$.each($("input[name=checkitem]:checked"), function (index, content) {
+			var iindex = $("input[name=checkitem]:checked")[index].value;
+			array.push(iindex);
+		});
+		if (array.length < 1) {
+			window.open('@Url.Action("PlDetail", "SearchManagement")');
+		} else {
+			var sIds = array.join(",");
+			window.open('/SearchManagement/PlDetail?pid='+ sIds);
+		}
+	}
+
+</script>

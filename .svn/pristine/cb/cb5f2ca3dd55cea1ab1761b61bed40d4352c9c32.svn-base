@@ -1,0 +1,56 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.WordMsg
+@model Myzj.OPC.UI.Model.WordMsg.WordMsgRefer
+<h2>禁词管理</h2>
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable">
+        <tbody>
+
+            <tr>
+                <td>类型:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.SearchDetail.IntWordType, new KvSelectList(typeof(AppEnum.WordType).GetEnumList()), true)
+                </td>
+                <td>禁词:</td>
+                <td>@Html.TextBoxFor(m => m.SearchDetail.VchForbidWord)</td>
+            </tr>
+        </tbody>
+    </table>
+    var success = @ViewData["SuccessMsg"];
+    if (null != success)
+    {
+    <span style="color: green">@success</span>
+    }
+    var notice = @ViewData["ErrorMsg"];
+    if (null != notice)
+    {
+    <span style="color: red">@notice</span>
+    }
+    @Html.Partial("Item", @Model.List)
+    
+    @Html.Partial("Pager", @Model)
+}
+<script type="text/javascript">
+    $(function () {
+        $(".delWordMsg").click(function () {
+            var obj = $(this);
+            var id = obj.attr("pvalue");
+
+            $.ajax({
+                url: "/WebForbidWordMsg/Del",
+                data: { "id": id },
+                dataType: 'json',
+                type: 'POST',
+                success: function (res) {
+                    if (res.DoFlag) {
+                        location.reload();
+                    } else {
+                        alert(res.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>

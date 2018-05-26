@@ -1,0 +1,148 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.Base.BaseRefer<Myzj.OPC.UI.Model.RentActivity.BaseCartSplitInfo>
+<h2>购物车拆分商品</h2>
+<style>
+    .input-validation-error {
+        border: 1px solid #c0c0c0;
+        background-color: white;
+    }
+
+    .showDetailTable tbody tr.tk-guanli td {
+        width: 15%;
+    }
+
+        .showDetailTable tbody tr.tk-guanli td.tk-name {
+            width: 5%;
+            text-align: center;
+        }
+
+        .showDetailTable tbody tr.tk-guanli td input {
+            text-align: left;
+            width: 85%;
+        }
+
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+        <tbody>
+            <tr class="tk-guanli">
+                <td class="tk-name">拆分类型:</td>
+                <td>
+                     @{
+                    SortedList<int, string> actlist = new SortedList<int, string>();
+                    actlist.Add(0, "请选择");
+                    actlist.Add(3, "供应商租赁");
+                    actlist.Add(2, "母婴之家租赁");
+                    actlist.Add(1, "母婴之家礼品卡");
+                }
+               @Html.DropDownListFor(m => m.SearchDetail.SplitType, new KvSelectList(actlist), false)
+                </td>
+                <td class="tk-name">商品id:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.SplitValue)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="rowButton">
+        <input type="submit" value="查询" id="btnSearch" />
+        
+    </div>
+    if (Model.List2 != null && Model.List2.Any())
+    {
+        var model = Model.List2;
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>编号</th>
+                    <th>商品id</th>
+                    <th>拆分类型</th>
+                    <th>是否启用</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in model)
+                {
+                    <tr>
+                        <td>@item.SplitNo</td>
+                        <td>@item.SplitValue</td>
+                        <td>
+                            @if (item.SplitType == 1)
+                            {
+                                <span>母婴之家礼品卡</span>
+                            }
+                            else if (item.SplitType==2)
+                            {
+                                <span>母婴之家租赁</span>
+                            }
+                            else if (item.SplitType == 3)
+                            {
+                                <span>供应商租赁</span>
+                            }
+                           
+                        </td>
+                        @if (item.IsValid == 1)
+                        {
+                            <td>启用</td>
+                        }
+                        else
+                        {
+                            <td>禁用</td>
+                        }
+                        <td>
+                             @if (item.IsValid == 1)
+                             {
+                                 <a style="color: #191970; cursor: pointer" target="_blank" onclick=" IsEnableItem(@item.SplitNo, 0); ">禁用</a>
+                             }
+                             else
+                             {
+                                 <a style="color:red; cursor: pointer" target="_blank" onclick=" IsEnableItem(@item.SplitNo, 1); ">启用</a>
+                             }
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+
+    }
+    
+    @Html.Partial("Pager", @Model)
+}
+
+<script type="text/javascript">
+
+    function IsEnableItem(sysNo, obj) {
+        if (confirm("确定吗?")) {
+            var model = {};
+            model.splitNo = sysNo;
+            model.isValid = obj;
+            $.ajax({
+                url: '@Url.Action("IsEnableCartSplit", "RentManager")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("操作成功");
+                    } else {
+                        alert("操作失败");
+                    }
+                }
+            });
+        }
+    }
+</script>

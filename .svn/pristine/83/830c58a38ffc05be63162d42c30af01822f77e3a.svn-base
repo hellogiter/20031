@@ -1,0 +1,223 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.BaseCouponConfig
+@model Myzj.OPC.UI.Model.BaseCouponConfig.CouponInfoDtailRefer
+<h2>优惠券管理</h2>
+<style>
+    .input-validation-error {
+        border: 1px solid #c0c0c0;
+        background-color: white;
+    }
+
+    .showDetailTable tbody tr.tk-guanli td {
+        width: 15%;
+    }
+
+        .showDetailTable tbody tr.tk-guanli td.tk-name {
+            width: 5%;
+            text-align: center;
+        }
+
+        .showDetailTable tbody tr.tk-guanli td input {
+            text-align: left;
+            width: 85%;
+        }
+
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+</style>
+
+
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+        <tbody>
+            <tr class="tk-guanli">
+                <td class="tk-name">使用状态:</td>
+                <td>
+                    @{
+    var list = new Dictionary<int, string>();
+    list.Add(-1, "--ALL--");
+    list.Add(0, "未开始");
+    list.Add(1, "可使用");
+    list.Add(2, "已过期");
+    list.Add(3, "已删除");
+    list.Add(4, "已禁用");
+                    }
+                    @Html.DropDownListFor(m => m.SearchDetail.Status, new KvSelectList(list))
+                </td>
+                <td class="tk-name">优惠券key:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.CouponKey)
+                </td>
+                <td class="tk-name">优惠券名称:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.CouponName)
+                </td>
+                <td class="tk-name">审核状态:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.SearchDetail.AuditState, new KvSelectList(typeof(AppEnum.CouponAuditState).GetEnumList()), true)
+
+                </td>
+
+            </tr>
+            <tr class="tk-guanli">
+                <td class="tk-name">有效时间：</td>
+                <td colspan="3">
+                    <input type="text" name="SearchDetail.StartTime" id="SearchDetail.StartTime" value="@ViewBag.StartTime" onfocus="dateFmt(this,1) " style="width: 200px;"/>
+                    <label style="width: 10px; margin-left: 10px; line-height: 20px;">至</label>
+                    <input type="text" name="SearchDetail.EndTime" id="SearchDetail.EndTime" value="@ViewBag.EndTime" onfocus=" dateFmt(this,2) " style="width: 200px;"/>
+                </td>
+                <td class="tk-name">优惠券类型:</td>
+                <td>
+                    @{
+    var coupontype = new Dictionary<int, string>();
+    coupontype.Add(-1, "--ALL--");
+    coupontype.Add(0, "满减券");
+    coupontype.Add(2, "折扣券");
+                    }
+                    @Html.DropDownListFor(m => m.SearchDetail.CouponType, new KvSelectList(coupontype))
+                </td>
+                <td class="tk-name">是否码转券:</td>
+                <td>
+                    @{
+    var type = new Dictionary<int, string>();
+    type.Add(-1, "--ALL--");
+    type.Add(1, "是");
+    type.Add(0, "否");
+                    }
+                    @Html.DropDownListFor(m => m.SearchDetail.IsCodeToCoupon, new KvSelectList(type))
+                </td>
+
+            </tr>
+            <tr  class="tk-guanli">
+                <td class="tk-name">编号SysNo:</td>
+                <td>@Html.TextBoxFor(m => m.SearchDetail.SysNo)</td>
+                <td colspan="6"></td>
+            </tr>
+        </tbody>
+    </table>
+    var success = @ViewData["SuccessMsg"];
+    if (null != success)
+    { 
+    <span style="color: green">@success</span>
+    }
+    var notice = @ViewData["ErrorMsg"];
+    if (null != notice)
+    {
+    <span style="color: red">@notice</span>
+    }
+    @Html.Partial("Item", @Model.List2)
+    
+    @Html.Partial("Pager", @Model)
+}
+<script type="text/javascript">
+    function dateFmt(obj, type) {
+        if (type == 1) {
+            if (obj.value == "") {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd 00:00:00' });
+            } else {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' });
+            }
+        } else {
+            if (obj.value == "") {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd 23:59:59' });
+            } else {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' });
+            }
+        }
+
+    }
+    //禁用启用
+    $(".setIsEnable").click(function () {
+        var sysno = $(this).attr("pvalue");
+        var type = $(this).attr("ptype");
+        if (confirm('确定？')) {
+            $.ajax({
+                url: "/CouponManage/SetIsEnabey",
+                data: { "SysNo": sysno, "Type": type },
+                success: function (res) {
+                    if (res.DoFlag) {
+                        alert("操作成功");
+                        location.reload();
+                    } else {
+                        alert(res.DoResult);
+                    }
+                }
+            });
+        }
+
+    });
+
+    //删除
+    $(".setIsDel").click(function () {
+        var obj = $(this);
+        var sysno = obj.attr("pvalue");
+        if (confirm('确定？')) {
+            $.ajax({
+                url: "/CouponManage/SetsetIsDely",
+                data: { "SysNo": sysno },
+                dataType: 'json',
+                type: 'POST',
+                success: function (res) {
+                    if (res.DoFlag) {
+                        alert("删除成功");
+                        location.reload();
+                    } else {
+                        alert(res.DoResult);
+                    }
+                }
+            });
+        }
+    });
+
+    //提交审核进入待审核状态
+    $(".sumbitAudit").click(function () {
+        var obj = $(this);
+        var sysno = obj.attr("pvalue");
+        if (confirm('点击提交审核后进入待审核状态，不可修改，确定？')) {
+            $.ajax({
+                url: "/CouponManage/SumbitAudit",
+                data: { "SysNo": sysno },
+                dataType: 'json',
+                type: 'POST',
+                success: function (res) {
+                    if (res.DoFlag) {
+                        alert("提交成功");
+                        location.reload();
+                    } else {
+                        alert(res.DoResult);
+                    }
+                }
+            });
+        }
+    });
+
+
+    //复制
+    //$(".setIsCopy").click(function () {
+    //    var obj = $(this);
+    //    var sysno = obj.attr("pvalue");
+    //    //return;
+    //    if (confirm('确定复制吗？')) {
+    //        $.ajax({
+    //            url: "/CouponManage/SetIsCopy",
+    //            data: { "SysNo": sysno },
+    //            dataType: 'json',
+    //            type: 'POST',
+    //            success: function(res) {
+    //                if (res.DoFlag) {
+    //                    alert("复制成功");
+    //                    location.reload();
+    //                } else {
+    //                    alert(res.DoResult);
+    //                }
+    //            }
+    //        });
+    //    }
+    //});
+
+</script>

@@ -1,0 +1,853 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.WebIndex
+@using Myzj.OPC.UI.ServiceClient
+@model Myzj.OPC.UI.Model.BaseCouponConfig.CouponInfoDetailExt
+@{
+    var isEdit = (Model != null && Model.SysNo > 0);
+
+    var floorItem = (IEnumerable<Myzj.OPC.UI.Model.BaseCouponConfig.WareHouseDetail>)ViewBag.ItemModel;
+    var isDisabled = "";
+}
+
+
+<style>
+    .showDetailTableMultiColumnm tbody tr td {
+        text-align: left;
+        padding: 6px 8px;
+        float: none;
+    }
+
+    .showDetailTableMultiColumnm .mjsz input {
+        width: 60px;
+        /*padding: 0px 6px;*/
+        float: none;
+        margin-right: 10px;
+    }
+
+    .showDetailTableMultiColumnm .mjsz span {
+        /*padding-left: 10px;*/
+        text-align: left;
+        color: #000;
+    }
+
+    .showDetailTableMultiColumnm .sendfs {
+        text-align: left;
+        word-break: break-all;
+        max-width: 500px;
+    }
+
+        .showDetailTableMultiColumnm .sendfs input {
+            width: 12px;
+            float: none;
+            margin-left: 20px;
+            margin-right: 15px;
+        }
+
+            .showDetailTableMultiColumnm .sendfs input.text-con {
+                width: 200px;
+                margin-left: 10px;
+            }
+
+            .showDetailTableMultiColumnm .sendfs input.text-con500 {
+                width: 500px;
+                margin-left: 10px;
+            }
+
+    .showDetailTableMultiColumnm .manjian textarea {
+        width: 500px;
+        margin-right: 15px;
+    }
+
+    .showDetailTableMultiColumnm .tickename input {
+        width: 300px;
+        margin-right: 15px;
+    }
+
+    #dataStr tr {
+        width: 100%;
+        padding: 5px 0;
+        margin-left: 0;
+    }
+
+    #dataStr td {
+        width: 100%;
+        border: 0px;
+        margin: 0px;
+        text-align: left;
+        /*white-space: normal;*/
+        height: auto;
+    }
+
+    #dataStr {
+        width: 100%;
+        margin-left: 10px;
+    }
+
+    .showDetailTableMultiColumnm table#dataStr td input {
+        width: 123px;
+        padding: 3px 5px;
+        margin: 0 25px 0 6px;
+    }
+
+    .showDetailTableMultiColumnm table#dataStr tbody {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .showDetailTableMultiColumnm .onefirstTd {
+        width: 195px;
+    }
+
+    .showDetailTableMultiColumnm {
+        width: 99%;
+        margin: 5px auto;
+    }
+
+    span.error {
+        color: #C00;
+        padding: 0 6px;
+    }
+
+    .showDetailTableMultiColumnm tbody tr td label.error {
+        float: none;
+        width: inherit;
+        color: red;
+        margin: 0 20px 0 0;
+    }
+</style>
+
+<h2>查看优惠券详细</h2>
+
+<div id="tableContainer">
+    <form id="detailForm">
+        <input type="hidden" id="IntSysNo" value="@Model.SysNo"/>
+        <input type="hidden" id="StrCouponKey" value="@Model.CouponKey"/>
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+
+                <tr>
+                    <td class="onefirstTd">优惠券名称(*):</td>
+                    <td class="tickename">
+                        @Model.CouponName
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>优惠券发送方:</td>
+                    <td class="sendfs">
+
+                        @{
+                            var rdBelog1 = "第三方";
+                            if (Model.Belonging != null && Model.Belonging.Equals("1"))
+                            {
+                                rdBelog1 = "母婴之家";
+                            }
+                           
+                        }
+                        @rdBelog1
+                    </td>
+                </tr>
+                <tr>
+                    <td>优惠券类型：</td>
+                    @if (Model.CouponType.HasValue && Model.CouponType == 2)
+                    {
+                        <td>折扣券</td>
+                    }
+                    else
+                    {
+                        <td>满减券</td>
+                    }
+                </tr>
+                <tr>
+                    <td>是否码转券：</td>
+                    @if (Model.IsCodeToCoupon.HasValue && Model.IsCodeToCoupon == 1)
+                    {
+                        <td>是</td>
+                    }
+                    else
+                    {
+                        <td>否</td>
+                    }
+                </tr>
+                <tr class="mjsz">
+                    <td>设置(*):</td>
+                    <td>
+                        <span style="width: 100px;">满：@Model.FillMoney.ToString().TrimEnd('0').TrimEnd('.')
+                        </span>
+                        @if (Model.CouponType.HasValue && Model.CouponType == 2)
+                        {
+                            <span style="width: 100px;">折扣：@Model.Discount.ToString().TrimEnd('0').TrimEnd('.')</span>
+                            <span style="width: 100px;">折扣金额上限：@Model.DiscountUpperLimit</span>
+                        }
+                        else
+                        {
+                            <span style="width: 100px;">返：@Model.SubtractMoney.ToString().TrimEnd('0').TrimEnd('.')</span>
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>开始时间(*):</td>
+                    <td class="sendfs">
+                        @Model.StartTime
+                    </td>
+                </tr>
+                <tr>
+                    <td>结束时间(*):</td>
+                    <td class="sendfs">
+                        @Model.EndTime
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>是否启用:</td>
+                    <td class="sendfs">
+                        @{
+                            var selectTrue = "是";
+                            if (Model.IsEnable != null)
+                            {
+                                if (Model.IsEnable == true)
+                                {
+                                }
+                                else
+                                {
+                                    selectTrue = "否";
+                                }
+
+                            }
+                           
+                        }
+                        @selectTrue
+                    </td>
+                </tr>
+                <tr style="display: none">
+                    <td>审核级别:</td>
+                    <td class="sendfs">
+                        <input id="AuditLevel" type="checkbox" disabled="disabled" checked="checked" name="AuditLevel" value="2" />组长</td>
+                </tr>
+
+                <tr>
+                    <td>满减券描述(*):</td>
+                    <td class="manjian">
+                        @Model.CouponDescription
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>备注信息:</td>
+                    <td class="manjian">
+                        @Model.Remarks
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+        <span style="margin-left: 20px;">∨基础扩展字段</span>
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr style="display: none">
+                    <td>基础扩展字段(Json)</td>
+                    <td>
+                        <div style="margin: 10px 0; vertical-align: bottom;">
+                            @Html.TextAreaFor(m => m.BasicsExt)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>需求部门(*):
+                    </td>
+                    <td>
+                        @{
+                            var deptName = "";
+                            var list = BaseCouponConfigClient.Instance.GetDeptList().Where(m => m.Key == Model.DeptId);
+                            if (list != null && list.Any())
+                            {
+                                deptName = list.First().Value;
+                            }
+                        }
+                        @deptName
+                    </td>
+                </tr>
+                <tr>
+                    <td class="onefirstTd">每个会员限制发送张数 默认为 1(*):</td>
+                    <td class="tickename limit">
+                        @Model.SendLimitUserCount</td>
+                </tr>
+                <tr>
+                    <td>限制发送张数(*):</td>
+                    <td class="sendfs limit">
+                        @Model.SendLimitCount</td>
+                </tr>
+                <tr>
+                    <td>将要达到限制数量报警值(%):</td>
+                    <td class="sendfs limit">
+                        @Model.WillReachWarning
+                    </td>
+                </tr>
+                <tr>
+                    <td>设置天数(0不设置)(*):</td>
+                    <td class="sendfs limit">
+                        @Model.UseSetDays
+                    </td>
+
+                </tr>
+
+                <tr>
+                    <td>批次使用条件:</td>
+                    <td class="sendfs">
+                        <table id="dataStr">
+                            @{
+                                var html = "";
+                                var useBatch = Model.BatchUses;
+                                if (useBatch != null)
+                                {
+                                    foreach (var item in useBatch)
+                                    {
+                                        html += "<tr>";
+                                        html += "<td>开始时间：<input id='BatchStartTime' placeholder='必填'  value=\"" + @item.BatchStartTime + "\" onfocus=\"" + "WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" + "\" type='text'>";
+                                        html += " 结束时间：<input id='BatchEndTime' placeholder='必填'   value=\"" + @item.BatchEndTime + "\" onfocus=\"" + "WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" + "\" type='text'>";
+                                        html += " 单个领取数量：<input id='BatchSendUserCount'  placeholder='必填' value=\"" + @item.BatchSendUserCount + "\" type='text'>";
+                                        html += " 总数量：<input id='BatchSendCount'  placeholder='必填' value=\"" + @item.BatchSendCount + "\" type='text'>" +
+                                                " &nbsp;&nbsp;    已领取：" + @BaseCouponConfigClient.Instance.CountCoupon(Model.CouponKey, item.BatchStartTime, item.BatchEndTime, false) +
+                                                " &nbsp;&nbsp;    已使用：" + @BaseCouponConfigClient.Instance.CountCoupon(Model.CouponKey, item.BatchStartTime, item.BatchEndTime, true) + " </td>";
+                                        html += "</tr>";
+                                    }
+                                }
+                            }
+                            @Html.Raw(html)
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td>是否启用领券：</td>
+                    @if (Model.IsGetCoupon)
+                    {
+                        <td>是</td>
+                    }
+                    else
+                    {
+                        <td>否</td>
+                    }
+                </tr>
+                <tr>
+                    <td>是否在详情页显示：</td>
+                    @if (Model.IsShowOnDetail)
+                    {
+                        <td>是</td>
+                    }
+                    else
+                    {
+                        <td>否</td>
+                    }
+                </tr>
+                <tr>
+                    <td>券的分类来源:</td>
+                    <td>
+                          @{
+                             var source = BaseCouponConfigClient.Instance.GetCouponCategorySource().Where(m=>m.Key==(Model.CouponCategorySource??0)).FirstOrDefault();
+                             <span>@source.Value</span>
+                        }
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <span style="margin-left: 20px;">∨使用规则扩展</span>
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr style="display: none">
+                    <td>规则扩展字段(Json)</td>
+                    <td>
+                        <div style="margin: 10px 0; vertical-align: bottom;">
+                            @Html.TextAreaFor(m => m.CouponRule)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="onefirstTd">应用平台(*):</td>
+                    <td class="sendfs">
+                        @{
+                            var plat0 = "";
+                            var plat1 = "";
+                            var plat2 = "";
+                            var plat4 = "";
+                            var plat5 = "";
+                            var plat8 = "";
+
+                            if (Model.Platform != null && !string.IsNullOrEmpty(string.Join(",", Model.Platform)))
+                            {
+                                var platlist = string.Join(",", Model.Platform).Replace("][", ",").Replace("[", "").Replace("]", "").Split(',');
+
+                                foreach (var v in platlist)
+                                {
+                                    switch (v)
+                                    {
+                                        case "0":
+                                            plat0 = "checked='checked'";
+                                            break;
+                                        case "1":
+                                            plat1 = "checked='checked'";
+                                            break;
+                                        case "2":
+                                            plat2 = "checked='checked'";
+                                            break;
+                                        case "4":
+                                            plat4 = "checked='checked'";
+                                            break;
+                                        case "5":
+                                            plat5 = "checked='checked'";
+                                            break;
+                                        case "8":
+                                            plat8 = "checked='checked'";
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+                        <input type="checkbox" @plat0 name="chkPlatform" id="chkPlat_0" value="0">
+                        全部
+                        <input type="checkbox" @plat1 name="chkPlatform" id="chkPlat_1" value="1">
+                        PC网站
+                        <input type="checkbox" @plat2 name="chkPlatform" id="chkPlat_2" value="2">
+                        Wap网站
+                        <input type="checkbox" @plat4 name="chkPlatform" id="chkPlat_4" value="4">
+                        安卓APP
+                        <input type="checkbox" @plat5 name="chkPlatform" id="chkPlat_5" value="5">
+                        苹果APP
+                        <input type="checkbox" @plat8 name="chkPlatform" id="chkPlat_8" value="8">
+                        Ipad
+                    </td>
+                </tr>
+                <tr>
+                    <td>可使用一级分类:</td>
+                    <td class="sendfs">
+                        @if (Model.ApplicableFirstCategory != null && Model.ApplicableFirstCategory[0] != null)
+                        {
+                            <input type="text" style="display:none " id="ApplicableFirstCategory"  name="ApplicableFirstCategory" value="@Model.ApplicableFirstCategory" />
+                        }
+                        else
+                        {
+                            <input type="text" style="display: none" id="ApplicableFirstCategory" name="ApplicableFirstCategory" value="" />
+                        }
+                        @Model.C_ApplicableFirstCategory
+                    </td>
+                </tr>
+                <tr>
+                    <td>可使用二级分类:</td>
+                    <td class="sendfs">
+                        @if (Model.ApplicableSecondCategory != null && Model.ApplicableSecondCategory[0] != null)
+                        {
+                            <input type="text" style="display:none " id="ApplicableSecondCategory" name="ApplicableSecondCategory" value="@Model.ApplicableSecondCategory" />
+                        }
+                        else
+                        {
+                            <input type="text" style="display: none" id="ApplicableSecondCategory" name="ApplicableSecondCategory" value="" />
+                        }
+
+                        @Model.C_ApplicableSecondCategory
+                    </td>
+                </tr>
+                <tr>
+                    <td>可使用三级分类:</td>
+                    <td class="sendfs">
+                        @if (Model.ApplicableThreeCategory != null && Model.ApplicableThreeCategory[0] != null)
+                        {
+                            <input type="text" style="display:none " id="ApplicableThreeCategory" name="ApplicableThreeCategory" value="@Model.ApplicableThreeCategory" />
+                        }
+                        else
+                        {
+                            <input type="text" style="display: none" id="ApplicableThreeCategory" name="ApplicableThreeCategory" value="" />
+                        }
+
+                        @Model.C_ApplicableThreeCategory
+                    </td>
+                </tr>
+                <tr>
+                    <td>排除一级分类:</td>
+                    <td class="sendfs">
+                        @if (Model.ExcludeFirstCategory != null && Model.ExcludeFirstCategory[0] != null)
+                        {
+                            <input type="text" style="display:none " id="ExcludeFirstCategory" name="ExcludeFirstCategory" value="@Model.ExcludeFirstCategory" />
+                        }
+                        else
+                        {
+                            <input type="text" style="display: none" id="ExcludeFirstCategory" name="ExcludeFirstCategory" value="" />
+                        }
+                        @Model.C_ExcludeFirstCategory
+                    </td>
+                </tr>
+                <tr>
+                    <td>排除二级分类:</td>
+                    <td class="sendfs">
+                        @if (Model.ExcludeSecondCategory != null && Model.ExcludeSecondCategory[0] != null)
+                        {
+                            <input type="text" style="display:none " id="ExcludeSecondCategory" name="ExcludeSecondCategory" value="@Model.ExcludeSecondCategory" />
+                        }
+                        else
+                        {
+                            <input type="text" style="display: none" id="ExcludeSecondCategory" name="ExcludeSecondCategory" value="" />
+                        }
+
+                        @Model.C_ExcludeSecondCategory
+                    </td>
+                </tr>
+                <tr>
+                    <td>排除三级分类:</td>
+                    <td class="sendfs">
+                        @if (Model.ExcludeThreeCategory != null && Model.ExcludeThreeCategory[0] != null)
+                        {
+                            <input type="text" style="display:none " id="ExcludeThreeCategory" name="ExcludeThreeCategory" value="@Model.ExcludeThreeCategory" />
+                        }
+                        else
+                        {
+                            <input type="text" style="display: none" id="ExcludeThreeCategory" name="ExcludeThreeCategory" value="" />
+                        }
+
+                        @Model.C_ExcludeThreeCategory
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <td>可使用商品Id:</td>
+                    <td class="sendfs">
+                        @if (Model.ApplicableGoodsId != null && Model.ApplicableGoodsId[0] != null)
+                        {
+                            @string.Join(",", Model.ApplicableGoodsId)
+                        }
+                        else
+                        {
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>排除商品Id:</td>
+                    <td class="sendfs">
+                        @if (Model.ExcludeGoodsId != null && Model.ExcludeGoodsId[0] != null)
+                        {
+                            @string.Join(",", Model.ExcludeGoodsId)
+                        }
+                        else
+                        {
+
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>可使用促销Id:</td>
+                    <td class="sendfs">
+                        @if (Model.ApplicablePromotion != null && Model.ApplicablePromotion[0] != null)
+                        {
+                            @string.Join(",", Model.ApplicablePromotion)
+
+                        }
+                        else
+                        {
+
+
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>排除促销Id:</td>
+                    <td class="sendfs">
+                        @if (Model.ExcludePromotion != null && Model.ExcludePromotion[0] != null)
+                        {
+                            @string.Join(",", Model.ExcludePromotion)
+
+                        }
+                        else
+                        {
+
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>会员等级(*):</td>
+                    <td class="sendfs">
+                        @{
+                            var lev0 = "";
+                            var lev1 = "";
+                            var lev2 = "";
+                            var lev3 = "";
+                            var lev4 = "";
+                            var lev5 = "";
+
+                            if (Model.ApplicableMemberLevel != null && !string.IsNullOrEmpty(string.Join(",", Model.ApplicableMemberLevel)))
+                            {
+                                var memlevel = string.Join(",", Model.ApplicableMemberLevel).Replace("][", ",").Replace("[", "").Replace("]", "").Split(',');
+
+                                foreach (var v in memlevel)
+                                {
+                                    switch (v)
+                                    {
+                                        case "0":
+                                            lev0 = "checked='checked'";
+                                            break;
+                                        case "1":
+                                            lev1 = "checked='checked'";
+                                            break;
+                                        case "2":
+                                            lev2 = "checked='checked'";
+                                            break;
+                                        case "3":
+                                            lev3 = "checked='checked'";
+                                            break;
+                                        case "4":
+                                            lev4 = "checked='checked'";
+                                            break;
+                                        case "5":
+                                            lev5 = "checked='checked'";
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+
+                        <input type="checkbox" @lev0 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_0"  value="0">
+                        全部 
+                                 <input type="checkbox" @lev1 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_1"  value="1">
+                        普通会员  
+                                 <input type="checkbox" @lev2 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_2" value="2">
+                        银卡会员
+                                 <input type="checkbox" @lev3 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_3" value="3">
+                        金卡会员
+                                 <input type="checkbox" @lev4 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_4" value="4">
+                        白金卡会员
+                                 <input type="checkbox" @lev5 name="chkApplicableMemberLevel" id="chkApplicableMemberLevel_5" value="5">
+                        至尊会员
+                    </td>
+                </tr>
+                <tr>
+                    <td>应用保税仓(*):</td>
+                    <td class="sendfs" style="height: auto; white-space: normal;">
+                        @{
+                            var sele1 = "";
+                            var modelCang = new string[] { };
+                            if (Model.ApplicablePosition != null && !string.IsNullOrEmpty(string.Join(",", Model.ApplicablePosition)))
+                            {
+                                modelCang = string.Join(",", Model.ApplicablePosition).Replace("][", ",").Replace("[", "").Replace("]", "").Split(',');
+
+                                foreach (var s in modelCang)
+                                {
+                                    if (s.Equals("0"))
+                                    {
+                                        sele1 = "checked='checked'";
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        sele1 = "";
+                                    }
+                                }
+
+                            }
+                        }
+
+                        <input type="checkbox" @sele1 name="chkApplicablePosition" id="chkApplicablePosition_0" value="0">全部 
+                        @{
+                            if (floorItem != null)
+                            {
+                                var i = 0;
+                                foreach (var item in floorItem)
+                                {
+                                    i += 1;
+                                    var select = "";
+                                    foreach (var s in modelCang)
+                                    {
+                                        if (item.Id.ToString().Equals(s))
+                                        {
+                                            select = "checked='checked'";
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            select = "";
+                                        }
+                                    }
+                            <input type="checkbox" @select name="chkApplicablePosition" id="chkApplicablePosition_"@item.Id value="@item.Id" />@item.WarehouseName
+                                    if (i % 6 == 0)
+                                    {
+                            <br />
+                            <span style="margin-left: 29px; width: 37px; height: 3px;"></span>
+                                    }
+                                }
+                            }
+                        }
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>应用商城(*):</td>
+                    <td class="sendfs">
+                        @{
+                            var mall0 = "";
+                            var mall1 = "";
+                            var mall2 = "";
+                            var mall3 = "";
+                            var mall4 = "";
+                            var mall5 = "";
+
+                            if (Model.MallType != null && !string.IsNullOrEmpty(string.Join(",", Model.MallType)))
+                            {
+                                var malllist = string.Join(",", Model.MallType).Replace("][", ",").Replace("[", "").Replace("]", "").Split(',');
+
+                                foreach (var v in malllist)
+                                {
+                                    switch (v)
+                                    {
+                                        case "0":
+                                            mall0 = "checked='checked'";
+                                            break;
+                                        case "1":
+                                            mall1 = "checked='checked'";
+                                            break;
+                                        case "2":
+                                            mall2 = "checked='checked'";
+                                            break;
+                                        case "3":
+                                            mall3 = "checked='checked'";
+                                            break;
+                                        case "4":
+                                            mall3 = "checked='checked'";
+                                            break;
+                                        case "5":
+                                            mall5 = "checked='checked'";
+                                            break;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                //新增时默认选择商城自营
+                                mall1 = "checked='checked'";
+                            }
+                        }
+                        <input type="checkbox"  @mall0 name="chkMallType" id="chkMallType_0" value="0">
+                        全部 
+                    <input type="checkbox" @mall1 name="chkMallType" id="chkMallType_1" value="1">
+                        商城类型-自营 
+                    @*<input  type="checkbox" @mall2 name="chkMallType" id="chkMallType_2" value="2">
+                        商城类型-非自营*@
+                        <input type="checkbox" @mall3 name="chkMallType" id="chkMallType_3" value="3">
+                        海淘（自贸、直邮）
+                    @*<input type="checkbox" @mall4 name="chkMallType" id="chkMallType_4" value="4">
+                        海淘 直邮*@
+                    <input type="checkbox" @mall5 name="chkMallType" id="chkMallType_5" value="5">
+                        新特卖
+                    </td>
+                </tr>
+                <tr>
+                    <td>排促销类型(*):</td>
+                    <td class="sendfs" style="word-break: break-all">
+                        @{
+                            var promTypeList = BaseCouponConfigClient.Instance.GetPromotionList();
+                            int a = 0;
+
+                            foreach (var prom in promTypeList)
+                            {
+                                a++;
+
+                                if (Model.PromType != null && Model.PromType.Count > 0)
+                                {
+
+                                    if (Model.PromType.Contains(prom.Key))
+                                    {
+                            <input type="checkbox" name="ckProm" value="@prom.Key" checked="checked" />
+                                    }
+                                    else
+                                    {
+                            <input type="checkbox" name="ckProm" value="@prom.Key" />
+                                    }
+
+                                }
+                                else
+                                {
+                                    if (prom.Value.Contains("秒杀"))
+                                    {
+                            <input type="checkbox" name="ckProm" value="@prom.Key" checked="checked" />
+                                    }
+                                    else
+                                    {
+                            <input type="checkbox" name="ckProm" value="@prom.Key" />
+                                    }
+
+                                }
+                            @prom.Value
+                                if (a % 10 == 0)
+                                {
+                            <br />
+                                }
+
+                            }
+
+
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>供应商ID:</td>
+                    <td class="sendfs">
+                        @if (Model.Supplier != null && Model.Supplier[0] != null)
+                        {
+                            @string.Join(",", Model.Supplier)
+                        }
+                        else
+                        {
+                        }
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>新特卖供应商专场ID:</td>
+                    <td class="sendfs">
+                        @if (Model.Special != null && Model.Special[0] != null)
+                        {
+                            @string.Join(",", Model.Special) 
+                        }
+                        else
+                        {
+
+
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>优惠券使用品牌ID:</td>
+                    <td class="sendfs">
+                        @if (Model.ApplicableBrand != null && Model.ApplicableBrand[0] != null)
+                        {
+                            @string.Join(",", Model.ApplicableBrand) 
+                        }
+                        else
+                        {
+
+
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>优惠券排除品牌ID:</td>
+                    <td class="sendfs">
+                        @if (Model.ExcludeBrand != null && Model.ExcludeBrand[0] != null)
+                        {
+                           
+                            @string.Join(",", Model.ExcludeBrand)
+                        }
+                        else
+                        {
+
+                        }
+                    </td>
+                </tr>
+        </table>
+    </form>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="关闭" id="btnDel" onclick="window.location.href = window.close()" />
+</div>
+
+
+
+
+
+

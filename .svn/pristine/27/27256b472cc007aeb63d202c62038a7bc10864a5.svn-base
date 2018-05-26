@@ -1,0 +1,328 @@
+﻿@{
+    ViewBag.Title = "BargainGroupEdit";
+}
+@model  Myzj.OPC.UI.Model.BargainGroup.GroupGoodsDetailExt
+<h2>更新团商品信息</h2>
+<style type="text/css">
+    .showDetailTableMultiColumnm .manjian textarea {
+        width: 500px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .showDetailTableMultiColumnm .tickename input {
+        width: 200px;
+    }
+</style>
+
+@{
+    var beforePay = (bool)ViewBag.ActBeforePay;
+}
+@using (Html.BeginForm())
+{
+    if (Model != null)
+    {
+    <div id="tableContainer">
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td style="text-align: right">商品ID</td>
+                    <td style="text-align: left" colspan="3">
+                        @Model.GoodsId
+                        <input type="hidden" id="hdSysNo" value="@Model.SysNo"/>
+                        <input type="hidden" id="hdJianGroupCount" value="@Model.JianGroupCount"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">对应活动ID</td>
+                    <td colspan="3">
+                        <input id="txtGroupActivitySysNo" type="text" placeholder="必填" disabled="disabled" style="width: 200px;" value="@Model.GroupActivitySysNo" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">商品名</td>
+                    <td style="text-align: left" colspan="3">
+                        @Model.GoodsName
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">商品原价</td>
+                    <td style="text-align: left" colspan="3">
+                        @Model.VipPrice
+                        <input type="hidden" id="inputOrgiPrice" value="@Model.VipPrice"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">商品描述</td>
+                    <td style="text-align: left" colspan="3">
+                        <textarea id="txtGoodsDes" placeholder="必填"> @Model.GoodsDes</textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">活动图片地址</td>
+                    <td style="text-align: left" colspan="3">
+                        <input id="txtPicUrl" type="text" placeholder="必填" value=" @Model.PicUrl" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">商品单价</td>
+                    <td style="text-align: left" colspan="3">
+
+                        <input id="txtGroupPrice" type="text" placeholder="必填" style="width: 200px;" value="@Model.GroupPrice" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">设置成团人数</td>
+                    <td style="text-align: left" id="txtSetCanGroupCount" colspan="3">
+                        @Model.SetCanGroupCount
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">设置建团总数</td>
+                    <td style="text-align: left" colspan="3">
+                        <input id="txtSetJianGroupCount" type="text" placeholder="必填" style="width: 200px;"  value="@Model.SetJianGroupCount" />*建议建团总数控在1000以下
+                            <input id="hidSetJianGroupCount" type="hidden" value="@Model.SetJianGroupCount" />
+                        @* <input id="hidJianGroupCount" type="text" />*@
+                    </td>
+                </tr>
+                <tr style="display: none">
+                    <td style="text-align: right">禁止用户建团标签</td>
+                    <td colspan="3" style="text-align: left">
+                        <input id="txtNoCreateUserLabel" value="@Model.NoCreateUserLabel" type="text"  style="width: 200px;" />*多个标签以英文逗号','分隔
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">禁止用户参团标签</td>
+                    <td colspan="3" style="text-align: left">
+                        <input id="txtNoJoinUserLabel" type="text" value="@Model.NoJoinUserLabel"  style="width: 200px;" />*多个标签以英文逗号','分隔
+                    </td>
+                </tr>
+                @if (!beforePay)
+                {
+                    <tr>
+                        <td style="text-align: right">支持团长一元购用户标签</td>
+                        <td colspan="3" style="text-align: left">
+                            <input id="txtZeroPayUserLabel" type="text" value="@Model.ZeroPayUserLabel" style="width: 200px;" />*多个标签以英文逗号','分隔
+                        </td>
+                    </tr>
+                }
+
+                <tr>
+                    <td style="text-align: right">促销ID</td>
+                    <td style="text-align: left" colspan="3">
+                        <input id="txtPromSysNos" type="text" placeholder="必填" style="width: 200px;" value="@Model.PromSysNos" />
+                    </td>
+                </tr>
+                @if (!beforePay)
+                {
+                    <tr>
+                        <td style="text-align: right">一元购促销ID</td>
+                        <td colspan="3" style="text-align: left">
+                            <input id="txtPromSysNos2" type="text" value="@Model.PromSysNos2" placeholder="必填" style="width: 200px;" />*满足条件一元购使用此促销Id
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td style="text-align: right; color: red">拼团玩法图片地址</td>
+                    <td colspan="3" style="text-align: left">
+                        <input id="txtPingPlayDesc" type="text" value="@Model.PingPlayDesc" placeholder="当商品支持一元购时必填" style="width: 450px;" />
+                    </td>
+                </tr>
+                @if (beforePay)
+                {
+                    <tr>
+                        <td style="text-align: right; color: red">先支付-是否支持直接参团</td>
+                        <td colspan="3" id="radList">
+                            @if (Model.CanNearGroup == true)
+                            {
+                                <span style="width: 40px; float: left;">
+                                    <input type="radio" name="CanNearGroup" checked="checked" value="True" />是</span>
+                                <span style="width: 40px; margin-left: 50px;">
+                                    <input type="radio" name="CanNearGroup" value="False" />否</span>
+                            }
+                            else
+                            {
+                                <span style="width: 40px; float: left;">
+                                    <input type="radio" name="CanNearGroup" value="True" />是</span>
+                                <span style="width: 40px; margin-left: 50px;">
+                                    <input type="radio" name="CanNearGroup" checked="checked" value="False" />否</span>
+                            }
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td style="text-align: right; color: red">后支付-团长一元购规则图片地址</td>
+                        <td colspan="3" style="text-align: left">
+                            <input id="txtZeroPayDesc" type="text" value="@Model.ZeroPayDesc" placeholder="当商品支持一元购时必填" style="width: 450px;" />
+                        </td>
+                    </tr>
+                }
+
+                @* <tr>
+                    <td style="text-align: right">开团流程图地址</td>
+                    <td colspan="3">
+                        <input id="txtGroupProcessPic" type="text" value="@Model.GroupProcessPic"  style="width: 450px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">砍价攻略图地址</td>
+                    <td colspan="3">
+                        <input id="txtGroupBargainDesc" type="text" value="@Model.GroupBargainDesc"   style="width: 450px;" />
+                    </td>
+                </tr>
+                 <tr>
+                        <td style="text-align: right">砍价团规则图片地址</td>
+                        <td colspan="3">
+                            <input id="txtGroupRuleDescription" type="text" value="@Model.GroupRuleDescription"   style="width: 450px;"/>
+                        </td>
+                    </tr> 
+                *@
+
+
+
+                <tr>
+                    <td style="text-align: right">排序值</td>
+                    <td style="text-align: left" colspan="3">
+                        <input id="txtSort" type="text" placeholder="必填" style="width: 200px;" value="@Model.Sort" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">开始时间</td>
+                    <td style="text-align: left">
+                        <input id="txtStartTime" type="text" placeholder="必填" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'});" value="@Model.StartTime" class="Wdate" style="width: 200px;" />
+                    </td>
+                    <td style="text-align: right">结束时间</td>
+                    <td style="text-align: left">
+                        <input id="txtEndTime" type="text" placeholder="必填" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'});" value="@Model.EndTime" class="Wdate" style="width: 200px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">是否启用</td>
+                    <td colspan="3" id="radList">
+                        @if (Model.IsEnable == true)
+                        {
+                            <span style="width: 40px; float: left;">
+                                <input type="radio" name="IsEnable" checked="checked" value="True" />启用</span>
+                            <span style="width: 40px; margin-left: 50px;">
+                                <input type="radio" name="IsEnable" value="False" />禁用</span>
+                        }
+                        else
+                        {
+                            <span style="width: 40px; float: left;">
+                                <input type="radio" name="IsEnable" value="True" />启用</span>
+                            <span style="width: 40px; margin-left: 50px;">
+                                <input type="radio" name="IsEnable" checked="checked" value="False" />禁用</span>
+                        }
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="rowButton">
+            <input type="button" value="保存" id="btnSave" />
+            <input type="button" value="关闭" id="btnDel" onclick="window.close();" />
+        </div>
+    </div>
+        
+    }
+    else
+    {
+    @Html.Partial("Error");
+    }
+
+
+}
+
+<script type="text/javascript">
+
+
+
+    $("#btnSave").click(function () {
+        var jianNum = $.trim($("#hidJianGroupCount").val());
+
+        var model = {};
+        model.SysNo = $.trim($("#hdSysNo").val());
+        model.GoodsDes = $.trim($("#txtGoodsDes").val());
+        model.GroupPrice = $.trim($("#txtGroupPrice").val());
+        model.SetJianGroupCount = $.trim($("#txtSetJianGroupCount").val());
+        model.Sort = $.trim($("#txtSort").val());
+        model.StartTime = $.trim($("#txtStartTime").val());
+        model.EndTime = $.trim($("#txtEndTime").val());
+        model.PromSysNos = $.trim($("#txtPromSysNos").val());
+        model.GroupActivitySysNo = $.trim($("#txtGroupActivitySysNo").val());
+        model.IsEnable = $('#radList input[name="IsEnable"]:checked').val();
+        model.PicUrl = $.trim($("#txtPicUrl").val());
+        model.GroupProcessPic = $.trim($("#txtGroupProcessPic").val());
+        model.GroupBargainDesc = $.trim($("#txtGroupBargainDesc").val());
+        model.GroupRuleDescription = $.trim($("#txtGroupRuleDescription").val());
+        model.NoCreateUserLabel = $.trim($("#txtNoCreateUserLabel").val());
+        model.NoJoinUserLabel = $.trim($("#txtNoJoinUserLabel").val());
+        model.ZeroPayUserLabel = $.trim($("#txtZeroPayUserLabel").val());
+        model.PromSysNos2 = $.trim($("#txtPromSysNos2").val());
+        model.SetCanGroupCount = $.trim($("#txtSetCanGroupCount").text());//参团人数
+        model.PingPlayDesc = $.trim($("#txtPingPlayDesc").val());//拼团玩法
+        model.ZeroPayDesc = $.trim($("#txtZeroPayDesc").val());//团长一元购说明图片地址
+        model.CanNearGroup = $('#radList input[name="CanNearGroup"]:checked').val();//是否支持参加附近的团
+
+        var count = parseInt($("#hdJianGroupCount").val());
+        if (count > parseInt($("#txtSetJianGroupCount").val())) {
+            alert("建团数不能改小");
+            return;
+        }
+
+        if (model.SetJianGroupCount > 1000) {
+            if (!confirm("你设置的建团数量过大，可能会造成亏损，是否继续")) {
+                return;
+            }
+        }
+
+        if (parseFloat($("#inputOrgiPrice").val()) > parseFloat(model.GroupPrice)) {
+            if (!confirm("设置的商品价低于成本价，可能会造成亏损，是否继续")) {
+                return;
+            }
+        }
+
+
+        if (confirm("你确定保存吗？")) {
+            $.ajax({
+                url: '@Url.Action("BargainGroupUpdate", "BargainGroup")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("更新成功！");
+                        window.location.href = '@Url.Action("Index", "BargainGroup", new { groupActivitySysNo = @Model.GroupActivitySysNo })';
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        }
+    });
+
+    //$(function () {
+    //    var dataParameter = {
+    //        "GroupActivitySysNo": 3,
+    //        "SysNo": 87
+    //    };
+    //    $.ajax({
+    //        url: 'http://192.168.12.191:7788/json/reply/QueryGroupGoodsJianGroup',
+    //        type: 'post',
+    //        dataType: 'jsonp',
+    //        contentType: 'application/json',
+    //        data: dataParameter,
+    //        success: function (result) {
+    //            if (result.DoFlag) {
+    //                $("#hidJianGroupCount").val(result.JianGroupCount);
+    //            } else {
+    //                alert(result.DoResult);
+    //            }
+    //        }
+    //    });
+    //});
+
+</script>

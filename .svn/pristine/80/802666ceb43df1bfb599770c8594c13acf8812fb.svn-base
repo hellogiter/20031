@@ -1,0 +1,96 @@
+﻿@using Myzj.OPC.UI.Model.CouponActivity
+@using Myzj.OPC.UI.Portal.Models
+@model IEnumerable<Myzj.OPC.UI.Model.CouponActivity.CouponActivityConfigureDetail>
+<h2>@ViewBag.Title</h2>
+<style>
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+</style>
+
+@if (Model != null && Model.Any())
+{
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>操作</th>
+                    <th>活动Key</th>
+                    <th>优惠券Key</th>
+                    <th>优惠券配置图片</th>
+                    <th>开始时间</th>
+                    <th>设置领券总人数</th>
+                    <th>领取优惠券数量</th>
+                    <th>设置每人领券数量</th>
+                    <th>排序</th>
+                    <th>是否启用</th>
+                    <th>创建时间</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr class="gl-title">
+                        <td><a title="编辑" style="color: #191970" target="_blank" href="@Url.Action("ActivityCouponEdit", "AppCouponActivity", new { SysNo = item.SysNo,GroupActivitySysNo=@ViewBag.GroupActivitySysNo })" >编辑</a> | 
+                            <a title="删除" href="javascript:;" style="color: #191970" target="_blank" onclick="deleteActivity(@item.SysNo)" >删除</a></td>
+                        <td>
+                            @item.ActivityKey
+                        </td>
+                        <td><a  style="color: #191970" target="_blank" title="查询优惠券"  href="@Url.Action("Index", "CouponManage", new { GroupActivitySysNo = item.SysNo })" >@item.CouponKey</a></td>
+                        <td>
+                            <img src="@item.CouponPicUrl" width="60px" height="30px"/></td>
+                        <td>@item.StartTime~@item.EndTime</td>
+                        <td>@item.SetLimitCount</td>
+                        <td>@item.ReceiveLimitCount</td>
+                        <td>@item.SetLimitUserCount</td>
+                        <td>@item.Sort</td>
+                        @if (item.IsEnable == true)
+                        {
+                            <td>启用
+                            </td>
+                        }
+                        else
+                        {
+                            <td>禁用
+                            </td>
+                        }
+                        <td>@item.CreateTime</td>
+
+                    </tr>
+                }
+
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+        
+    
+
+}
+
+<script type="text/javascript">
+    function deleteActivity(id) {
+
+        if (confirm("你确定删除吗？")) {
+            $.ajax({
+                url: '@Url.Action("DeleteCouponActivityConfigure", "AppCouponActivity")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: "{\"sysNo\":"+id+"}",
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("删除成功！");
+                        location.href = location.href;
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        }
+    }
+</script>
+

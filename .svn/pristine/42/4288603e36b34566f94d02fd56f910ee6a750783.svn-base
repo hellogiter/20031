@@ -1,0 +1,190 @@
+﻿@using MYZJ.Framework.ServiceBase.ServiceModel
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.SaleHotStyle
+@using Myzj.OPC.UI.Model.WebIndex
+
+@model IEnumerable<Myzj.OPC.UI.Model.SearchManagement.SearchManagementDetail>
+@{
+    var isEdit = (Model != null && Model.Count() == 0);
+    var actionName = isEdit ? "Update" : "Add";
+}
+
+@if (isEdit)
+{
+    <h2>新增/批量新增商品搜索词</h2>
+}
+else
+{
+   
+    <h2>修改/批量修改商品搜索词</h2>
+}
+
+<div id="tableContainer">
+    <form id="detailForm">
+        <div id="divImg">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                <table class="showDetailTableMultiColumnm">
+                    <tr>
+                        <th colspan="4" style="text-align: left; padding-left: 5px;">商品搜索词信息</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input  type="hidden" value="@item.SId" style="width: 20px;" id="hidSid" name="hidSid"/>
+                            <input type="hidden" value="@item.SearchWord" name="UpSearchWord"/>
+                            <input type="hidden" value="@item.ExcludeWord" name="UpExcludeWord"/>
+                            <input id="butDel" type="button" value="删除" style="width: 90px" onclick=" delImgItem(this) " />
+                        </td>
+                        <td colspan="3"></td>
+                    </tr>
+                    @if (item.SId > 0)
+                    {
+                        <tr>
+                            <td></td>
+                            <td>
+                                <input type="text" value="@item.ProductId" id="ProductId" name="ProductId"  style="width: 10%" readonly="readonly"/>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                   
+                        <tr>
+                            <td>商品ID(*):</td>
+                            <td>
+                                <input type="text" value="@item.ProductId" id="ProductId" name="ProductId"  style="width: 10%" />
+                                <label style="height: 20px; font-weight: 700; width: 80%" class="label"></label>
+                            </td>
+                            <td>
+                                <input type="button" value="检测" style="width: 50px;" class="checkProductId" pvalue="@item.ProductId"/>
+                            </td>
+                        </tr>
+                    }
+                    <tr>
+                        <td>搜索词(*):</td>
+                        <td colspan="2">
+                            <input type="text" value="@item.SearchWord" id="SearchWord" name="SearchWord"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>排除词(*):</td>
+                        <td colspan="2">
+                            <input type="text" value="@item.ExcludeWord" id="ExcludeWord" name="ExcludeWord"/>
+                        </td>
+                    </tr>
+                </table>
+                }
+            }
+        </div>
+    </form>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="提交" id="btnSave" />
+    <input type="button" value="返回" id="btnDel" onclick="window.close()" />
+</div>
+
+<script type="text/javascript">
+    //检测商品Id是否有效
+    $(".checkProductId").click(function () {
+        var productId = $(this).parents("tr").children("td:eq(1)").children("input").val();
+        var innerText = $(this).parents("tr").children("td:eq(1)").children("label");
+        $.ajax({
+            url: "/SearchManagement/CheckPdtInfoById?productId=" + productId,
+            success: function (result) {
+                if (result.DoFlag) {
+                    innerText.text(result.DoResult);//返回商品名称
+                } else {
+                    alert(result.DoResult);
+                }
+            }
+        });
+    });
+
+    //删除商品搜索词信息
+    function delImgItem(objs) {
+        var obj = $(objs);
+        var html = obj.parents(".showDetailTableMultiColumnm");
+
+        var imgId = html.find("input[name='hidImgId']").val();
+        if (imgId == '0') {
+            html.remove();
+        } else {
+            html.find("input[name='hidIsDel']").val("1");
+            html.hide();
+        }
+    }
+
+    $(function () {
+        //保存
+        $("#btnSave").click(function () {
+            var search = {};
+            var searchModel = [];
+            var sId = 0;
+            var productId = 0;
+            var searchWord = "";
+            var excludeWord = "";
+            var label = $("#label").text();
+            $("#divImg .showDetailTableMultiColumnm").each(function (i, item) {
+                var obj = $(this);
+                sId = obj.find("input[name='hidSid']").val();
+                productId = obj.find("input[name='ProductId']").val();
+                searchWord = obj.find("input[name='SearchWord']").val();//修改后
+                excludeWord = obj.find("input[name='ExcludeWord']").val();//修改后
+                if (sId == 0) {
+                    var upSearchWord = searchWord;
+                    var upExcludeWord = excludeWord;
+                } else {
+                    var upSearchWord = obj.find("input[name='UpSearchWord']").val();//修改前
+                    var upExcludeWord = obj.find("input[name='UpExcludeWord']").val();//修改前
+                }
+
+                var iObj = {};
+                iObj.SId = sId;
+                iObj.ProductId = productId;
+                iObj.SearchWord = upSearchWord;
+                iObj.ExcludeWord = upExcludeWord;
+                iObj.UpdateSearchWord = searchWord;
+                iObj.UpdateExcludeWord = excludeWord;
+
+                searchModel.push(iObj);
+            });
+            search.SearchList = searchModel;
+            if (productId == null || productId == "") {
+                alert("请输入商品Id!");
+                return false;
+            } else if (searchWord == null || searchWord == "") {
+                alert("请输入搜索词!");
+                return false;
+            } else if (excludeWord == null || excludeWord == "") {
+                alert("请输入排除词!");
+                return false;
+            }
+
+            if (sId <= 0) {
+                if (label == null || label == "") {
+                    alert("请检测商品Id是否存在商品表中!");
+                    return false;
+                }
+            }
+
+            $.ajax({
+                url: "/SearchManagement/UpdateWebSearchManagement?sId=" + sId,
+                type: "post",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify(search),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert(result.DoResult);
+                        reloadPage();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>

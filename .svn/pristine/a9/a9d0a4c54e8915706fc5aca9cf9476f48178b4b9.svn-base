@@ -1,0 +1,84 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>@ViewBag.Title</title>
+    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/Pager.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/Dialog/default/zebra_dialog.css")" rel="stylesheet" />
+    <script src="@Url.Content("~/Scripts/jquery-1.10.2.js")" type="text/javascript"></script>
+    <link href="@Url.Content("~/Content/Frame/style.css")" type="text/css" rel="stylesheet" />
+    <script src="@Url.Content("~/Scripts/my97/WdatePicker.js")"></script>
+    <script src="@Url.Content("~/Scripts/pager.js")"></script>
+    <script src="@Url.Content("~/Scripts/Dialog/zebra_dialog.js")"></script>
+    <script src="@Url.Content("~/Scripts/ajaxfileupload.js")"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //移到底部
+            $(".showDetailTable :text:not(:disabled)").each(function (k, v) {
+                var ele = $(v);
+                var name = ele.attr('name');
+                if (name != undefined) {
+                    if (name.indexOf('Start') > -1 || name.indexOf('End') > -1 || name.indexOf('Day') > -1 || name.indexOf('Date') > -1 || name.indexOf('Time') > -1) {
+                        ele.addClass("Wdate");
+                        ele.bind("click", function () {
+                            WdatePicker();
+                        });
+                    }
+                }
+            });
+
+            //移到底部
+            $(".showDetailTableMultiColumnm :text:not(:disabled)").each(function (k, v) {
+                var ele = $(v);
+                var name = ele.attr('name');
+                if (name != undefined) {
+                    if (name.indexOf('Start') > -1 || name.indexOf('End') > -1 || name.indexOf('Day') > -1 || name.indexOf('Date') > -1 || name.indexOf('Time') > -1) {
+                        ele.addClass("Wdate");
+                        ele.bind("click", function () {
+                            WdatePicker();
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+    @RenderSection("Header", false)
+</head>
+<body>
+    @RenderBody()
+</body>
+</html>
+
+
+@*      //使用方法：
+        var dialog;
+        function ShowDetail(id) {
+            dialog = new $.Zebra_Dialog("", {
+                'type': '', //- confirmation error information question warning
+                'modal': true,
+                'overlay_close': false,
+                'custom_class': 'dialog',
+                'overlay_opacity': 0.5,
+                'width': 500,
+                'title': '促销商品详情',
+                'buttons': false, //'buttons': ['确定', '取消'],
+                'onClose': function (caption) {
+                    $("#QueryProduct").click();
+                },
+                'source': {
+                    //'ajax':{url:'url','cache':false}
+                    'iframe': {
+                        'src': '/ProductManage/EditProduct?SysNo=' + id,
+                        'height': 270,
+                        'frameborder': 0,
+                        'scrolling': 'no'
+                    }
+                },
+            });
+        }*@

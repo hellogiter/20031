@@ -1,0 +1,99 @@
+﻿@using Myzj.OPC.UI.Common
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.MotherShow
+@using Myzj.OPC.UI.ServiceClient
+@using NPOI.HSSF.Record.Formula.Functions
+
+@{
+    Layout = null;
+
+    var motherShow = (GetMotherShow)ViewBag.GetMotherShow;
+
+    if (motherShow.List != null && motherShow.List.Count > 0)
+    {
+        
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>
+                        <input id="ckbSelect" type="checkbox" /></th>
+                    <th>操作</th>
+                    <th>ID</th>
+                    <th>用户Id</th>
+                    <th>手机</th>
+                    <th>主图</th>
+                    <th>内容</th>
+                    <th>被赞数</th>
+                    <th>评论数</th>
+                    <th>反对数</th>
+                    <th>创建时间</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in motherShow.List)
+                {
+                    <tr>
+                        <td>
+                            @{
+                    var ckStr = "";
+                    if (item.RelevanceTopicId > 0)
+                    {
+                        ckStr = "checked='checked'";
+                    }
+                            }
+
+                            <input id="cbkState" class="cbkState" type="checkbox" @ckStr  data-mtopicid="@item.RelevanceTopicId" 
+                                data-showid="@item.MShowId" data-state="@item.MShowState" data-userid="@item.MUserId" />
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Detail", "MotherShow", new { id = @item.MShowId })" target="_blank" class="update">编辑</a>
+                            &nbsp;&nbsp;&nbsp;
+                            
+                            @{
+                    var url = WebUrl.WebAppUrl() + "/MLT/MotherShow?id=" + item.MShowId;
+                            }
+
+                            <a href="/Default/Preview?url=@url" target="_blank">预览</a>
+                        </td>
+                        <td>
+                            @item.MShowId
+                        </td>
+
+                        <td>@item.MUserId</td>
+                        <td>@item.Mobile</td>
+                        <td>
+                            <a href="@(UrlFactory.FormatImgUrl(item.ImageUrl))" target="_blank" >
+                                <img src="@(UrlFactory.FormatImgUrl(item.ImageUrl))" style="width:30px;" /></a>
+                        </td>
+                        <td>@item.MShowContent</td>
+                        <td>@item.MShowPraiseCount</td>
+                        <td>@item.MShowCommentsCount</td>
+                        <td>@item.MShowAgainstCount</td>
+                        <td>@item.CreateTime</td>
+                        <td>
+                            @{
+                    var selectName = "selectState_" + item.MShowId;
+                            }
+                            <select id="@selectName" data-showid="@item.MShowId" data-originalstate="@item.MShowState" data-userid="@item.MUserId">
+                                <option value="0">未审核</option>
+                                <option value="1">审核通过</option>
+                                <option value="2">审核未通过</option>
+                                <option value="3">审核待发布</option>
+                            </select>
+                            <script>
+                                bingSate('@selectName', '@item.MShowState');
+                            </script>
+                        </td>
+                    </tr>   
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+}
+
+@Html.Partial("Pager", @motherShow)

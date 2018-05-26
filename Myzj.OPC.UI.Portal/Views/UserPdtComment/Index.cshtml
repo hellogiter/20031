@@ -1,0 +1,263 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.SaleHotStyle
+@model Myzj.OPC.UI.Model.UserPdtComment.UserPdtCommentRefer
+<h2>评论管理</h2>
+
+<script type="text/javascript">
+    //绑定状态
+    //name 名称
+    //val 值
+    function bingSate(name, val) {
+        $("#" + name).val(val);
+    }
+</script>
+@using (Html.BeginForm("UploadFile", "UserPdtComment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+    <input type="file" name="file" value="选择文件" style="width: 173px;margin-left: 67px;"/>
+    <input type="submit" id="submit" value="导入" />
+}
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable">
+        <tbody>
+            <tr>
+                <td>会员号:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.IntUserID)
+                </td>
+                <td>订单号:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.IntOrderNO)
+                </td>
+            </tr>
+            <tr>
+                <td>商品ID:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.IntProductID)
+                </td>
+                <td>是否精华:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.SearchDetail.IntIsHighLight, new KvSelectList(typeof(AppEnum.IsHighLight).GetEnumList()), true)
+                </td>
+            </tr>
+            <tr>
+                <td>评分类型:</td>
+                <td>
+                    <select id="SearchDetail_IntStart" name="SearchDetail.IntStart">
+                        <option value="-1">--ALL--</option>
+                        <option value="1">商品满意度</option>
+                        <option value="2">商品包装满意度</option>
+                        <option value="3">送货速度满意度</option>
+                        <option value="4">送货服务满意度</option>
+                    </select>
+                </td>
+                <td>评分:</td>
+                <td>
+                    <select id="SearchDetail_IntXingXing" name="SearchDetail.IntXingXing">
+                        <option value="-1">--ALL--</option>
+                        <option value="1">一颗星星</option>
+                        <option value="2">二颗星星</option>
+                        <option value="3">三颗星星</option>
+                        <option value="4">四颗星星</option>
+                        <option value="5">五颗星星</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>是否置顶:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.SearchDetail.IntIsOnTop, new KvSelectList(typeof(AppEnum.IsTop).GetEnumList()), true)
+                </td>
+                <td>是否申请加精:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.SearchDetail.IntAppHighLight, new KvSelectList(typeof(AppEnum.IntAppHighLight).GetEnumList()), true)
+                </td>
+            </tr>
+            <tr>
+                <td>是否首页显示:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.SearchDetail.IntIndexVisible, new KvSelectList(typeof(AppEnum.IndexVisible).GetEnumList()), true)
+                </td>
+                <td>是否显示:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.SearchDetail.IntIsMask, new KvSelectList(typeof(AppEnum.IsMask).GetEnumList()), true)
+                </td>
+            </tr>
+            <tr>
+                <td>审核人:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.IntAuditUserID)
+                </td>
+                <td>回复人:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.IntReplyUserId)
+                </td>
+            </tr>
+            <tr>
+                <td>评价开始时间:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.StartDtCommentDate)
+                </td>
+                <td>评价结束时间:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.EndDtCommentDate)
+                </td>
+            </tr>
+            <tr>
+                <td>审核开始时间:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.StartDtAuditDate)
+                </td>
+                <td>审核结束时间:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.EndDtAuditDate)
+                </td>
+
+            </tr>
+            <tr>
+                <td>回复开始时间:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.StartDtReplyDateTime)
+                </td>
+                <td>回复结束时间:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.EndDtReplyDateTime)
+                </td>
+            </tr>
+            <tr>
+                <td>审核状态:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.SearchDetail.IntAuditState, new KvSelectList(typeof(AppEnum.IntAuditState).GetEnumList()), true)
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>评价内容:</td>
+                <td colspan="3">
+                    @Html.TextAreaFor(m => m.SearchDetail.VchContent)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    var success = @ViewData["SuccessMsg"];
+    if (null != success)
+    { 
+    <span style="color: green">@success</span>
+    }
+    var notice = @ViewData["ErrorMsg"];
+    if (null != notice)
+    {
+    <span style="color: red">@notice</span>
+    }
+    @Html.Partial("Item", @Model.List)
+    
+    @Html.Partial("Pager", @Model)
+}
+<script type="text/javascript">
+    $(function () {
+        //批量修改
+        $("#btnPLUpdate").click(function () {
+            var search = {};
+            var searchModel = [];
+            var commentId = 0;
+            $('input[type="checkbox"][name="all"]:checked').each(function (index) {
+                commentId = $(this).parents('tr').children().eq(2).html();//获取选中行的SID
+                var reontent = $(this).parents('tr').children().eq(13).children("textarea").val();
+
+                var istop = 0;//是否置顶
+                if ($(this).parents('tr').children().eq(15).find("input[type='checkbox']").is(':checked') == true) {
+                    istop = 1;
+                }
+                var isHighLight = 0;//是否加精
+                if ($(this).parents('tr').children().eq(16).find("input[type='checkbox']").is(':checked') == true) {
+                    isHighLight = 1;
+                }
+                var isMask = 0;//显示	
+                if ($(this).parents('tr').children().eq(17).find("input[type='checkbox']").is(':checked') == true) {
+                    isMask = 1;
+                }
+                var indexVisible = 0;//首页显示
+                if ($(this).parents('tr').children().eq(18).find("input[type='checkbox']").is(':checked') == true) {
+                    indexVisible = 1;
+                }
+                var auditState = $(this).parents('tr').children().eq(19).find("option:selected").val();
+
+                var iObj = {};
+                iObj.IntCommentID = commentId;
+                iObj.IntIsOnTop = istop;
+                iObj.IntIsHighLight = isHighLight;
+                iObj.VchReplyContent = reontent;
+                iObj.IntIsMask = isMask;
+                iObj.IntIndexVisible = indexVisible;
+                iObj.IntAuditState = auditState;
+
+                searchModel.push(iObj);
+            });
+
+            search.TempCommentDos = searchModel;
+
+            $.ajax({
+                url: "/UserPdtComment/UpdatePlUserPdtComment?commentId=" + commentId,
+                type: "post",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify(search),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert(result.DoResult);
+                        reloadPage();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+    });
+
+    function OK() { //点击确定按钮的时候
+        var file = ($("#fileName").val());
+        alert(file);
+        if (file == "") {
+            $.messager.alert('系统提示', '请选择将要上传的文件!');
+            //document.forms[0].submit();
+        } else {
+            var stuff = file.match(/^(.*)(\.)(.{1,8})$/)[3];
+            if (stuff != 'xls') {
+                alert('文件类型不正确，请选择.xls文件!');
+                //document.forms[0].submit();
+            } else {
+                $.ajax({
+                    type: "POST",
+                    url: "/UserPdtComment/InsertnExcelDaoRuww?fileName" + file,
+                    data: "file=" + file + "",
+                    success: function (result) {
+                        $.messager.alert('系统提示', result + "");
+                    }
+                });
+            }
+        }
+    }
+
+
+    //全选和反全选
+    $("#selectAll").click(function () {//当点击全选框时 
+        var flag = $("#selectAll").is(":checked");//判断全选按钮的状态 
+        var checkItems = document.getElementsByName("all");
+        for (var i = 0; i < checkItems.length; i++) {
+            checkItems[i].checked = flag;
+        }
+    });
+    //点击子项
+    $("input:checkbox[name='all']").each(function () {
+        $(this).click(function () {
+            if ($("input:checkbox[name='all']:checked").length == $("input:checkbox[name='all']").length) {
+                document.getElementById("selectAll").checked = true;
+            } else {
+                document.getElementById("selectAll").checked = false;
+            }
+        });
+    });
+</script>

@@ -1,0 +1,32 @@
+﻿@{
+}
+<div id="tableContainer">
+    <form id="detailForm">
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>排名:</td>
+                    <td colspan="3">
+                        @Html.TextBoxFor(m => m.MShowTitle)
+                    </td>
+                </tr>
+                <tr>
+                    <td>辣妈妈:</td>
+                    <td colspan="3">
+                        @Html.TextAreaFor(m => m.MShowContent)
+                    </td>
+                </tr>
+                <tr>
+                    <td>被封禁麻数:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.MShowPraiseCount, new { disabled = "disabled" })
+                    </td>
+                    <td>状态:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.MShowCommentsCount, new { disabled = "disabled" })
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>

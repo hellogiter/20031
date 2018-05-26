@@ -1,0 +1,97 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.WebAward.WebLotteryNumberRefer
+<h2>[@ViewBag.strName] [抽奖次数配置]</h2>
+
+<form id="WebNUmber" action="/WebAward/WebLotteryNumberDetail" target="_blank" method="POST">
+    <div class="rowButton">
+        <input type="hidden" value="@ViewBag.IntTagsId" name="tagsId"/>
+        <input type="hidden" value="@ViewBag.TagsName" name="tagsName"/>
+        <input type="button" name="Query" id="BtnAdd" value="新增" />
+    </div>
+</form>
+@if (Model != null)
+{
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>操作</th>
+                    <th>用户组名称</th>
+                    <th>抽奖次数（区间）</th>
+                    <th>创建时间</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.List)
+                {
+                    <tr>
+                        <td>@item.IntNumId</td>
+                        <td>
+                            <a style="color: #191970" target="_blank"  href="@Url.Action("WebLotteryNumberDetail", "WebAward", new { id = item.IntNumId, intNumId = item.IntTagsId, tagsName = item.vchTagsName })" >修改</a>
+                            @*<a style="color: #191970" target="_blank"  href="@Url.Action("WebAwardPrizeItem", "WebAward", new { numId = item.IntNumId, strName = ViewBag.strName })">配置奖项</a>*@
+                            <form id="FormWebNUmber" action="/WebAward/WebAwardPrizeItem" target="_blank" method="POST">
+                                <input type="hidden" value="@ViewBag.strName" name="strName"/>
+                                <a href="javascript:(0);" class="BtnPrizeItem" pvalue="@item.IntNumId" >奖项配置</a>
+                            </form>
+                        </td>
+                        <td>@item.vchTagsName</td>
+                        <td>@item.VchLotteryNumber</td>
+                        <td>@item.DtCreateTime</td>
+                        <td>
+                            @{
+                    var checkStr = "";
+                    if (item.IntStatus == 1)
+                    {
+                        checkStr = "checked='checked'";
+                    }
+                            }
+                            <input id="cbkState-@item.IntNumId" type="checkbox" @checkStr data-id="@item.IntNumId" onclick="updateState(this)" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+}
+<script type="text/javascript">
+    $(function () {
+        //新增
+        $("#BtnAdd").click(function () {
+            $("#WebNUmber").submit();
+        });
+        //配置奖项
+        $(".BtnPrizeItem").click(function () {
+            var id = $(this).attr("pvalue");
+            var td = $("<input type='hidden' value='" + id + "' id='numId' name='numId'/>");
+            $("#FormWebNUmber").append(td);
+            $("#numId").val(id);
+
+            $("#FormWebNUmber").submit();
+            $("#numId").remove();
+        });
+
+    });
+    //修改状态
+    function updateState(obj) {
+        var id = $(obj).data("id");
+        var state = 0;
+        if (obj.checked) {
+            state = 1;
+        }
+        $.ajax({
+            url: "/WebAward/SaveLotteryNumberState?id=" + id + "&state=" + state,
+            type: "Post",
+            success: function (res) {
+                if (res.DoFlag) {
+                    location.reload();
+                } else {
+                    alert(res.DoResult);
+                }
+            }
+        });
+    }
+</script>

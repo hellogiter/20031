@@ -1,0 +1,149 @@
+﻿@using Myzj.OPC.UI.ServiceClient
+@model Myzj.OPC.UI.Model.MLTSYSProjectMannger.EditMLTSYSProjectRes
+<h2>修改专题</h2>
+@using (Html.BeginForm("Edit", "MLTSYSProject", FormMethod.Post))
+{
+    if (Model != null)
+    {
+    <div>
+
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>标题:</td>
+                    <td colspan="3">
+                        @Html.TextBoxFor(m => m.ProjectTitle)
+                        <input type="hidden" value="@Model.ProjectId" name="ProjectId" id="ProjectId"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>被赞数量:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.PraiseCount, new { @readonly = "readonly", @style = "background: #f5deb3" })
+                    </td>
+                    <td>评论数量:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.CommentsCount, new { @readonly = "readonly", @style = "background: #f5deb3" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>反对数量:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.AgainstCount, new { @readonly = "readonly", @style = "background: #f5deb3" })
+                    </td>
+                    <td>排序:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.Sort, new { @value = "0" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>状态:</td>
+                    <td colspan="3">
+                        <select name="ProjectState">
+                            @if (Model.ProjectState == 1)
+                            {
+                                <option value="1" name="ProjectState" selected="selected">启用</option>
+                                <option value="0" name="ProjectState">禁用</option>
+                            }
+                            else
+                            {
+                                <option value="1" name="ProjectState">启用</option>
+                                <option value="0" name="ProjectState" selected="selected">禁用</option>
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>内容:</td>
+                    <td colspan="3">
+                        @Html.TextAreaFor(m => m.ProjectContent)
+                    </td>
+                </tr>
+                <tr>
+                    <td>描述:</td>
+                    <td colspan="3">
+                        @Html.TextAreaFor(m => m.ProjectDescribe)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="rowButton">
+        <input type="submit" value="保存" id="Edit" />
+    </div>
+   
+    }
+}
+<script type="text/javascript">
+    $(function () {
+        $("#Edit").submit(function () {
+            var projectid = $("[name='ProjectId']").val();
+            var projectTitle = $("#ProjectTitle").val();
+            var projectDescribe = $("#ProjectDescribe").val();
+            var projectContent = $("#ProjectContent").val();
+            var praiseCount = $("#PraiseCount").val();
+            var commentsCount = $("#CommentsCount").val();
+            var againstCount = $("#AgainstCount").val();
+            var sort = $("#Sort").val();
+            var projectState = $("[name='ProjectState']").val();
+
+            //if (projectContent.length > 400) {
+            //    alert("专题主图内容超过长度");
+            //    $("#projectTitle").focus();
+            //    return false;
+            //}
+            //if (projectDescribe.length > 300) {
+            //    alert("专题主图备注超过长度");
+            //    $("#projectTitle").focus();
+            //    return false;
+            //}
+
+            if (projectTitle == null || projectTitle == "") {
+                alert("标题不能为空");
+                return false;
+            }
+            if (projectContent == "") {
+                alert("内容不能为空");
+                return false;
+            }
+            //var $formData = "{\"ProjectTitle\":\"" + projectTitle + "\",";
+            //$formData += "\"ProjectId\":\"" + projectid + "\",";
+            //$formData += "\"ProjectDescribe\":\"" + projectDescribe + "\",";
+            //$formData += "\"ProjectContent\":\"" + projectContent + "\",";
+            //$formData += "\"PraiseCount\":\"" + praiseCount + "\",";
+            //$formData += "\"CommentsCount\":\"" + commentsCount + "\",";
+            //$formData += "\"Sort\":\"" + sort + "\",";
+            //$formData += "\"ProjectState\":\"" + projectState + "\",";
+            //$formData += "\"AgainstCount\":\"" + againstCount + "\"}";
+            //$.ajax({
+            //    url: "/MLTSYSProject/Edit",
+            //    type: "post",
+            //    data: eval("(" + $formData + ")"),
+            //    success: function (res) {
+            //        if (res.DoFlag) {
+            //            alert("编辑成功");
+            //            window.close();
+            //            reloadPage();
+            //        } else {
+            //            alert(res.DoResult);
+            //        }
+            //    },
+            //    error: function () {
+            //        alert("服务器异常，请稍后尝试...");
+            //        return;
+            //    }
+            //});
+            //return true;
+        });
+
+        //判断只能输入数字
+        $("#Sort").change(function () {
+            var sort = $.trim($("#Sort").val());
+            var regex = /^[0-9]*$/;
+            if (!regex.test(sort)) {
+                alert("只能输入数字!");
+                return false;
+            }
+        });
+    });
+</script>

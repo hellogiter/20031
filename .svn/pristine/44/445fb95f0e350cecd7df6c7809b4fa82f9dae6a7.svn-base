@@ -1,0 +1,109 @@
+﻿@using Myzj.OPC.UI.Model.BargainGroup
+@using Myzj.OPC.UI.Portal.Models
+@model IEnumerable<Myzj.OPC.UI.Model.BargainGroup.GroupActivityDetailExt>
+<h2>@ViewBag.Title</h2>
+<style>
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+</style>
+
+@if (Model != null && Model.Any())
+{
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>活动ID</th>
+                    <th>操作</th>
+                    <th>活动名称</th>
+                    <th>活动描述</th>
+                    <th>每人可建团和参团总数</th>
+                    <th>每人可建团总数</th>
+                    <th>每人可参团总数</th>
+                    <th>优先付款</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                 @*   <th>活动链接</th>*@
+                    <th>新活动链接</th>
+                    <th>是否启用</th>
+                    <th>创建时间</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr class="gl-title">
+                        <td><a title="编辑" style="color: #191970;font-weight:bold" target="_blank" href="@Url.Action("EditGroupActivity", "BargainGroup", new { SysNo = item.SysNo })" >@item.SysNo</a></td>
+                        <td>
+                            <a  style="color: #191970" target="_blank"  href="@Url.Action("Index", "BargainGroup", new { GroupActivitySysNo = item.SysNo })" >查看商品</a>
+                            | <a  style="color: #191970" target="_blank"  href="@Url.Action("GroupRecordIndex", "BargainGroup", new { ActivitySysNo = item.SysNo })" >参团记录</a>
+                        </td>
+                        <td>@item.GroupActivityName</td>
+                        <td>@item.GroupActivityDes</td>
+                        <td>@(item.OpenOrCanCount??0)</td>
+                        <td>@item.GroupUserInCount</td>
+                        <td>@item.GroupUserCanCount</td>
+                        @if (item.BeforePay ?? false)
+                        {
+                            <td>是</td>
+                        }
+                        else
+                        {
+                            <td>否</td>
+                        }
+
+                        <td>@item.StartTime</td>
+                        <td>@item.EndTime</td>
+                        @*<td><a target="_blank" href="@GroupUrlFactory.ConvertActivityUrl(item.SysNo ?? 0)">生成WAP推广链接</a></td>*@
+                        <td><a target="_blank" href="@GroupUrlFactory.ConvertActivityUrl2(item.SysNo ?? 0)">砍价团3.0推广链接</a></td>
+                        @if (item.IsEnable == true)
+                        {
+                            <td>启用
+                            </td>
+                        }
+                        else
+                        {
+                            <td>禁用
+                            </td>
+                        }
+                        <td>@item.CreateTime</td>
+
+                    </tr>
+                }
+
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+        
+    
+
+}
+
+<script type="text/javascript">
+    function deleteActivity(id, thisrow) {
+
+        if (confirm("删除该活动将会导致该活动下的所有商品团不可用,你确定删除吗？")) {
+            $.ajax({
+                url: '@Url.Action("DeleteGroupActivity", "BargainGroup")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: "{\"sysNo\":" + id + "}",
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("删除成功！");
+                        $(thisrow).parent().parent().remove();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        }
+    }
+</script>
+

@@ -1,0 +1,120 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.WebIndex
+@model Myzj.OPC.UI.Model.WebAward.WebAwardUserTagsDetail
+@{
+    var isEdit = (Model != null && Model.IntTagsId > 0);
+    var actionName = isEdit ? "Update" : "Add";
+}
+
+@if (isEdit)
+{
+    <h2>修改用户标签组配置</h2>
+}
+else
+{
+    <h2>新增用户标签组配置</h2>
+}
+
+<div id="tableContainer">
+    <form id="detailForm">
+        @if (Model.IntTagsId == null)
+        {
+            <input type="hidden" value="@ViewBag.IntAwardId" id="HidIntAwardId"/>
+            <input type="hidden" value="@ViewBag.vchAwardName" id="HidvchAwardName"/>
+        }
+        else
+        {
+            <input type="hidden" id="hidIntTagsId" value="@Model.IntTagsId"/>
+            <input type="hidden" id="HidIntAwardId" value="@Model.IntAwardId"/>
+        }
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>关联活动名称:</td>
+                    <td>
+                        <label>@ViewBag.vchAwardName</label>
+                    </td>
+                </tr>
+                <tr style="display: none">
+                    <td>关联活动ID:</td>
+                    <td>
+                        <label>@ViewBag.IntAwardId</label></td>
+                </tr>
+                <tr>
+                    <td>标签组名称:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.VchTagsName)
+                    </td>
+                </tr>
+                <tr>
+                    <td>优先级:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.IntPriority)-(数值越大越优先)
+                    </td>
+                </tr>
+                <tr>
+                    <td>默认 :</td>
+                    <td>
+                        @if (Model.BitIsDefault == true)
+                        {
+                            <select id="BitIsDefault" name="BitIsDefault">
+                                <option value="false">否</option>
+                                <option value="true" selected="selected">是</option>
+                            </select>
+                        }
+                        else
+                        {
+                            <select id="BitIsDefault" name="BitIsDefault">
+                                <option value="false" selected="selected">否</option>
+                                <option value="true">是</option>
+                            </select>
+                        }
+                        -默认(客户标签不在设定组里面时，进入默认标签) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>标签:</td>
+                    <td>
+                        @Html.TextAreaFor(m => m.VchTagsLabels)-(由 袁学文 提供)多个以","隔开
+                    </td>
+                </tr>
+        </table>
+    </form>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="保存" id="btnSave" />
+    <input type="button" value="返回" id="btnDel" onclick="window.close()" />
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        //保存
+        $("#btnSave").click(function () {
+            var model = {};
+            model.IntTagsId = $("#hidIntTagsId").val();
+            model.IntAwardId = $("#HidIntAwardId").val();
+            model.VchTagsName = $("#VchTagsName").val();
+            model.IntPriority = $("#IntPriority").val();
+            model.BitIsDefault = $("#BitIsDefault").val();
+            model.VchTagsLabels = $("#VchTagsLabels").val();
+            model.IntStatus = $("#IntStatus").val();
+
+            $.ajax({
+                url: '@Url.Action("SaveUserTags", "WebAward")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("保存成功！");
+                        reloadPage();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>

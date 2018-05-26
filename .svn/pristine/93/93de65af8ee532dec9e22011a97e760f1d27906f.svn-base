@@ -1,0 +1,265 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.ServiceClient
+@model Myzj.OPC.UI.Model.BaseCouponConfig.AuditRoleConfigDetailExt
+<h2>@ViewBag.Title</h2>
+<style type="text/css">
+    .showDetailTableMultiColumnm .manjian textarea {
+        width: 500px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .showDetailTableMultiColumnm .tickename input {
+        width: 200px;
+    }
+</style>
+
+
+<input type="hidden" id="hdSysNo" value="@Model.SysNo"/>
+<div id="tableContainer">
+    <table class="showDetailTableMultiColumnm">
+        <tbody>
+            @*<tr>
+                <td>会员ID</td>
+                <td>
+                    @if (Model.SysNo.HasValue)
+                    {
+                        <input type="text" id="txtMemberId" placeholder="必填" value="@Model.MemberId" disabled="disabled" />
+                    }
+                    else
+                    {
+                         <input type="text" id="txtMemberId" placeholder="必填,限10个字符" value="@Model.MemberId" />
+                    }
+                   
+                </td>
+            </tr>
+            <tr>
+                <td>会员名称</td>
+                <td>
+                    @if (Model.SysNo.HasValue)
+                    {
+                        <input type="text" id="txtMemberName" placeholder="必填" value="@Model.MemberName" disabled="disabled" />
+                    }
+                    else
+                    {
+                        <input type="text" id="txtMemberName" placeholder="必填，限10个字符" onkeyup="cleanSpelChar(this)" value="@Model.MemberName"/>
+                    }
+                   
+                </td>
+            </tr>*@
+            <tr>
+                <td>部门：</td>
+                <td>
+                    <input type="hidden" id="hd_DeptId" value="@Model.DeptId"/>
+                    @{
+                        var deptList = BaseCouponConfigClient.Instance.GetAllDept().Where(m => !string.IsNullOrEmpty(m.Value)).Distinct();
+                        if (Model.SysNo.HasValue)
+                        {
+                        <select id="sltDept" disabled="disabled">
+                            <option value="-1">--请选择部门--</option>
+                            @foreach (var item in deptList)
+                            {
+                                <option value="@item.Key">@item.Value</option>
+                            }
+                        </select>
+                        }
+                        else
+                        {
+  
+                        <select id="sltDept">
+                            <option value="-1">--请选择部门--</option>
+                            @foreach (var item in deptList)
+                            {
+                                <option value="@item.Key">@item.Value</option>
+                            }
+                        </select>
+                        }
+                       
+                    }
+
+                </td>
+            </tr>
+            <tr>
+                <td>用户：</td>
+                <td>
+                    <input type="hidden" id="hd_UserId" value="@Model.MemberId"/>
+                    @if (Model.SysNo.HasValue)
+                    {
+                        <select id="sltUser" disabled="disabled">
+                        </select>
+                    }
+                    else
+                    {
+                        <select id="sltUser" >
+                        </select>
+                    }
+                  
+                </td>
+            </tr>
+            <tr>
+                <td>角色</td>
+                <td>
+                    @{
+                        var list = BaseCouponConfigClient.Instance.GetAllRole();
+
+                        var userRole = BaseCouponConfigClient.Instance.GetUserRole(Model.MemberId);
+                    }
+
+                    @*     @Html.DropDownListFor(m => m.MemberRole, new KvSelectList(list))*@
+
+                    @foreach (var item in list)
+                    {  <span style="display: inline-block; width: 100px; line-height: 20px;">
+                        @if (userRole!=null && userRole.Contains(item.Key))
+                        {
+                            <input type="checkbox" value="@item.Key" name="chkItem" checked="checked"/>@item.Value
+                        }
+                        else
+                        {
+                            <input type="checkbox" value="@item.Key" name="chkItem" />@item.Value
+                        }
+                    </span>
+                    }
+
+                </td>
+            </tr>
+            <tr>
+                <td>手机号</td>
+                <td>
+                    <input type="text" id="txtMobile" placeholder="限11字符" value="@Model.Mobile" />
+                </td>
+            </tr>
+            <tr>
+                <td>备注</td>
+                <td>
+                    <textarea id="txtRemarks" placeholder="限50字符" onkeyup="cleanSpelChar(this)">@Model.Remarks</textarea>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <div class="rowButton">
+        <input type="button" value="保存" id="btnSave" onclick="saveRole()" />
+        <input type="button" value="关闭" id="btnCancel" onclick=" window.location.href = '/CouponAuditRole/UserRoleIndex';" />
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        //$("#sltUser").append(" <option value='-1'>--请选择用户--</option>");
+        if ($("#hd_DeptId").val() != "") {
+            $("#sltDept").val($("#hd_DeptId").val());
+        }
+
+        GetUser($("#hd_DeptId").val());
+    });
+
+    function GetUser(deptId) {
+        // $("#sltUser").append(" <option value='-1' Selected>--请选择用户--</option>");
+        $.ajax({
+            url: '@Url.Action("GetDeptUser", "CouponAuditRole")',
+            type: 'post',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: "{\"deptId\":" + deptId + "}",
+            success: function (result) {
+
+                //$("#sltUser").append(" <option value='-1'>--请选择用户--</option>");
+
+                if ($.trim(result) != "") {
+                    $("#sltUser").append(result);
+                    if ($("#hd_UserId").val() != "") {
+                        $("#sltUser").val($("#hd_UserId").val());
+                        if ($("#hd_UserId").val() != $("#sltUser").val()) {
+                            $("#sltUser").val("-1");
+                        }
+                    }
+                }
+            }
+        });
+    }
+    $("#sltDept").change(function () {
+        var deptId = $("#sltDept").val();
+        $("#sltUser option").remove();
+        // $("#sltUser").append(" <option value='-1' selected=\"selected\">--请选择用户--</option>");
+        GetUser(deptId);
+
+    });
+    if ($("#sltUser").val() == "") {
+        $("#sltUser").val("-1");
+    }
+
+    $("#txtMobile,#txtMemberId").keyup(function () {
+        var tmptxt = $(this).val();
+        $(this).val(tmptxt.replace(/\D|^0/g, ''));
+    }).bind("paste", function () {
+        var tmptxt = $(this).val();
+        $(this).val(tmptxt.replace(/\D|^0/g, ''));
+    }).css("ime-mode", "disabled");
+
+    function saveRole() {
+        if ($("#sltDept").val() == "-1") {
+            alert("请选择部门");
+            return;
+        }
+
+        if ($("#sltUser").val() == "-1") {
+            alert("请选择用户");
+            return;
+        }
+
+        //获取选中的角色ID
+        var strs = '';
+        $("input[name=chkItem]:checked").each(function () {
+            if (strs) { strs += ','; }
+            strs += $(this).val();
+        });
+        if ($.trim(strs) == "") {
+            alert("请选择角色");
+            return;
+        }
+
+        if ($("#txtMobile").val().length > 12) {
+            alert("输入字符过长");
+            return;
+        }
+
+
+        if ($("#txtRemarks").val().length > 50) {
+            alert("输入字符过长");
+            return;
+        }
+        if (confirm("确定保存 ?")) {
+            var model = {};
+            model.SysNo = $.trim($("#hdSysNo").val());
+            model.MemberId = $("#sltUser").val();
+            model.MemberName = $("#sltUser").find("option:selected").text();
+            model.DeptId = $("#sltDept").val();
+            //  model.MemberRole = $.trim($("#MemberRole").val());
+            model.RoleStr = strs;
+            model.Mobile = $.trim($("#txtMobile").val());
+            model.Remarks = $.trim($("#txtRemarks").val());
+            $.ajax({
+                url: '@Url.Action("SaveUserRole", "CouponAuditRole")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    alert(result.DoResult);
+                    if (result.DoFlag) {
+                        window.location.href = '/CouponAuditRole/UserRoleIndex';
+                    }
+                }
+            });
+    }
+}
+
+//验证输入框内不能输入特殊字符,输入就立刻清除
+function cleanSpelChar(th) {
+    if (/["'<>%;)(&+]/.test(th.value)) {
+        $(th).val(th.value.replace(/["'<>%;)(&+]/, ""));
+    }
+}
+</script>
+
+

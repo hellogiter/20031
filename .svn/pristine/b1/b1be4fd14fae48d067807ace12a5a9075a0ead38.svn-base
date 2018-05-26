@@ -1,0 +1,79 @@
+﻿@using Myzj.OPC.UI.Common
+@using Myzj.OPC.UI.ServiceClient
+@model IEnumerable<Myzj.OPC.UI.Model.MLTSYSProjectMannger.MLTSYSProject>
+@{
+    if (Model != null && Model.Any())
+    {
+   
+    <table class="resultTable" id="calcTotalAmount">
+        <thead>
+            <tr>
+                <th>操作</th>
+                <th>ID</th>
+                <th>专题图</th>
+                <th>专题名称</th>
+                <th>发起人</th>
+                <th>发起时间</th>
+                <th>排序</th>
+                <th>被赞数量</th>
+                <th>评论数量</th>
+                <th>反对数量</th>
+                <th>渠道名称</th>
+                <th>状态</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var orderRes in Model)
+            {
+                <tr>
+                    <td>
+                        <a class="btnDelete" pvalue="@orderRes.ProjectId" href="javascript:;">删除</a>
+                        <a  href="/MLTSYSProject/Edit?id=@orderRes.ProjectId">修改</a>
+                        &nbsp;&nbsp;&nbsp;
+                        @{
+                            var url = WebUrl.WebAppUrl() + "/MLT/ProjectDetail?id=" + orderRes.ProjectId;
+                        }
+
+                        <a href="/Default/Preview?url=@url" target="_blank">预览</a>
+                    </td>
+                    <td>
+                        @orderRes.ProjectId
+                        <input type="hidden" value="@orderRes.ProjectId" id="hidProjectId"/>
+                    </td>
+                    <td>
+                        @*<img src="@orderRes.ProjectImg" alt="@orderRes.ProjectImg"/>*@
+                        <a href="@(UrlFactory.FormatImgUrl(orderRes.ProjectImg))" target="_blank">
+                            <img src="@(UrlFactory.FormatImgUrl(orderRes.ProjectImg))" width="50"/>
+                        </a>
+                        <br />
+                        <a href="MLTSYSProjectImage/@orderRes.ProjectId">【编辑图片】</a>
+                    </td>
+                    <td>@orderRes.ProjectTitle</td>
+                    <td>@orderRes.CreateUserName</td>
+                    <td>@orderRes.CreateTime</td>
+                    <td>
+                        <input type="text" style="width: 30px;" value="@orderRes.Sort" class="txtSort" pvalue="@orderRes.ProjectId"/>
+                    </td>
+                    <td>@orderRes.PraiseCount</td>
+                    <td>@orderRes.CommentsCount</td>
+                    <td>@orderRes.AgainstCount</td>
+                    <td>@orderRes.ChannelName</td>
+                    <td>
+                        @{
+                            var checkedStr = "";
+                            if (orderRes.ProjectState == 1)
+                            {
+                                checkedStr = "checked='checked'";
+                            }
+                        }
+                        <input id="cbkState" name="cbkState" pstate="@orderRes.ProjectState" type="checkbox"  @checkedStr class="clProjectState" pvalue="@orderRes.ProjectId" />
+                    </td>
+                </tr>   
+            }
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    }
+}
+

@@ -1,0 +1,140 @@
+﻿@{
+    var isEdit = (Model != null && Model.Id > 0);
+    var title = isEdit ? "编辑" : "新增";
+    ViewBag.Title = title;
+}
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.WordLibManage
+@using Myzj.OPC.UI.ServiceClient
+@model Myzj.OPC.UI.Model.WordLibManage.WordLibManageDetail
+
+<h2>@title</h2>
+<style>
+    .showDetailTable tr td:nth-child(2n+1) { width: 15%; text-align: right; }
+
+    .showDetailTable tr td:nth-child(2n) { width: 85%; }
+    .showDetailTable select[name=ForbiddenType],.showDetailTable select[name=Type]{width:200px}
+
+    .showDetailTable .sBtn { width: 15%; height: 30px; margin-top: 10px; margin-bottom: 10px; cursor: pointer; }
+    .unvisible{display: none}
+</style>
+<table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+    <tbody>
+        <tr>
+            <td>应用位置</td>
+            <td>
+                @{
+                    var lisforbiddentype = WordLibManageConfigClient.Instance.GetForbiddenTypeList();
+                }
+                @Html.DropDownListFor(m => m.ForbiddenType, new KvSelectList(lisforbiddentype))
+            </td>
+        </tr>
+        <tr>
+            <td>类型</td>
+            <td>
+                @{
+                    var listtype = new Dictionary<int, string>();
+                    listtype.Add(0, "白名单");
+                    listtype.Add(1, "违禁词(黑名单)");
+                }
+                @Html.DropDownListFor(m => m.Type, new KvSelectList(listtype))
+            </td>
+        </tr>
+        <tr>
+            <td>显示词：</td>
+            <td>
+                <textarea style="width: 65%;" id="KeyWord" value="@Model.KeyWord">@Model.KeyWord</textarea>
+                <span style="color: #f00; font-weight: bold; width: 10px;" @(Model.KeyWord == null ? "" : "class=unvisible") id="keywordunsee">*</span>
+                <span style="width:150px" id="somedit">用“；”可批量添加多个词</span>
+            </td>
+        </tr>
+        <tr>
+            <td>状态：</td>
+            <td>
+                @{
+                    var selectTrue = "checked='checked'";
+                    var selectFalse = "";
+                    if (Model.Enable != null)
+                    {
+                        if (Model.Enable == true)
+                        {
+                            selectTrue = "checked='checked'";
+                            selectFalse = "";
+                        }
+                        else
+                        {
+                            selectTrue = "";
+                            selectFalse = "checked='checked'";
+                        }
+
+                    }
+                }
+                <input @selectTrue type="radio" name="IsEnable" value="true" style="width: 20px; cursor: pointer" id="rd1"/><label for="rd1" style="width: 100px; text-align: left; margin-left: 0; cursor: pointer">启用</label>
+                <input @selectFalse type="radio" name="IsEnable" value="false" style="width: 20px; cursor: pointer" id="rd2"/><label for="rd2" style="width: 100px; text-align: left; margin-left: 0; cursor: pointer">禁用</label>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="button" value="保存" class="sBtn" id="btnSave" style="margin-left: 45%" />
+
+            </td>
+        </tr>
+    </tbody>
+    <input type="hidden" value="@Model.Id" id="hdId"/>
+</table>
+<script type="text/javascript">
+    $(function () {
+        if ($.trim($("#hdId").val()) > 0) {
+            $("#somedit").css("display","none");
+        }
+    });
+    //用英文分号替换英文分号、中英文分号或者回车
+    function ReplaceSeperator(mobiles) {
+        var i;
+        var result = "";
+        var c;
+        for (i = 0; i < mobiles.length; i++) {
+            c = mobiles.substr(i, 1);
+            if (c == "；" || c == ";" || c == "\n")
+                result = result + ";";
+            else if (c != "\r")
+                result = result + c;
+        }
+        return result;
+    }
+    function necessaryinput() {
+        if ($("#KeyWord").val() == '' || $("#KeyWord").val() == undefined) {
+            alert("请填写显示词");
+            return false;
+        }
+        return true;
+    }
+    var model = {};
+
+    $("#btnSave").click(function () {
+        model.Id = $.trim($("#hdId").val());
+        model.ForbiddenType = $("#ForbiddenType").val();
+        model.Type = $.trim($("#Type").val());
+        model.KeyWord = ReplaceSeperator($.trim($("#KeyWord").val()));
+        model.Enable = $("input[name='IsEnable']:checked").val();
+        if (confirm("你确定保存吗？")) {
+            if (necessaryinput()) {
+                $.ajax({
+                    url: '@Url.Action("UpdateOrAddEntity", "WordLibManage")',
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: JSON.stringify(model),
+                    success: function (result) {
+                        if (result.DoFlag) {
+                            alert(result.DoResult);
+                            window.location.href = '@Url.Action("Index", "WordLibManage", new { id = @Model.Id })';
+                        } else {
+                            alert(result.DoResult);
+                        }
+                    }
+                });
+            }
+        }
+    });
+</script>

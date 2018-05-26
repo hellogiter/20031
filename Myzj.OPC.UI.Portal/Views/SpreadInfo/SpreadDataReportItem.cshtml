@@ -1,0 +1,40 @@
+﻿@using Myzj.OPC.UI.Model.SpreadInfo
+
+@{
+    var model = (SpreadBaseRefer)ViewBag.SpreadBaseInfo;
+
+    Layout = null;
+}
+
+@{
+    if (model.List != null && model.List.Count > 0)
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>日期</th>
+                    <th>提交人数</th>
+                    <th>注册人数</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in model.List)
+                {
+                    <tr>
+                        <td>@Convert.ToDateTime(item.QueryTime).ToString("yyyy-MM-dd") </td>
+                        <td>@item.SubmitCount</td>
+                        <td>@item.RegisterCount</td>
+
+                    </tr>   
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+}
+
+@Html.Partial("Pager", @model)

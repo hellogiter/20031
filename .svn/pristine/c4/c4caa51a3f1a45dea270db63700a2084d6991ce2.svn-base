@@ -1,0 +1,106 @@
+﻿@model IEnumerable<Myzj.OPC.UI.Model.BaseCouponConfig.CouponBatchSendDetailExt>
+@{
+    Layout = null;
+}
+
+
+<style>
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+</style>
+@{
+    if (Model != null && Model.Any())
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>批次号</th>
+                    <th>文件名</th>
+                    <th>预约执行时间</th>
+                    <th>申请人</th>
+                    <th>申请时间</th>
+                    <th>状态</th>
+                    <th>执行结果</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.SysNo</td>
+                        <td>@item.BatchFileName</td>
+                        <td>@item.AdvanceTime</td>
+                        <td>@item.ApplyPeople</td>
+                        <td>@item.ApplyTime</td>
+
+                        <td id="@item.SysNo">
+                        @{
+                                var state = "";
+                                switch (item.ExeState)
+                                {
+                                    case -1:
+                                        state = "取消执行";
+                                        break;
+                                    case 0:
+                                        state = "新建";
+                                        break;
+                                    case 1:
+                                        state = "执行中";
+                                        break;
+                                    case 2:
+                                        state = "成功";
+                                        break;
+                                    case 3:
+                                        state = "失败";
+                                        break;
+                                }
+                            }
+                           @state
+                        </td>
+                        <td>@item.ExeDescription</td>
+                        <td>
+                            @if (item.ExeState == 0)
+                            {
+                                <input type="button" value="取消执行" onclick=" cancelBatch(@item.SysNo, this) "/>
+                            }
+                            else
+                            {
+                                 <input type="button" value="取消执行" disabled="disabled"/>
+                            }
+                          
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+
+<script type="text/javascript">
+    function cancelBatch(sysNo, obj) {
+       
+        $.ajax({
+            type: "Post",
+            url: "/CouponSendManager/CancelBatchSendCoupon",
+            data: "{sysNo:" + sysNo + "}",
+            contentType: "application/json;utf-8",
+            dataType: "json",
+            success: function (re) {
+                alert(re.DoResult);
+                if (re.DoFlag == true) {
+                    obj.disabled = "disabled";
+                    $("#" + sysNo).text("取消执行");
+                }
+
+            }
+        });
+    }
+</script>
+
+    }

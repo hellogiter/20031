@@ -1,0 +1,96 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Portal.Models.DomainModels.TestDetail
+<head>
+    <title>测试页面</title>
+</head>
+<body>
+    @using (Html.BeginForm("SaveTest", "SpreadInfo", FormMethod.Post))
+    {
+        <div id="tableContainer">
+            <table class="showDetailTableMultiColumnm">
+                <tbody>
+                    <tr>
+                        <td>Id:</td>
+                        <td>
+                            @Html.TextBoxFor(model => model.SpreadId,new{@placeholder="编号"})
+                            @Html.ValidationMessageFor(model => model.SpreadId,"", new { @style = " width: 30px;" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Password:</td>
+                        <td>
+                            @Html.TextBoxFor(model => model.Password,new{@placeholder="密码"})
+                            @Html.ValidationMessageFor(model => model.Password,"", new { @style = " width: 30px;" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>ConfirmPassword:</td>
+                        <td>
+                            @Html.TextBoxFor(model => model.ConfirmPassword,new{@placeholder="确认密码"})
+                            @Html.ValidationMessageFor(model => model.ConfirmPassword,"", new { @style = " width: 30px;" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>CreateTime:</td>
+                        <td>
+                            @Html.TextBoxFor(model => model.CreateTime,new{@placeholder="创建时间"})
+                            @Html.ValidationMessageFor(model => model.CreateTime,"", new { @style = " width: 30px;" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Email:</td>
+                        <td>
+                            @Html.TextBoxFor(model => model.Email,new{@placeholder="邮箱"})
+                            @Html.ValidationMessageFor(model => model.Email,"", new { @style = " width: 30px;" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Phone:</td>
+                        <td>
+                            @Html.TextBoxFor(model => model.Phone,new{@placeholder="正则表达式验证手机号码"})
+                            @Html.ValidationMessageFor(model => model.Phone,"", new { @style = " width: 30px;" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Type:</td>
+                        <td>
+                            @Html.TextBoxFor(model => model.Type,new{@placeholder="自带的验证手机号码"})
+              
+                            @Html.ValidationMessageFor(model => model.Type,"", new { @style = " width: 30px;" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Site:</td>
+                        <td>
+                            @* @Html.TextBoxFor(model => model.Site,new{@placeholder="站点"})
+                            @Html.ValidationMessageFor(model => model.Site,"", new { @style = " width: 30px;" })*@
+                              @Html.DropDownListFor(m => m.Status, new KvSelectList(typeof(AppEnum.ActivitySite).GetEnumList()), false)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Status:</td>
+                        <td>
+                            @* @Html.TextBoxFor(model => model.Status,new{@placeholder="状态"})*@
+                            @* @Html.ValidationMessageFor(model => model.Status,"", new { @style = " width: 30px;" })*@
+                               @Html.DropDownListFor(m => m.Status, new KvSelectList(typeof(AppEnum.ActivityStatus).GetEnumList()), false)
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="rowButton">
+                <input type="submit" value="保存"  />
+            </div>
+        </div>
+    }
+</body>
+
+
+<script type="text/javascript">
+    //修改ValidationMessageFor提示框样式
+    function OnError(error, inputElement) {
+      //  var container = $(this).find("[data-valmsg-for='" + escapeAttributeValue(inputElement[0].name) + "']");
+        
+
+
+    }
+</script>

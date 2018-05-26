@@ -1,0 +1,57 @@
+﻿@using Myzj.OPC.UI.Common
+@using Myzj.OPC.UI.Model.Project
+@using Myzj.OPC.UI.ServiceClient
+@{
+    ViewBag.Title = "Item";
+    Layout = null;
+
+    var project = (GetProjectList)ViewBag.GetProjectList;
+}
+
+
+<table class="resultTable">
+    <thead>
+        <tr>
+            <th>操作</th>
+            <th>专题ID</th>
+            <th>专题主图</th>
+            <th>专题名称</th>
+            <th>被赞数</th>
+            <th>评论数</th>
+            <th>排序</th>
+            <th>添加时间</th>
+            <th>状态</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (project.List != null && project.List.Count > 0)
+        {
+            foreach (var item in project.List)
+            {
+                var url = WebUrl.WebAppUrl() + "/MLT/ProjectDetail?id=" + item.ProjectId;
+            <tr>
+                <td><a href="/Project/Detail?projectId=@item.ProjectId">修改</a>&nbsp;<a href="/Default/Preview?url=@url" target="_blank">预览</a></td>
+                <td>@item.ProjectId</td>
+                <td><a href="@UrlFactory.FormatImgUrl(item.ImgUrl)" target="_blank">
+                    <img src="@UrlFactory.FormatImgUrl(item.ImgUrl)" width="50px" /></a></td>
+                <td>@item.ProjectTitle</td>
+                <td>@item.PraiseCount</td>
+                <td>@item.CommentsCount</td>
+                <td><input type="text" style="width: 30px;" value="@item.Sort" data-id="@item.ProjectId" onchange="upSort(this)" /></td>
+                <td>@item.CreateTime</td>
+                <td>
+                    @{
+                        var checkStr = "";
+                        if (item.ProjectState == 1)
+                        {
+                            checkStr = "checked='checked'";
+                        }
+                    }
+                    <input id="cbkState-@item.ProjectId" type="checkbox" @checkStr data-id="@item.ProjectId" onclick="updateState(this)" />
+                </td>
+            </tr>
+            }
+
+        }
+    </tbody>
+</table>

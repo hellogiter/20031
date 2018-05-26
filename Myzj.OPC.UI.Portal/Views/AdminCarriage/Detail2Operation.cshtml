@@ -1,0 +1,166 @@
+﻿@{
+    Layout = null;
+}
+
+@model Myzj.OPC.UI.Model.AdminCarriage.LevelParam
+           <div id="OperationDiv" style="border: solid 0px black; padding:10px;">
+  <table class="resultTable">
+        <tr>
+             <td>级别</td>
+             <td>
+                <input id="cb1" type="checkbox" value="1" @Model.Levels.Contains(1).ToString().Replace("True","checked='checked'").Replace("False","") /><label>普通宝宝</label>
+                <input id="cb2" type="checkbox" value="2" @Model.Levels.Contains(2).ToString().Replace("True","checked='checked'").Replace("False","") /><label>星星宝宝</label>
+                <input id="cb3" type="checkbox" value="3" @Model.Levels.Contains(3).ToString().Replace("True","checked='checked'").Replace("False","")/><label>月亮宝宝</label>
+                <input id="cb4" type="checkbox" value="4" @Model.Levels.Contains(4).ToString().Replace("True","checked='checked'").Replace("False","")/><label>太阳宝宝</label>
+                <input id="cb5" type="checkbox" value="17" @Model.Levels.Contains(17).ToString().Replace("True","checked='checked'").Replace("False","")/><label>信用月亮</label>
+                  <input id="cb6" type="checkbox" value="18" @Model.Levels.Contains(18).ToString().Replace("True","checked='checked'").Replace("False","")/><label>信用太阳</label>
+            </td>
+        </tr>   
+       <tr>
+             <td>免邮费订单金额</td>
+             <td style="text-align:left"><input value="@string.Join(",",@Model.FreeShippingMoney)" id="txtFreeShippingMoney" type="text"  style="width:500px;"/></td>
+        </tr>
+       <tr>
+             <td>免邮费金额</td>
+             <td style="text-align:left"><input value="@string.Join(",",@Model.FullCarriage)" id="txtFullCarriage" type="text" style="width:500px;"/></td>
+        </tr>
+      <tr>
+             <td>不免邮费金额</td>
+             <td style="text-align:left"><input value="@string.Join(",",@Model.NoFullCarriage)" id="txtNoFullCarriage" type="text" style="width:500px;"/></td>
+        </tr>
+       <tr>
+            <td>优先级</td>
+            <td style="text-align:left"><input value="@Model.Priority" id="txtPriority" type="text" /></td>
+        </tr>
+      <tr>
+           <td colspan="2" style="text-align:center;"><input id="btnSave" type="submit" value="保存" class="btn" /> 
+               <span id="errormesg" style="color:red;"></span>
+           </td> 
+        </tr>
+      </table> 
+     <input id="Hidden1" type="hidden" value="@ViewBag.rowindex" />
+    </div> 
+
+<script src="../../Scripts/jquery-1.10.2.js"></script>
+<script>
+    var flag = false;
+    $("[type='checkbox']").each(function (index, element) {
+        if (element.checked) {
+            flag = true;
+        }
+    });
+    if (!flag) {
+        $("#txtFreeShippingMoney").val("");
+        $("#txtFullCarriage").val("");
+        $("#txtNoFullCarriage").val("");
+    }
+
+    if ($("#Hidden1").val() == "-1") {
+        $("#btnSave").val("新增保存");
+        $("#btnNewOrderMoney").click();
+    }
+    else {
+        $("#btnSave").val("修改保存");
+    }
+
+    $("#btnSave").click(function () {
+
+        var flag2 = false;
+        $("[type='checkbox']").each(function (index, element) {
+            if (element.checked) {
+                flag2 = true;
+            }
+        });
+        
+        var flag3 = false;
+        $("[type='text']").each(function (index, element) {
+           
+            if (!$(element).val().trim()) {
+                flag3 = true;
+            }
+        });
+
+        if (flag3) {
+            return;
+        }
+        var levelArr = new Array();
+        $("[type='checkbox']").each(function (index, element) {
+
+            if (element.checked) {
+
+                levelArr.push(parseInt($(element).attr("value")));
+
+            }
+        });
+        
+        $("#Show").html("...loading...");
+
+        var data = {};
+        data.id = $("#Hidden1").val();
+        data.levels = levelArr.toString();
+        data.freeShippingMoney = $("#txtFreeShippingMoney").val().trim();
+        data.fullCarriage = $("#txtFullCarriage").val().trim();
+        data.noFullCarriage = $("#txtNoFullCarriage").val().trim();
+        data.priority = $("#txtPriority").val().trim();
+      
+
+        if (parseInt($("#Hidden1").val()) >= 0) {
+            $.ajax({
+                url: '/AdminCarriage/UpdatePlug2Configure',
+                type: 'POST',
+                dataType: 'html',
+                data: data,
+                success: function (result) {
+                    $("#errormesg").html("保存成功");
+
+                    $("#OperationDiv").hide(4000);
+                    $.ajax({
+                        url: '/AdminCarriage/Detail2Show',
+                        type: 'GET',
+                        dataType: 'html',
+                        success: function (result) {
+
+                            if (result && $.trim(result).length > 0) {
+                                $("#Show").html(result);
+                                $(".xiugai").each(function (index, element) {
+                                    if (index == $("#Hidden1").val()) {
+                                        $(element).parent().parent().css("color", "green");
+
+                                    }
+
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        else {
+            $.ajax({
+                url: '/AdminCarriage/AddPlug2Configure',
+                type: 'POST',
+                dataType: 'html',
+                data: data,
+                success: function (result) {
+                    $("#errormesg").html("新增成功");
+
+                    $("#OperationDiv").hide(4000);
+                    $.ajax({
+                        url: '/AdminCarriage/Detail2Show',
+                        type: 'GET',
+                        dataType: 'html',
+                        success: function (result) {
+
+                            if (result && $.trim(result).length > 0) {
+                                $("#Show").html(result);
+                                $(".xiugai").last().parent().parent().css("color", "green");
+
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+    });
+</script>

@@ -1,0 +1,163 @@
+﻿@using System.Collections
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.SaleHotStyle
+
+@model IEnumerable<Myzj.OPC.UI.Model.UserPdtComment.UserPdtCommentDetail>
+@{
+    Layout = null; 
+}
+
+@{
+    <div class="rowButton">
+        <input type="submit" name="Query" id="Query" value="查询" />
+    </div>
+    
+    <div>
+        <input type="button" name="Query" id="btnPLUpdate" value="批量修改/修改" />
+        @*<input type="file" name="fileName" id="fileName">
+        <input type="submit" name="Query" id="BtnAdd" value="评论导入" onclick="OK()" />*@
+
+    </div>
+    if (Model != null && Model.Any())
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>全选<input type="checkbox" class="checkAll" id="selectAll" /></th>
+                    <th>操作</th>
+                    <th>商品ID</th>
+                    <th>会员ID</th>
+                    <th>订单编码</th>
+                    <th>总评</th>
+                    <th>包装</th>
+                    <th>速度</th>
+                    <th>服务</th>
+                    <th>评论内容</th>
+                    <th>评论时间</th>
+                    <th>是否申请加精</th>
+                    <th>回复内容</th>
+                    <th>回复时间</th>
+                    <th>置顶</th>
+                    <th>是否加精</th>
+                    <th>显示</th>
+                    <th>首页显示</th>
+                    <th>审核状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr class="table_tr">
+                        <td>
+                            <input type="checkbox" name="all" class="All" value="@item.IntCommentID"/>
+                        </td>
+                        <td>
+                            <a  target="_blak" href="@Url.Action("Detail", "UserPdtComment", new { id = item.IntCommentID })">查看</a>
+                        </td>
+                        <td style="display: none">@item.IntCommentID</td>
+                        <td>@item.IntProductID</td>
+                        <td>@item.IntUserID</td>
+                        <td>@item.IntOrderNO</td>
+                        <td>【@(item.IntStart == null ? 0 : item.IntStart)】 </td>
+                        <td>【@(item.IntPackagStart == null ? 0 : item.IntPackagStart)】 </td>
+                        <td>【@(item.IntDSpeedStart == null ? 0 : item.IntDSpeedStart)】 </td>
+                        <td>【@(item.IntDServiceStart == null ? 0 : item.IntDeliverStar)】 </td>
+
+                        <td>
+                            <textarea readonly="readonly"> @item.VchContent</textarea>
+                        </td>
+                        <td>@item.DtCommentDate</td>
+                        <td>@(item.IntAppHighLight == 1 ? "申请加精" : "未申请加精")</td>
+                        <td>
+                            <textarea>@item.VchReplyContent</textarea>
+                        </td>
+                        <td>@item.DtReplyDateTime</td>
+                        <td>
+                            @{
+                    var selIsOnTop = "";
+                    if (item.IntIsOnTop == 1)
+                    {
+                        selIsOnTop = "checked='checked'";
+                    }
+                    else
+                    {
+                        selIsOnTop = "";
+                    }
+                                  
+                            }
+                            <input type="checkbox" @selIsOnTop class="checkboxIstop" name="checkboxIstop"/>
+                        </td>
+                        <td>
+                            @{
+                    var selIsHighLight = "";
+                    if (item.IntIsHighLight == 1)
+                    {
+                        selIsHighLight = "checked='checked'";
+                    }
+                    else
+                    {
+                        selIsHighLight = "";
+                    }
+                                <input type="checkbox" @selIsHighLight/>
+                            }
+                        </td>
+                        <td>
+                            @{
+                    var selIsMask = "";
+                    if (item.IntIsMask == 1)
+                    {
+                        selIsMask = "checked='checked'";
+                    }
+                    else
+                    {
+                        selIsMask = "";
+                    }
+                                <input type="checkbox" @selIsMask/>
+                            }
+                        </td>
+                        <td>
+                            @{
+                    var selIndexVisible = "";
+                    if (item.IntIndexVisible == 1)
+                    {
+                        selIndexVisible = "checked='checked'";
+                    }
+                    else
+                    {
+                        selIndexVisible = "";
+                    }
+                                <input type="checkbox" @selIndexVisible/>
+                            }
+                        </td>
+                        <td>
+                            @{
+                    if (item.IntAuditState == (int)AppEnum.IntAuditState.NoAudit)
+                    {
+                                <select>
+                                    <option>审核未通过</option>
+                                </select>
+                    }
+                    else
+                    {
+                        var selectName = "selectSate_" + item.IntCommentID;
+                                <select id="@selectName" data-type="@item.IntAuditState" data-projectid="@item.IntCommentID" class="selState" pvalue="@item.IntAuditState" name="paydate" >
+                                    <option value="0">未审核</option>
+                                    <option value="1">审核通过</option>
+                                    <option value="2">审核未通过</option>
+                                </select>
+                                <script>
+                                    bingSate('@selectName', '@item.IntAuditState');
+                                </script>
+                    }
+                            }
+                        </td>
+                    </tr>   
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+}

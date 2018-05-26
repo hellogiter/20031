@@ -1,0 +1,101 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.SpreadInfo
+@model Myzj.OPC.UI.Model.SpreadInfo.CreateSpreadUser
+@{
+    var region = (List<SpreadUserDetail>)ViewBag.Region;
+    var activity = (Activity)ViewBag.AllActivity;
+}
+
+<h2>创建归属地</h2>
+
+<div id="tableContainer">
+    <form id="detailForm">
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>归属名称(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.UserName)
+                    </td>
+                </tr>
+                <tr>
+                    <td>手机号:</td>
+                    <td>@Html.TextBoxFor(m => m.Phone)</td>
+                </tr>
+                <tr>
+                    <td>登陆密码:</td>
+                    <td>@Html.TextBoxFor(m => m.Password)</td>
+                </tr>
+                <tr>
+                    <td>备注:</td>
+                    <td>
+                        @Html.TextAreaFor(m => m.Remark)
+                    </td>
+                </tr>
+                <tr>
+                    <td>状态:</td>
+                    <td>
+                        <input type="radio" value="1" style="width: 30px; margin-top: 8px" name="Status" id="radenable" checked="checked"/>
+                        <label style="width: 30px; float: left; margin-left: -2px; margin-top: 8px" for="radenable">启用</label>
+                        <input type="radio" value="2" style="width: 30px; margin-top: 8px" name="Status" id="radclose"/>
+                        <label style="width: 30px; float: left; margin-left: -6px; margin-top: 8px" for="radclose">禁用</label>
+                        <input type="radio" value="3" style="width: 30px; margin-top: 8px" name="Status" id="radBaoFei"/>
+                        <label style="width: 30px; float: left; margin-left: -6px; margin-top: 8px" for="radBaoFei">报废</label>
+                    </td>
+                </tr>
+        </table>
+    </form>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="创建归属地" id="btnCreateAttribution" />
+    <input type="button" value="返回" id="btnDel" onclick="window.close()" />
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        //创建归属地
+        $("#btnCreateAttribution").click(function () {
+            var model = {};
+            model.UserName = $("#UserName").val();
+            model.Status = $("input[name='Status']").val();
+            model.Remark = $("#Remark").val();
+            model.Phone = $("#Phone").val();
+            model.password = $("#Password").val();
+
+            if (model.UserName == null || model.UserName == "") {
+                alert("请输入渠道名称");
+                return false;
+            }
+            
+            if (model.Phone == null || model.Phone == "") {
+                alert("请输入手机号码");
+                return false;
+            }
+            if (model.Phone.length > 11 || model.Phone.length < 11) {
+                alert("请输入11位手机号码");
+                return false;
+            }
+            if (!(/^1[0-9]{10}$/.test(model.Phone))) {
+                alert("手机格式不正确");
+                return false;
+            }
+
+            $.ajax({
+                url: '@Url.Action("CreateAttribution", "SpreadInfo")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert(result.DoResult);
+                        reloadPage();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>

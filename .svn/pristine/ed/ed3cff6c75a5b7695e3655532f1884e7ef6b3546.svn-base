@@ -1,0 +1,62 @@
+﻿@using Myzj.OPC.UI.Portal.Models
+@model IEnumerable<Myzj.OPC.UI.Model.BargainGroup.GroupStructureListSearchResult>
+<style>
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+</style>
+
+@if (Model != null && Model.Any())
+{
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount" style="width: 99%; margin: 5px auto; line-height: 40px;">
+            <thead>
+                <tr class="gl-title">
+                    <th>团SysNo</th>
+                    <th>操作</th>
+                    <th>团长UserId</th>
+                    <th>团长昵称</th>
+                    <th>团长手机</th>
+                    <th>团创建时间</th>
+                    <th>团过期时间(触发)</th>
+                    <th>团长是否一元购</th>
+                    <th>参团人数</th>
+                    <th>团状态</th>
+                    <th>参团限制人数</th>
+                     @*<th>IsDel</th>*@
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.SysNo</td>
+                        <td><a style="color: #191970" target="_blank" href="javascript:showMemberForm(@item.SysNo);" pvalue="@item.SysNo" >查看成员</a></td>
+                        <td>@item.UserId</td>
+                        <td>@item.NickName</td>
+                        <td>@item.UserMobile</td>
+                        <td>@item.CreateTime</td>
+                        <td>@item.GroupExpirDate</td>
+                        @if (item.IsPayFree??false)
+                        {
+                            <td>是</td>
+                        }
+                        else
+                        {
+                           <td>否</td>  
+                        }
+                        <td>@item.CanGroupCount</td>
+                        <td>@item.GrouStateStr</td>
+                          <td>@item.SetCanGroupCount</td>
+                          @*<td>@item.IsDelete</td>*@
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+}
+
+

@@ -1,0 +1,101 @@
+﻿@{
+   
+}
+@model Myzj.OPC.UI.Model.BaseCouponConfig.AuditRoleDetail
+<h2>@ViewBag.Title</h2>
+<style type="text/css">
+    .showDetailTableMultiColumnm .manjian textarea {
+        width: 500px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .showDetailTableMultiColumnm .tickename input {
+        width: 200px;
+    }
+</style>
+
+
+<input type="hidden" id="hdSysNo" value="@Model.SysNo"/>
+<div id="tableContainer">
+    <table class="showDetailTableMultiColumnm">
+        <tbody>
+            <tr>
+                <td>角色ID</td>
+                <td>
+                    <input type="text" id="txtRoleID" placeholder="必填" value="@Model.AuditRole" disabled="disabled" />
+                </td>
+            </tr>
+            <tr>
+                <td>角色名称</td>
+                <td>
+                    <input type="text" id="txtRoleName" placeholder="必填，限10字符" onkeyup="cleanSpelChar();" value="@Model.RoleName" />
+                </td>
+            </tr>
+            <tr>
+                <td>描述</td>
+                <td>
+                    <textarea id="txtRemarks" placeholder="限50字符" onkeyup="cleanSpelChar(this);">@Model.Remarks</textarea>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <div class="rowButton">
+        <input type="button" value="保存" id="btnSave" onclick="saveRole()" />
+        <input type="button" value="关闭" id="btnCancel" onclick=" window.location.href = '/CouponAuditRole/Index';" />
+    </div>
+</div>
+
+<script type="text/javascript">
+    $("#txtRoleID").keyup(function () {
+        var tmptxt = $(this).val();
+        $(this).val(tmptxt.replace(/\D|^0/g, ''));
+    }).bind("paste", function () {
+        var tmptxt = $(this).val();
+        $(this).val(tmptxt.replace(/\D|^0/g, ''));
+    }).css("ime-mode", "disabled");
+    function saveRole() {
+        if ($.trim($("#txtRoleID").val()) == "") {
+            alert("请输入角色ID");
+            return;
+        }
+        if ($.trim($("#txtRoleName").val()) == "" || $("#txtRoleName").val().length>10) {
+            alert("请输入正确的角色名称");
+            return;
+        }
+        if ($.trim($("#txtRemarks").val()).length > 50) {
+            alert("描述限50字符内");
+            return;
+        }
+       
+        if (confirm("确定保存 ?")) {
+            var model = {};
+            model.SysNo = $.trim($("#hdSysNo").val());
+            model.AuditRole = $.trim($("#txtRoleID").val());
+            model.RoleName = $.trim($("#txtRoleName").val());
+            model.Remarks = $.trim($("#txtRemarks").val());
+            $.ajax({
+                url: '@Url.Action("SaveRole", "CouponAuditRole")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    alert(result.DoResult);
+                    if (result.DoFlag) {
+                        window.location.href = '/CouponAuditRole/Index';
+                    }
+                }
+            });
+        }
+    }
+    
+    //验证输入框内不能输入特殊字符,输入就立刻清除
+    function cleanSpelChar(th) {
+        if (/["'<>%;)(&+]/.test(th.value)) {
+            $(th).val(th.value.replace(/["'<>%;)(&+]/, ""));
+        }
+    }
+</script>
+

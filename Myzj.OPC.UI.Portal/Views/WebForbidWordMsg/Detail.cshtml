@@ -1,0 +1,74 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.WordMsg.WordMsgDetail
+@{
+    var isEdit = (Model != null && Model.IntForbidID > 0);
+    var actionName = isEdit ? "Update" : "Add";
+}
+
+@if (isEdit)
+{
+    <h2>修改禁词</h2>
+}
+else
+{
+    <h2>新增禁词</h2>
+}
+
+<div id="tableContainer">
+    <form id="detailForm">
+        <input type="hidden" id="hidIntForbidID" value="@Model.IntForbidID"/>
+
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>类型:</td>
+                    <td>
+                        @Html.DropDownListFor(m => m.IntWordType, new KvSelectList(typeof(AppEnum.WordType).GetEnumList()), false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>禁词(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.VchForbidWord)
+                    </td>
+                </tr>
+        </table>
+    </form>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="保存" id="btnSave" />
+    <input type="button" value="取消" id="btnDel" onclick="window.location.href = window.close()" />
+</div>
+<script type="text/javascript">
+    $(function () {
+        //保存
+        $("#btnSave").click(function () {
+            var model = {};
+            model.IntForbidID = $("#hidIntForbidID").val();
+            model.VchForbidWord = $("#VchForbidWord").val();
+            model.IntWordType = $("#IntWordType").val();
+
+            if (model.VchForbidWord == null || model.VchForbidWord=="") {
+                alert("请输入禁词!");
+                return false;
+            }
+
+            $.ajax({
+                url: '@Url.Action("Save", "WebForbidWordMsg")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("更新成功！");
+                        reloadPage();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>

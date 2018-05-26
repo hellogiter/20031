@@ -1,0 +1,96 @@
+﻿<h2>添加短信模板</h2>
+<style type="text/css">
+    .showDetailTableMultiColumnm .manjian textarea {
+        width: 500px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .showDetailTableMultiColumnm .tickename input {
+        width: 200px;
+    }
+</style>
+
+
+@using (Html.BeginForm())
+{
+    <div id="tableContainer">
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>模板类型</td>
+                    <td colspan="3">
+                        <input id="txtTempType" type="text" placeholder="必填" style="width: 200px;" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>模板名称</td>
+                    <td colspan="3">
+                        <input id="txtTempName" type="text" style="width: 200px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>模板内容</td>
+                    <td colspan="3">
+                        <textarea id="txtContent" placeholder="必填"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>备注</td>
+                    <td colspan="3">
+                        <input id="txtRemark" type="text" placeholder="必填" style="width: 200px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>是否启用</td>
+                    <td colspan="3" id="radList">
+                        <span style="width: 40px; float: left;">
+                            <input type="radio" name="IsEnable" checked="checked" value="true" />启用</span>
+                        <span style="width: 40px; margin-left: 50px;">
+                            <input type="radio" name="IsEnable" value="false" />禁用</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+       
+        <div class="rowButton">
+            <input type="button" value="添加" id="btnSave" />
+            <input type="button" value="关闭" id="btnDel" onclick="window.close();" />
+        </div>
+        
+         @Html.Action("SmsTemplatePlaceHolder", "ShortMessage")
+    </div>
+    
+}
+
+<script type="text/javascript">
+
+    $("#btnSave").click(function () {
+        var model = {};
+        model.TempType = $.trim($("#txtTempType").val());
+        model.TempName = $.trim($("#txtTempName").val());
+        model.Content = $.trim($("#txtContent").val());
+        model.Remark = $.trim($("#txtRemark").val());
+        model.IsEnable = $('#radList input[name="IsEnable"]:checked').val();
+
+        if (confirm("你确定保存吗？")) {
+            $.ajax({
+                url: '@Url.Action("AddSmsTemplate", "ShortMessageExec")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("添加成功！");
+                        window.location.href = '@Url.Action("TemplateIndex", "ShortMessage")';
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        }
+    });
+
+</script>

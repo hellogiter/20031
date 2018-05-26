@@ -1,0 +1,255 @@
+﻿@{
+    Layout = null;
+    var Id = Convert.ToInt32(ViewData["Id"]);
+    var Ct = ViewData["Ct"];
+    var Ct2 = ViewData["Ct2"];
+}
+
+<html>
+<head>
+    <script src="@Url.Content("~/Scripts/jquery-1.10.2.js")" type="text/javascript"></script>
+    <title>商品分类</title>
+</head>
+
+<body>
+    <input type="hidden" value="@Id" id="sysNo"/>
+    <input type="hidden" value="@Ct" id="sysCt"/>
+    <input type="hidden" value="@Ct2" id="sysCt2"/>
+    @{
+        var cteNameId = "";
+        var cteName = "";
+        var objId = "";
+        if (Id == 1)
+        {
+            cteNameId = "一级分类Id";
+            cteName = "一级分类名称";
+            objId = "ApplicableFirstCategory";
+        }
+        else if (Id == 2)
+        {
+            cteNameId = "二级分类Id";
+            cteName = "二级分类名称";
+            objId = "ApplicableSecondCategory";
+        }
+        else if (Id == 3)
+        {
+            cteNameId = "三级分类Id";
+            cteName = "三级分类名称";
+            objId = "ApplicableThreeCategory";
+        }
+        else if (Id == 4)
+        {
+            cteNameId = "排除一级分类Id";
+            cteName = "排除一级分类名称";
+            objId = "ExcludeFirstCategory";
+        }
+        else if (Id == 5)
+        {
+            cteNameId = "排除二级分类Id";
+            cteName = "排除二级分类名称";
+            objId = "ExcludeSecondCategory";
+        }
+        else if (Id == 6)
+        {
+            cteNameId = "排除三级分类Id";
+            cteName = "排除三级分类名称";
+            objId = "ExcludeThreeCategory";
+        }
+    }
+    <h2>选择商品分类</h2>
+    <table cellspacing="0" class="erp_search_border" cellpadding="0" width="100%" align="center"
+        border="0">
+        <tr>
+            <td height="23" class="forumRowHighlight">
+                <div>
+                    <table class="erp_table" cellspacing="0" rules="all" border="1" id="gvd" style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td class="headline2" scope="col">
+                                <input id="chk_0" type="checkbox" name="chkCate" value="0" />
+                            </td>
+                            <th scope="col">@cteNameId</th>
+                            <th scope="col">@cteName</th>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td style="padding-top: 20px; padding-left: 164px; width: 49px;">
+                <input type="button" id="btn_return" onclick="ReturnSel('@objId    ')" style="width: 72px; height: 30px;"
+                       value="确  定" />
+            </td>
+        </tr>
+
+        <script type="text/javascript">
+            $(function () {
+                getNavGationData();
+            });
+            window.GoodsApi = "http://goods.api.muyingzhijia.com/";
+
+            //1，查询商品类别接口
+            function getNavGationData() {
+                var data = '[' +
+                    '{ "CategoryId": 11},' +
+                    '{ "CategoryId": 2},' +
+                    '{ "CategoryId": 441},' +
+                    '{ "CategoryId": 442},' +
+                    '{ "CategoryId": 6},' +
+                    '{ "CategoryId": 3},' +
+                    '{ "CategoryId": 7},' +
+                    '{ "CategoryId": 9},' +
+                    '{ "CategoryId": 443}' +
+                    ']';
+                jQuery.ajax({
+                    url: window.GoodsApi + "/json/reply/QueryIndexCategorys",
+                    data: { ParentIds: data },
+                    type: "get",
+                    async: true,
+                    dataType: 'jsonp',
+                    success: function (result) {
+                       console.log(result);
+                        if (result.DoFlag) {
+                            var show = [];
+                            var show2 = [];
+                            var show3 = [];
+                            var Id = $("#sysNo").val();
+                            var sysCt = $("#sysCt").val();
+                            var sysCt2 = $("#sysCt2").val();
+                            $.each(result.QueryIndexCategorysDtos, function (i, item) {
+                                var html = "";
+                                html += '<tr>  <td class="content2"> <span style="display: inline-block; width: 20px;">';
+                                html += '<input id="chk_' + item.IntCateID + '" type="checkbox" name="chkCate" data-value="'+item.VchCateName+'" value="' + item.IntCateID + '" /></span></td>';
+                                html += '<td>' + item.IntCateID + '</td>';
+                                html += '<td>' + item.VchCateName + '</td>';
+                                html += '</tr>';
+                                show.push(html);
+                                //筛选商品二级分类
+                                $.each(item.GetTwoCategory, function (j, list) {
+                                    var html2 = "";
+                                    if (Id == 2 || Id==5) {
+                                        if (sysCt != "") {
+                                            var ctArr = sysCt.split(",");
+                                            $.each(ctArr, function(jj, list2) {
+                                                if (item.IntCateID == list2) {
+                                                    html2 += '<tr>  <td class="content2"> <span style="display: inline-block; width: 20px;">';
+                                                    html2 += '<input id="chk_' + list.TwoCatetory.IntCateID + '" type="checkbox" name="chkCate" data-value="'+list.TwoCatetory.VchCateName+'" value="' + list.TwoCatetory.IntCateID + '" /></span></td>';
+                                                    html2 += '<td>' + list.TwoCatetory.IntCateID + '</td>';
+                                                    html2 += '<td>' + list.TwoCatetory.VchCateName + '</td>';
+                                                    html2 += '</tr>';
+                                                    show2.push(html2);
+                                                }
+                                            });
+                                        }else {
+                                            html2 += '<tr>  <td class="content2"> <span style="display: inline-block; width: 20px;">';
+                                            html2 += '<input id="chk_' + list.TwoCatetory.IntCateID + '" type="checkbox" name="chkCate" data-value="'+list.TwoCatetory.VchCateName+'" value="' + list.TwoCatetory.IntCateID + '" /></span></td>';
+                                            html2 += '<td>' + list.TwoCatetory.IntCateID + '</td>';
+                                            html2 += '<td>' + list.TwoCatetory.VchCateName + '</td>';
+                                            html2 += '</tr>';  show2.push(html2);
+                                        }
+                                    } 
+                                    //筛选商品三级分类
+                                    $.each(list.TwoCatetory.ThreeCategory, function (k, cate) {
+                                        var html3 = "";
+                                        //如果2级不为空
+                                        if (Id == 3 || Id==6) {
+                                            if (sysCt2 != "") {
+                                                var ct2Arr = sysCt2.split(",");
+                                                $.each(ct2Arr, function(kk,cate2) {
+                                                    if (list.TwoCatetory.IntCateID == cate2) {
+                                                        html3 += '<tr>  <td class="content2"> <span style="display: inline-block; width: 20px;">';
+                                                        html3 += '<input id="chk_' + cate.IntCateID + '" type="checkbox" name="chkCate" data-value="'+cate.VchCateName+'" value="' + cate.IntCateID + '" /></span></td>';
+                                                        html3 += '<td>' + cate.IntCateID + '</td>';
+                                                        html3 += '<td>' + cate.VchCateName + '</td>';
+                                                        html3 += '</tr>';
+                                                        show3.push(html3);
+                                                    }
+                                                });
+                                                
+                                            }//判断1级
+                                            if (sysCt2 == "" && sysCt != "") {
+                                                var ct3Arr = sysCt.split(",");
+                                                $.each(ct3Arr, function(kk,cate3) {
+                                                    if (item.IntCateID  == cate3) {
+                                                        html3 += '<tr>  <td class="content2"> <span style="display: inline-block; width: 20px;">';
+                                                        html3 += '<input id="chk_' + cate.IntCateID + '" type="checkbox" name="chkCate" data-value="'+cate.VchCateName+'" value="' + cate.IntCateID + '" /></span></td>';
+                                                        html3 += '<td>' + cate.IntCateID + '</td>';
+                                                        html3 += '<td>' + cate.VchCateName + '</td>';
+                                                        html3 += '</tr>';
+                                                        show3.push(html3);
+                                                    }
+                                                });
+                                            }//获取所有3级分类 
+                                            if(sysCt2 == "" && sysCt == "") {
+                                                html3 += '<tr>  <td class="content2"> <span style="display: inline-block; width: 20px;">';
+                                                html3 += '<input id="chk_' + cate.IntCateID + '" type="checkbox" name="chkCate" data-value="'+cate.VchCateName+'" value="' + cate.IntCateID + '" /></span></td>';
+                                                html3 += '<td>' + cate.IntCateID + '</td>';
+                                                html3 += '<td>' + cate.VchCateName + '</td>';
+                                                html3 += '</tr>';
+                                                show3.push(html3);
+                                            }
+                                        }
+                                    });
+                                });
+                            });
+
+                           
+                            //绑定数据
+                            if (Id == 1) {
+                                $("#gvd").append(show.toString());
+                            } else if (Id == 2) {
+                                $("#gvd").append(show2.toString());
+                            } else if (Id == 3) {
+                                $("#gvd").append(show3.toString());
+                            } else if (Id == 4) {
+                                $("#gvd").append(show.toString());
+                            } else if (Id == 5) {
+                                $("#gvd").append(show2.toString());
+                            } else if (Id == 6) {
+                                $("#gvd").append(show3.toString());
+                            }
+                        }
+                        $("#ui-silder-nav").attr("data-isLoaded", 1);
+                    }, error: function (e) {
+                        alert("系统繁忙，请稍后！");
+                    }
+                });
+            }
+
+            //2，chkbox反选  
+            $("input[name=chkCate]").click(function () {
+                var id = $(this).attr("id");
+                if (id == "chk_0") {
+                    if ($('#chk_0').prop('checked')) {
+                        $("input[name=chkCate]:checkbox").each(function () {
+                            this.checked = true;
+                        });
+                    } else {
+                        $("input[name=chkCate]:checkbox").removeAttr("checked");
+                    }
+                } else {
+                    $("#chk_0").removeAttr("checked");
+                }
+            });
+
+            //3，选取关闭  
+            function ReturnSel(objId) {
+                var chk_cate = [];
+                var chk_cateName = [];
+                $("input[name='chkCate']:checked").each(function () {
+                    if ($(this).val() != 0) {
+                        chk_cate.push($(this).val());
+                        chk_cateName.push($(this).data('value'));
+                    }
+                });
+                //console.log(chk_cate);
+                window.opener.document.getElementById("" + objId.trim() + "").value = chk_cate.join(',');
+                window.opener.document.getElementById("C_" + objId.trim() + "").value = chk_cateName.join(',');
+                window.close();
+            }
+
+        </script>
+    </table>
+
+</body>
+</html>

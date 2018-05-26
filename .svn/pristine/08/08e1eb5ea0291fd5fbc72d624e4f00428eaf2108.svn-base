@@ -1,0 +1,12 @@
+﻿@{
+    ViewBag.Title = "运费策略管理";
+}
+<div><h2>运费策略管理>>母婴之家运费规则</h2></div>
+<input id="btnNew" type="submit" value="新增" class="btn" disabled="disabled" />
+<input id="btnReturn" type="submit" value="返回" class="btn" />
+ <script src="../../Scripts/jquery-1.10.2.js"></script>
+<script>
+    $("#btnReturn").click(function () {
+        window.location = "/AdminCarriage/Index";
+    });
+    </script>

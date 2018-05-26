@@ -1,0 +1,198 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C5032C25-342E-4AC0-8C0C-7838D6D62AAC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Myzj.OPC.UI.ServiceClient</RootNamespace>
+    <AssemblyName>Myzj.OPC.UI.ServiceClient</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Myzj.OPC.UI.Library\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\Myzj.OPC.UI.Library\Myzj.OPC.UI.ServiceClient.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Myzj.OPC.UI.Library\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MYZJ.Authorization.Dto, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\MYZJ.Authorization.Dto.dll</HintPath>
+    </Reference>
+    <Reference Include="Myzj.BS.ServiceModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\Myzj.BS.ServiceModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Myzj.CMS.ServiceModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\Myzj.CMS.ServiceModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Myzj.DataCenter.ServiceModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\Myzj.DataCenter.ServiceModel.dll</HintPath>
+    </Reference>
+    <Reference Include="MYZJ.Framework.Interfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\MYZJ.Framework.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Myzj.Goods.ServiceModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\Myzj.Goods.ServiceModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Myzj.MKMS.ServiceModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\Myzj.MKMS.ServiceModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Myzj.Mlt.ServiceModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\Myzj.Mlt.ServiceModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Myzj.OPC.UI.Assembler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\Myzj.OPC.UI.Assembler.dll</HintPath>
+    </Reference>
+    <Reference Include="MYZJ.Promotion.Engine.ServiceModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\MYZJ.Promotion.Engine.ServiceModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Myzj.SearchEngine.ServiceModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\Myzj.SearchEngine.ServiceModel.dll</HintPath>
+    </Reference>
+    <Reference Include="MYZJ.UDP.ServiceModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\MYZJ.UDP.ServiceModel.dll</HintPath>
+    </Reference>
+    <Reference Include="MYZJ.UIS.ServiceModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\MYZJ.UIS.ServiceModel.dll</HintPath>
+    </Reference>
+    <Reference Include="MYZJ.VIP.ServiceModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\MYZJ.VIP.ServiceModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack, Version=3.9.60.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\ServiceStack.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Common, Version=3.9.60.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\ServiceStack.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces, Version=3.9.60.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.OrmLite, Version=3.9.60.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\ServiceStack.OrmLite.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.OrmLite.Sqlite, Version=3.9.60.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\ServiceStack.OrmLite.Sqlite.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.OrmLite.SqlServer, Version=3.9.60.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\ServiceStack.OrmLite.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Redis, Version=3.9.63.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\ServiceStack.Redis.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.ServiceInterface, Version=3.9.60.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\ServiceStack.ServiceInterface.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text, Version=3.9.59.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\ServiceStack.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Vip.myzj.com.ServiceModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Myzj.OPC.UI.Library\Vip.myzj.com.ServiceModel.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AdminCarriageClient.cs" />
+    <Compile Include="BargainGroupConfig.cs" />
+    <Compile Include="BaseCouponConfig.cs" />
+    <Compile Include="BaseDiscountCodeConfig.cs" />
+    <Compile Include="Base\BaseService.cs" />
+    <Compile Include="Base\ServiceCollection.cs" />
+    <Compile Include="ClearCacheClient.cs" />
+    <Compile Include="CouponActivityClient.cs" />
+    <Compile Include="CouponActivityConfigureClient.cs" />
+    <Compile Include="CouponBabyCoinConfigClient.cs" />
+    <Compile Include="ExpressClient.cs" />
+    <Compile Include="External\ServiceCollectionFactory.cs" />
+    <Compile Include="FloorConfig.cs" />
+    <Compile Include="ForbidWordMsg.cs" />
+    <Compile Include="OrderProductState.cs" />
+    <Compile Include="ProductLabel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RentActivityClient.cs" />
+    <Compile Include="SaleHotStyle.cs" />
+    <Compile Include="SaleHotStyleSpecialSubject.cs" />
+    <Compile Include="SearchManagement.cs" />
+    <Compile Include="ShortMessageClient.cs" />
+    <Compile Include="SortProductConfig.cs" />
+    <Compile Include="SpreadInfo.cs" />
+    <Compile Include="UdpClient.cs" />
+    <Compile Include="UserPdtComment.cs" />
+    <Compile Include="UserRefer.cs" />
+    <Compile Include="VIPClient.cs" />
+    <Compile Include="WebAward.cs" />
+    <Compile Include="WebBulletin.cs" />
+    <Compile Include="WebIndexRapidIn.cs" />
+    <Compile Include="WebUserBehavior.cs" />
+    <Compile Include="WordLibManageConfigClient.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Myzj.OPC.UI.Common\Myzj.OPC.UI.Common.csproj">
+      <Project>{7ba437d3-1eca-449d-b652-3aae99201d99}</Project>
+      <Name>Myzj.OPC.UI.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Myzj.OPC.UI.Model\Myzj.OPC.UI.Model.csproj">
+      <Project>{99a52b10-2986-4129-bd5b-33fdd5323de1}</Project>
+      <Name>Myzj.OPC.UI.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

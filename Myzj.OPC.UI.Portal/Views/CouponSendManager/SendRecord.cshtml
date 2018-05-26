@@ -1,0 +1,169 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.BaseCouponConfig
+@model Myzj.OPC.UI.Model.BaseCouponConfig.SendCouponRecordRefer
+<h2>优惠券发送记录</h2>
+<style>
+    .input-validation-error {
+        border: 1px solid #c0c0c0;
+        background-color: white;
+    }
+
+    .showDetailTable tbody tr.tk-guanli td {
+        width: 15%;
+    }
+
+        .showDetailTable tbody tr.tk-guanli td.tk-name {
+            width: 5%;
+            text-align: center;
+        }
+
+        .showDetailTable tbody tr.tk-guanli td input {
+            text-align: left;
+            width: 85%;
+        }
+
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+        <tbody>
+            <tr class="tk-guanli">
+                <td>会员Id:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.UserId)
+                </td>
+                <td>优惠券key:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.CouponKey)
+                </td>
+
+            </tr>
+            <tr  class="tk-guanli">
+                <td>优惠码:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.DiscountCode)
+                </td>
+                <td>优惠券名称:</td>
+                <td>@Html.TextBoxFor(m => m.SearchDetail.CouponName)</td>
+            </tr>
+            <tr class="tk-guanli">
+                <td>作废原因</td>
+                <td colspan="3">
+                    <textarea id="txtReason" placeholder="必填,请输入作废原因，100字符内" onkeyup="cleanSpelChar(this);"></textarea>
+                </td>
+
+            </tr>
+        </tbody>
+    </table>
+    <div class="rowButton">
+        <input type="submit" value="查询" id="btnSearch" />
+        <input type="button" value="批量作废" id="btnCancel" onclick="cancelCoupon();" />
+    </div>
+    @Html.Partial("Item", @Model.List2)
+    
+    @Html.Partial("Pager", @Model)
+}
+
+<script type="text/javascript">
+    $(function () {
+        //$("#chkAll").click(function () {
+        //    $("input[type=checkbox][name=chkItem]").attr("checked", $(this).is(':checked'));
+        //});
+        //$("[name='chkAll']").click(function () {
+        //    $("input[type=checkbox][name=chkItem]").attr("checked", $(this).is(':checked'));
+        //});
+
+        $("input[type=checkbox]").click(function () {
+            var id = $(this).attr("id");
+            if (id == "chkAll") {
+                if ($('#chkAll').prop('checked')) {
+                    $("input[type=checkbox]:checkbox").each(function () {
+                        this.checked = true;
+                    });
+                } else {
+                    $("input[type=checkbox]:checkbox").removeAttr("checked");
+                }
+            } else {
+                $("#chkAll").removeAttr("checked");
+            }
+        });
+
+
+    });
+
+    //批量作废 
+
+    function cancelCoupon(sysNo, obj) {
+        var strs = '';
+        if (sysNo != null) {
+            strs = sysNo;
+        }
+        else {
+            $("input[name=chkItem]:checked").each(function () {
+
+                if (strs) { strs += ','; }
+                strs += $(this).val();
+
+            });
+            if (strs.length < 1) {
+                alert("请选择作废项！");
+                return;
+            }
+        }
+        if ($.trim($("#txtReason").val()) == "") {
+            alert("请填写作废原因");
+            return;
+        }
+
+        if ($("#txtReason").val().length > 100) {
+            alert("请填写作废原因,100字符内");
+            return;
+        }
+
+        if (confirm("你确定作废吗？")) {
+            $.ajax({
+                type: "Post",
+                url: "/CouponSendManager/CancelCoupon",
+                data: "{sysNos:'" + strs + "',remarks:'" + $("#txtReason").val() + "'}",
+                contentType: "application/json;utf-8",
+                timeout: 10000,
+                dataType: "json",
+                error: function (XMLHttpRequest, textStatus, errorThrown) { alert("请求超时（10秒）出现未知异常，请通知技术部！错误信息：" + XMLHttpRequest.status + "," + textStatus + "," + errorThrown); },
+                success: function (re) {
+                    alert(re.DoResult);
+                    if (re.DoFlag == true) {
+                        if (sysNo != null) {
+                            // obj.parentNode.parentNode.style.display = "none";
+                            obj.disabled = "disabled";
+
+                        } else {
+                            $("input[name='chkItem']:checked").each(function () {
+
+                                // $(this).parent().parent().hide();
+
+                            });
+
+                        }
+                        window.location.href = window.location.href;
+                    }
+
+                }
+            });
+        }
+    }
+
+
+
+    //验证输入框内不能输入特殊字符,输入就立刻清除
+    function cleanSpelChar(th) {
+        if (/["'<>%;)(&+]/.test(th.value)) {
+            $(th).val(th.value.replace(/["'<>%;)(&+]/, ""));
+        }
+    }
+</script>

@@ -1,0 +1,105 @@
+﻿@model  Myzj.OPC.UI.Model.FloorConfig.FloorDetailRefer
+<h2>楼层详情配置-》@ViewBag.Name</h2>
+
+@{
+    <div class="rowButton">
+        <input type="button" name="Query" id="BtnAdd" value="新增" />
+    </div>
+
+    if (Model != null)
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>操作</th>
+                    <th>配置项商品ID</th>
+                    <th>楼层类型</th>
+                    <th>配置项名称</th>
+                    <th>配置项关键字</th>
+                    <th>配置项关键值</th>
+                    <th>配置项链接</th>
+                    <th>配置项图片</th>
+                    <th>配置排序</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.List)
+                {
+                    <tr>
+                        <td>@item.SysNO</td>
+                        <td>
+                            <a style="color: #191970" target="_blank" href="@Url.Action("FloorDetail", "FloorConfig", new { id = item.SysNO, strName = ViewBag.Name, name = item.ConfigItemName, floorId = item.FloorID })" >编辑</a>
+                            &nbsp;
+                            <a style="color: #191970"  target="_blank" href="@Url.Action("FloorLabelItem", "FloorConfig", new { id = item.SysNO, strName = ViewBag.Name, name = item.ConfigItemName, floorId = item.SysNO })" >编辑详情</a>
+                            &nbsp;
+                            <a style="color: #191970" href="javascript:(0)" pvalue="@item.SysNO" class="delFloorDetail">删除</a>
+                        </td>
+                        <td>@item.ProductId</td>
+                        <td>@item.FloorTypeName</td>
+                        <td>@item.ConfigItemName</td>
+                        <td>@item.ConfigItemKeyName</td>
+                        <td>@item.ConfigItemKeyValue</td>
+                        <td>@item.ConfigLink</td>
+                        <td>
+                            <img src="@item.Picture" width="35"/></td>
+                        <td>
+                            <input type="text" value="@item.Sequence" pvalue="@item.SysNO" class="Sequence" id="Sequence"style="width: 30px"/>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+}
+
+<script type="text/javascript">
+    $(function () {
+        //新增
+        $("#BtnAdd").click(function () {
+            var strName = '@ViewBag.Name';
+            var floorId = '@ViewBag.FloorID';
+            window.open("/FloorConfig/FloorDetail?strName=" + strName + "&floorID=" + floorId);
+        });
+        //修改排序
+        $(".Sequence").change(function () {
+            var id = $(this).attr("pvalue");
+            var number = $(this).val();
+
+            $.ajax({
+                url: "/FloorConfig/UpdateDetailSort",
+                data: { "id": id, "sort": number },
+                success: function (res) {
+                    if (res.DoFlag) {
+                        //alert("更新成功");
+                        location.reload();
+                    } else {
+                        alert(res.DoResult);
+                    }
+                }
+            });
+        });
+        //删除
+        $(".delFloorDetail").click(function () {
+            var obj = $(this);
+            var id = obj.attr("pvalue");
+            $.ajax({
+                url: "/FloorConfig/DelDetail",
+                data: { "id": id },
+                dataType: 'json',
+                type: 'POST',
+                success: function (res) {
+                    if (res.DoFlag) {
+                        location.reload();
+                    } else {
+                        alert(res.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>

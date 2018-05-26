@@ -1,0 +1,263 @@
+﻿@{
+    ViewBag.Title = "TemplateIndexIndex";
+}
+@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.ShortMessage.TemplateListRefer 
+<h2>短信模板管理</h2>
+<style>
+    .input-validation-error {
+        border: 1px solid #c0c0c0;
+        background-color: white;
+    }
+
+    .showDetailTable tbody tr.tk-guanli td {
+        width: 15%;
+    }
+
+        .showDetailTable tbody tr.tk-guanli td.tk-name {
+            width: 5%;
+            text-align: center;
+        }
+
+        .showDetailTable tbody tr.tk-guanli td input {
+            text-align: left;
+            width: 85%;
+        }
+
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+
+        .rowButton input {
+            margin: 2px 15px;
+            height: 30px;
+            width: 11%;
+            text-align: center;
+        }
+
+    textarea {
+        min-height: 41px;
+        min-width: 94%;
+    }
+</style>
+
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+        <tbody>
+            <tr class="tk-guanli">
+                <td class="tk-name">模板Key</td>
+                <td>
+                    @Html.TextBoxFor(m => m.Search.TempKey)
+                </td>
+                <td class="tk-name">模板类型:</td>
+                <td>@Html.TextBoxFor(m => m.Search.TempType)</td>
+                <td class="tk-name">模板名称:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.Search.TempName)
+                </td>
+
+                <td class="tk-name">是否有效:</td>
+                <td>
+                    @{
+    var sort = new SortedList<bool, string>();
+    sort.Add(true, "启用");
+    sort.Add(false, "禁用");
+                    }
+                    @Html.DropDownListFor(m => m.Search.IsEnable, new KvSelectList(sort), true)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="rowButton">
+        <input type="submit" value="查询" id="btnSearch" />
+        <input type="button" value="新增" id="btnAdd" onclick="window.open('/ShortMessage/TemplateAdd')" />
+    </div>
+    
+    if (Model.List != null && Model.List.Any())
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="sortable">
+            <thead>
+                <tr class="gl-title">
+                    <th>SysNo</th>
+                    <th>操作</th>
+                    <th>模板Key</th>
+                    <th>模板类型</th>
+                    <th>模板名称</th>
+                    <th>模板内容</th>
+                    <th>备注</th>
+                    <th>创建日期</th>
+                    <th>是否有效</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model.List)
+                {
+                    <tr class="gl-title" aid="@item.SysNo" id="@item.SysNo" sort="@item.SysNo">
+
+                        <td>
+                            <a style="color: #191970; font-weight:bold" title="修改" href="@Url.Action("TemplateUpdate", "ShortMessage", new { sysNo = item.SysNo })" >@item.SysNo</a>
+
+                        </td>
+                        <td>
+                            <a style="color: #191970;text-decoration: underline"  href="javascript:del(@item.SysNo)">删除</a>
+                            @if (item.IsEnable ?? false)
+                            {
+                                <a style="color: #191970;text-decoration: underline;"  href="javascript:enable(@item.SysNo,'false')">禁用</a>
+                            }
+                            else
+                            {
+                                <a style="color: red;text-decoration: underline"  href="javascript:enable(@item.SysNo,'true')">启用</a>
+                            }
+                        </td>
+
+                        <td>@item.TempKey</td>
+                        <td>@item.TempType</td>
+                        <td>@item.TempName</td>
+                        <td>@item.Content</td>
+                        <td>@item.Remark</td>
+                        <td>@item.RowCreateDate</td>
+                        @if (item.IsEnable ?? false)
+                        {
+                            <td>已启用</td>
+                        }
+                        else
+                        {
+                            <td>已禁用</td>
+                        }
+
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+
+    <script type="text/javascript">
+        $(function () {
+            $("#sortable tbody").sortable({
+                cursor: "move",
+                helper: function (e, tr) {
+                    var $originals = tr.children();
+                    var $helper = tr.clone();
+                    $helper.children().each(function (index) {
+                        $(this).width($originals.eq(index).width());
+                    });
+                    return $helper;
+                },
+                sort: function (e, ui) {
+                    array = [];
+                    select_item = ui.item; //当前拖动的元素
+                    var select_id = select_item.attr("id");
+                    select_sort = select_item.attr("sort"); //当前元素的顺序
+                    var prev_item = $(this).find('tr').filter('.ui-sortable-placeholder').prev('tr');//新位置下的上一个元素
+                    var next_item = $(this).find('tr').filter('.ui-sortable-placeholder').next('tr');//新位置下的下一个元素
+                    place_sort = next_item.attr('sort');
+
+                    place_sx = parseInt(place_sort);
+                    select_sx = parseInt(select_sort);
+
+                    if (select_sx > place_sx) { //说明是 向上移动
+                        //array.push(select_id);
+                        temp = place_sort;
+                        place_sx = select_sort;//最大
+                        select_sx = temp;//最小
+                        flag = false;
+                    } else { //向下移动
+                        place_sort = $(this).find('tr').filter('.ui-sortable-placeholder').prev('tr').attr('sort');
+                        place_sx = parseInt(place_sort);
+                        flag = true;
+                    }
+                },
+                stop: function (e, ui) {
+                    //alert(ui.item.attr("id"));//可以拿到id
+                    //alert(ui.position.top);//可以拿到id
+                    var temp = "";
+
+                    if (flag) {
+                        array.splice(place_sx - select_sx, 0, temp);
+                    }
+
+                    //if (window.confirm("确定这么排吗？")) {
+                    //发送请求，对sort字段进行修改
+                    $.ajax({
+                        url: '/EventAction/sortTable',
+                        type: 'POST',
+                        async: false,
+                        data: { 'ids': array, selectSx: select_sx, placeSx: place_sx },
+                        datatype: 'json',
+                        success: function (data) {
+                            alert(data.data);
+                            window.location.reload();
+                        },
+                        error: function () {
+                            alert('保存排序异常');
+                        }
+                    });
+                    //} else {
+                    //    $(this).sortable('cancel');
+                    //}
+
+                    return ui;
+                },
+            }).disableSelection();
+        });
+
+
+        function enable(sysNo, enable) {
+            var model = {};
+            model.SysNo = sysNo;
+            model.Enable = enable;
+
+            if (confirm("你确定修改吗？")) {
+                $.ajax({
+                    url: '@Url.Action("EnableSmsTemplate", "ShortMessageExec")',
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: JSON.stringify(model),
+                    success: function (result) {
+                        if (result.DoFlag) {
+                            window.location.href = '@Url.Action("TemplateIndex", "ShortMessage")';
+                        } else {
+                            alert(result.DoResult);
+                        }
+                    }
+                });
+            }
+        }
+
+        function del(sysNo) {
+            var model = {};
+            model.SysNo = sysNo;
+
+
+            if (confirm("你确定删除吗？")) {
+                $.ajax({
+                    url: '@Url.Action("DelSmsTemplate", "ShortMessageExec")',
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: JSON.stringify(model),
+                    success: function (result) {
+                        if (result.DoFlag) {
+                            window.location.href = '@Url.Action("TemplateIndex", "ShortMessage")';
+                        } else {
+                            alert(result.DoResult);
+                        }
+                    }
+                });
+            }
+        }
+
+    </script>
+   
+    @Html.Partial("Pager", @Model)
+}

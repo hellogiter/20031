@@ -1,0 +1,174 @@
+﻿@{
+    Layout = null;
+}
+
+@model Myzj.OPC.UI.Model.AdminCarriage.OtherParam 
+<div id="OperationDiv" style="border: solid 0px black; padding:10px;">
+  <table class="resultTable">
+        <tr>
+             <td>区域ID</td>
+             <td style="text-align:left"><input value="@string.Join(",",@Model.AreaIds)" id="txtAreaIds" type="text" style="width:500px;"/></td>
+        </tr>
+      <tr>
+             <td>不包含的区域ID</td>
+             <td style="text-align:left"><input value="@string.Join(",",@Model.ExcludeAreaIds)" id="txtExcludeAreaIds" type="text" style="width:500px;"/></td>
+        </tr>
+        <tr>
+          <td colspan="2">
+              <table class="resultTable" id="tb_JZHSections">
+              @foreach (var item in Model.OtherSections)
+              {
+                  <tr>
+                      <td>起始金额</td>
+                      <td><input value="@item.StartMoney" id="txtStartMoney" name="txtStartMoney" type="text" /></td>
+                        <td>截止金额</td>
+                       <td><input value="@item.EndMoney" id="txtEndMoney" name="txtEndMoney" type="text" /></td>
+                        <td>邮费</td>
+                       <td><input value="@item.Carriage " id="txtCarriage" name="txtCarriage" type="text" /></td>                       
+                      <td><input id="btnDel" type="button" value="删除行" onclick="deltr(this)" /></td>
+                  </tr>
+              }
+                  </table>
+              <input id="btnNewJZHSection" type="button" value="新增行" />
+          </td>
+      </tr>
+       <tr>
+            <td>优先级</td>
+            <td style="text-align:left"><input value="@Model.Priority" id="txtPriority" type="text" /></td>
+        </tr>
+      <tr>
+           <td colspan="2" style="text-align:center;"><input id="btnSave" type="submit" value="保存" class="btn" /> 
+               <span id="errormesg" style="color:red;"></span>
+           </td> 
+        </tr>
+      </table> 
+     <input id="Hidden1" type="hidden" value="@ViewBag.rowindex" />
+    </div> 
+<script src="../../Scripts/jquery-1.10.2.js"></script>
+<script>
+    $(document).ready(function () {
+        if ($("#Hidden1").val() == "-1") {
+            $("#btnSave").val("新增保存");
+            $("#btnNewJZHSection").click();
+        }
+        else {
+            $("#btnSave").val("修改保存");
+        }
+    });
+    $("#btnNewJZHSection").click(function () {
+        var trHtml = "<tr><td>起始金额</td><td><input value='' id='txtStartMoney' name='txtStartMoney' type='text' /></td><td>截止金额</td><td><input value='' id='txtEndMoney' name='txtEndMoney' type='text' /></td><td>邮费</td><td><input value='' id='txtCarriage' name='txtCarriage' type='text' /></td><td><input id='btnDel' type='button' value='删除行' onclick='deltr(this)'/></td></tr>";
+        $("#tb_JZHSections").append(trHtml);
+    });
+    function deltr(obj) {
+        $(obj).parent().parent().remove();
+    };
+
+    $("#btnSave").click(function () {
+
+        if (!$("#txtAreaIds").val().trim()) {
+            return;
+        }
+
+        if (!$("#txtExcludeAreaIds").val().trim()) {
+            return;
+        }
+
+        var flag = true;
+
+        $("[name='txtStartMoney']").each(function (index, element) {
+            if (!$(element).val().trim()) {
+                flag = false;
+            }
+        });
+        $("[name='txtEndMoney']").each(function (index, element) {
+            if (!$(element).val().trim()) {
+                flag = false;
+            }
+        });
+        $("[name='txtCarriage']").each(function (index, element) {
+            if (!$(element).val().trim()) {
+                flag = false;
+            }
+        });       
+
+        if (!flag) {
+            return;
+        }
+
+
+        var arr = new Array();
+        $("[name='txtStartMoney']").each(function (index, element) {
+            var om = {};
+            om.StartMoney = $(element).val().trim();
+            om.EndMoney = $("[name='txtEndMoney']").eq(index).val().trim();
+            om.Carriage = $("[name='txtCarriage']").eq(index).val().trim();         
+            arr.push(om);
+        });
+
+
+        var data = {};
+        data.id = $("#Hidden1").val();
+        data.AreaIds = $("#txtAreaIds").val().trim();
+        data.ExcludeAreaIds = $("#txtExcludeAreaIds").val().trim();
+        data.priority = $("#txtPriority").val().trim();
+        data.OtherSections = JSON.stringify(arr);
+
+        if (parseInt($("#Hidden1").val()) >= 0) {
+            $.ajax({
+                url: '/AdminCarriage/UpdatePlug4Configure',
+                type: 'POST',
+                dataType: 'html',
+                data: data,
+                success: function (result) {
+                    $("#errormesg").html("保存成功");
+
+                    $("#OperationDiv").hide(4000);
+                    $.ajax({
+                        url: '/AdminCarriage/Detail4Show',
+                        type: 'POST',
+                        dataType: 'html',
+                        success: function (result) {
+
+                            if (result && $.trim(result).length > 0) {
+                                $("#Show").html(result);
+                                $(".xiugai").each(function (index, element) {
+                                    if (index == $("#Hidden1").val()) {
+                                        $(element).parent().parent().css("color", "green");
+
+                                    }
+
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        else {
+            $.ajax({
+                url: '/AdminCarriage/AddPlug4Configure',
+                type: 'POST',
+                dataType: 'html',
+                data: data,
+                success: function (result) {
+                    $("#errormesg").html("新增成功");
+
+                    $("#OperationDiv").hide(4000);
+                    $.ajax({
+                        url: '/AdminCarriage/Detail4Show',
+                        type: 'GET',
+                        dataType: 'html',
+                        success: function (result) {
+
+                            if (result && $.trim(result).length > 0) {
+                                $("#Show").html(result);
+                                $(".xiugai").last().parent().parent().css("color", "green");
+
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    });
+</script>

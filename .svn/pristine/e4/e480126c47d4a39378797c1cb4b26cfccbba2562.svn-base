@@ -1,0 +1,118 @@
+﻿@{
+    ViewBag.Title = "新会员特权";
+}
+
+<h2>新会员特权168现金直减券发放查询</h2>
+<table class="showDetailTable">
+    <tr>
+        <td>会员ID</td>
+        <td>
+            <input id="txtUserId" type="text" /></td>
+        <td>
+            <input id="btnQuery" type="button" value="查询发券情况及原因" class="btn" /></td>
+        <td>
+            <input id="btnSendCoupon" type="button" value="手动补券" class="btn" disabled="disabled" />
+        </td>
+         <td>
+            <input id="btnFirstOrder" type="button" value="首单和使用168券订单的状态" class="btn"  style="width:300px;"/>
+        </td>
+    </tr>
+</table>
+<div id="mainContent" style="color:red; width:90%;margin-left:auto;margin-right:auto;margin-top:10px; line-height:200%;"></div>
+<style>
+    .backg {
+        background-color:#ADADAD;
+    }
+
+</style>
+<script type="text/javascript">
+    $("#btnQuery").click(function () {
+        $("#btnSendCoupon").removeClass("backg");
+        $("#btnQuery").addClass("backg");
+        $("#btnFirstOrder").removeClass("backg");
+
+        $("#mainContent").text("Loading...");
+        var userId = $("#txtUserId").val();
+        if (userId) {
+            $.ajax({
+                url: 'NewMemberDiscount/GetReseaon',
+                type: 'POST',
+                data:{userId:userId},
+                dataType: 'html',
+                success: function (result) {
+                    
+                    $("#mainContent").html(result);
+                },
+                error: function (a, b, c) {
+                    alert(b);
+                }
+            });
+        }
+        else {
+            $("#mainContent").text("请输入正确的会员ID。");
+        }
+    });
+
+
+    $("#btnSendCoupon").click(function () {
+
+        $("#btnSendCoupon").addClass("backg");
+        $("#btnQuery").removeClass("backg");
+        $("#btnFirstOrder").removeClass("backg");
+
+        $("#mainContent").text("Loading...");
+        var userId = $("#txtUserId").val();
+        if (userId) {
+            if (confirm("确定要手动为该客户补发168现金直减券？")) {
+
+                $.ajax({
+                    url: 'NewMemberDiscount/SendCouponManually',
+                    type: 'POST',
+                    data: { userId: userId },
+                    dataType: 'html',
+                    success: function (result) {
+
+                        $("#mainContent").html(result);
+                    },
+                    error: function (a, b, c) {
+                        alert(b);
+                    }
+                });
+            }
+            else {
+                $("#mainContent").text("发送抵扣券失败，已取消未改客户补发168现金直减券。");
+            }
+        }
+        else {
+            $("#mainContent").text("请输入正确的会员ID。");
+        }
+    })
+
+
+    $("#btnFirstOrder").click(function () {
+        $("#btnSendCoupon").removeClass("backg");
+        $("#btnQuery").removeClass("backg");
+        $("#btnFirstOrder").addClass("backg");
+
+        $("#mainContent").text("Loading...");
+        var userId = $("#txtUserId").val();
+        if (userId) {
+            $.ajax({
+                url: 'NewMemberDiscount/GetFirstOrder',
+                type: 'POST',
+                data: { userId: userId },
+                dataType: 'html',
+                success: function (result) {
+
+                    $("#mainContent").html(result);
+                },
+                error: function (a, b, c) {
+                    alert(b);
+                }
+            });
+        }
+        else {
+            $("#mainContent").text("请输入正确的会员ID。");
+        }
+    })
+</script>

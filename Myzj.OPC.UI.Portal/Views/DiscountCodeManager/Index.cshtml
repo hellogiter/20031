@@ -1,0 +1,184 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.BaseDiscountCodeConfig
+@model BaseRefer<DiscountActivityReq, DiscountActivityRes>
+@{
+    ViewBag.Title = "Index";
+}
+<style>
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+</style>
+
+
+<h2>优惠码活动管理</h2>
+
+@using (Html.BeginForm())
+{
+    <div>
+        <table class="showDetailTableMultiColumnm">
+            <tr>
+                <td>活动Key</td>
+                <td>@Html.TextBoxFor(m => m.SearchDetail.ActivityKey)</td>
+                <td>活动名称</td>
+                <td>@Html.TextBoxFor(m => m.SearchDetail.ActivityName)</td>
+                <td>券类型</td>
+                <td>
+                     @{
+                    var list = new Dictionary<int, string>();
+                    list.Add(-1, "--ALL--");
+                    list.Add(0, "普通券0");
+                    list.Add(1, "普通券1");
+                    list.Add(2, "普通券2");
+                    list.Add(3, "普通券3");
+                    list.Add(4, "微信卡卷");
+                }
+                @Html.DropDownListFor(m => m.SearchDetail.CodeType, new KvSelectList(list))
+                </td>
+            </tr>
+            <tr>
+                <td>开始时间</td>
+                <td>
+                    <input type="text" name="SearchDetail.StartTime" id="SearchDetail.StartTime" value="@Model.SearchDetail.StartTime" onfocus="dateFmtStr(this,1) "/>
+                </td>
+                <td>结束时间</td>
+                <td>
+                    <input type="text" name="SearchDetail.EndTime" id="SearchDetail.EndTime" value="@Model.SearchDetail.EndTime" onfocus=" dateFmtStr(this,2) " /></td>
+                <td>关联优惠券Key</td>
+                <td>@Html.TextBoxFor(m => m.SearchDetail.CouponKeys)</td>
+            </tr>
+        </table>
+    </div>
+    <div class="rowButton">
+        <input type="submit" id="btnSearch" value="查询" />
+        <input type="button" id="btnAdd" value="新增" onclick="window.location.href = '/DiscountCodeManager/EditDiscountActivity'" />
+    </div>
+    if (Model.List2 != null && Model.List2.Any())
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>活动Key</th>
+                    <th>活动名称</th>
+                    <th>券类型</th>
+                    <th>关联优惠券Key</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                    <th>状态</th>
+                    <th>设置码数量</th>
+                    <th>码数量</th>
+                    <th>限制次数</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.List2)
+                {
+                    <tr>
+                        <td>@item.ActivityKey</td>
+                        <td>@item.ActivityName</td>
+                        <td>@if (item.CodeType == 4)
+                            {
+                                <span>微信卡卷</span>
+                            }
+                            else
+                            {
+                                <span>普通券</span>
+                            }
+                        </td>
+                        <td>@item.CouponKeys</td>
+                        <td>@item.StartTime</td>
+                        <td>@item.EndTime</td>
+                        @if (item.IsEnable == true)
+                        {
+                            <td>启用</td>
+                        }
+                        else
+                        {
+                            <td>禁用</td>
+                        }
+
+                        <td>@item.SetCodeCount</td>
+                        <td>@item.CreateCodeCount</td>
+                        <td>@item.LimitCount</td>
+                        <td>@*@if (item.CreateCodeCount == 0)
+                            {
+                            *@<a style="color: #191970;cursor: pointer" target="_blank" onclick="window.location.href='/DiscountCodeManager/EditDiscountActivity?SysNo=@item.SysNo'">修改 </a>
+                            <a style="color: #191970;cursor: pointer" target="_blank" onclick="IsEnableOrDelete(@item.SysNo,true,2);">删除</a>
+                                @if (item.IsEnable == true)
+                                {
+                            <a style="color: #191970;cursor: pointer" target="_blank" onclick="IsEnableOrDelete(@item.SysNo,false,1);">禁用</a>
+                                }
+                                else
+                                {
+                            <a style="color: #191970;cursor: pointer" target="_blank" onclick="IsEnableOrDelete(@item.SysNo,true,1);">启用</a>
+                                }
+                           @* }*@
+
+                            @if (item.IsEnable == true)
+                            {
+                                @*<a style="color: #191970;cursor: pointer" target="_blank" onclick="window.location.href='/DiscountCodeManager/DiscountCodeDetail?activitySysNo=@item.SysNo'">码管理</a>*@
+                                <a style="color: #191970;cursor: pointer" target="_blank" href="@Url.Action("DiscountCodeDetail", "DiscountCodeManager", new { activitySysNo = item.SysNo })">码管理</a>
+                                if (item.CreateCodeCount > 0)
+                                {
+                                <a style="color: #191970; cursor: pointer" target="_blank" href="@Url.Action("DiscountCodeExport", "DiscountCodeManager", new { ActivityKey = item.ActivityKey })">导出码</a>
+                                }
+
+                                else
+                                {
+                                <a style="color: #808080; cursor: pointer" target="_blank">导出码</a>
+                                }
+                                
+                                @* <a style="color: #191970; cursor: pointer" target="_blank" onclick="window.location.href='/DiscountCodeManager/QueryDiscountCodeBatch?activityKey=@item.ActivityKey'">查询批次</a>*@
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    @Html.Partial("Pager", @Model)
+    }
+
+
+}
+<script type="text/javascript">
+
+    //禁用 、 删除
+    function IsEnableOrDelete(sysNo, flag, type) {
+        if (confirm("确定操作?")) {
+            var model = {};
+            model.SysNo = sysNo;
+            if (type == 1)
+                model.IsEnable = flag;
+            else if (type == 2)
+                model.IsDelete = flag;
+            $.ajax({
+                url: '@Url.Action("SaveDiscountActivity", "DiscountCodeManager")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    alert(result.DoResult);
+                    if (result.DoFlag) {
+                        // window.location.href = '/DiscountCodeManager/Index';
+                        location.reload();
+                    }
+                }
+            });
+        }
+    }
+
+</script>
+

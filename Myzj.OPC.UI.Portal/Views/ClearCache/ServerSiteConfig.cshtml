@@ -1,0 +1,215 @@
+﻿@{
+    ViewBag.Title = "ServerSiteConfig";
+}
+
+<table style="width: 99%; margin: 5px auto;">
+    <tr>
+        <td><h2>站点配置</h2></td>
+    </tr>
+    <tr style="width:100%;">
+        <td style="width:100%;">
+            <table class="showDetailTable" style="width:99%; margin: 5px auto;">
+                <tr style="width:100%;">
+                    <td style="width:20%">站点名称</td>
+                    <td style="width:50%;" >
+                        <input id="txtSiteName" type="text" /></td>
+                    <td style="width:30%;"></td>
+                </tr>
+                <tr>
+                    <td>端口号</td>
+                    <td>
+                        <input id="txtSitePort" type="text" />
+                        
+                    </td>
+                    <td><input id="btnNewSite" type="button" value="新增"  class="btn"/></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+<div id="Show">@Html.Action("SiteShow")</div>
+<table style="width: 99%; margin: 5px auto;">
+    <tr>
+        <td><h2>服务地址配置</h2></td>
+    </tr>
+    <tr style="width:100%;">
+        <td style="width:100%;">
+            <table class="showDetailTable" style="width:99%; margin: 5px auto;">              
+                <tr>
+                    <td style="width:20%">服务器名称</td>
+                    <td style="width:50%">
+                        <input id="txtServer" type="text" />
+                        
+                    </td>
+                    <td style="width:30%"><input id="btnNewServer" type="button" value="新增"  class="btn"/></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+<div id="ShowServer">@Html.Action("ServerShow")</div>
+<script src="../../Scripts/jquery-1.10.2.js"></script>
+<script>
+    $("#btnNewSite").click(function () {
+        var siteName = $("#txtSiteName").val();
+        var sitePort = $("#txtSitePort").val();
+
+        if (!siteName || !sitePort) {
+            return;
+        }
+
+        var data = {};
+        data.SiteName = siteName;
+        data.SitePort = sitePort;
+
+        $.ajax({
+            url: '/ClearCache/AddSite',
+            type: 'POST',
+            dataType: 'html',
+            data: data,
+            success: function (result) {
+                if (result == "True") {
+                    alert("保存成功");
+                    $.ajax({
+                        url: '/ClearCache/SiteShow',
+                        type: 'GET',
+                        dataType: 'html',
+                        success: function (result) {
+
+                            if (result && $.trim(result).length > 0) {
+                                $("#Show").html(result);
+
+                            }
+                        }
+                    });
+                } else {
+                    alert("不能重复添加");
+                }
+
+               
+               
+            }
+        });
+    });
+
+    function modifysite(sysno, isEnable) {
+
+        if (isEnable == "True") {
+            isEnable = "False";
+        }
+        else {
+            isEnable = "True";
+        }
+         
+
+        var data = {};
+        data.sysno = sysno;
+        data.isenable = isEnable;
+        $.ajax({
+            url: '/ClearCache/UpdateSite',
+            type: 'POST',
+            dataType: 'html',
+            data: data,
+            success: function (result) {
+                if (result == "True") {
+                alert("修改成功");
+                $.ajax({
+                    url: '/ClearCache/SiteShow',
+                    type: 'GET',
+                    dataType: 'html',
+                    success: function (result) {
+
+                        if (result && $.trim(result).length > 0) {
+                            $("#Show").html(result);
+
+                        }
+                    }
+                });
+                } else {
+                    alert("修改失败");
+                }
+            }
+        });
+    }
+
+    $("#btnNewServer").click(function () {
+        var serverName = $("#txtServer").val();
+
+        if (!serverName) {
+            return;
+        }
+
+        var data = {};
+        data.ServerName = serverName;
+
+        $.ajax({
+            url: '/ClearCache/AddServer',
+            type: 'POST',
+            dataType: 'html',
+            data: data,
+            success: function (result) {
+                if (result == "True") {
+                    alert("保存成功");
+                    $.ajax({
+                        url: '/ClearCache/ServerShow',
+                        type: 'GET',
+                        dataType: 'html',
+                        success: function (result) {
+
+                            if (result && $.trim(result).length > 0) {
+                                $("#ShowServer").html(result);
+
+                            }
+                        }
+                    });
+                } else {
+                    alert("不能重复添加");
+                }
+
+
+
+            }
+        });
+    });
+
+
+    function modifyserver(sysno, isEnable) {
+
+        if (isEnable == "True") {
+            isEnable = "False";
+        }
+        else {
+            isEnable = "True";
+        }
+
+
+        var data = {};
+        data.sysno = sysno;
+        data.isenable = isEnable;
+        $.ajax({
+            url: '/ClearCache/UpdateServer',
+            type: 'POST',
+            dataType: 'html',
+            data: data,
+            success: function (result) {
+                if (result == "True") {
+                    alert("修改成功");
+                    $.ajax({
+                        url: '/ClearCache/ServerShow',
+                        type: 'GET',
+                        dataType: 'html',
+                        success: function (result) {
+
+                            if (result && $.trim(result).length > 0) {
+                                $("#ShowServer").html(result);
+
+                            }
+                        }
+                    });
+                } else {
+                    alert("修改失败");
+                }
+            }
+        });
+    }
+</script>

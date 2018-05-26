@@ -1,0 +1,82 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+@model List<Myzj.OPC.UI.Model.BaseCouponConfig.AuditRoleDetail>
+<h2>优惠券审核角色管理</h2>
+
+
+<style>
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+</style>
+
+
+
+<div class="rowButton">
+   @* <input type="button" value="创建" id="btnAdd" onclick="window.location.href = '/CouponAuditRole/EditRole';" />*@
+    <a  style="color: #191970" href="@Url.Action("UserRoleIndex", "CouponAuditRole")" >用户角色列表</a>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a  style="color: #191970" href="@Url.Action("RuleIndex", "CouponAuditRole")" >审核规则列表</a>
+</div>
+
+
+@if (Model != null && Model.Any())
+{
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>角色ID</th>
+                    <th>角色名称</th>
+                    <th>备注</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr class="gl-title">
+                        <td>@item.AuditRole</td>
+                        <td>@item.RoleName</td>
+                        <td>@item.Remarks</td>
+                        <td>
+                             <a  style="color: #191970" href="@Url.Action("EditRole", "CouponAuditRole", new { SysNo = item.SysNo })" >编辑</a>
+                           @*  <a  style="color: #191970" href="javascript:void(0);" onclick="deleteRole(@item.SysNo,this);" >删除角色</a>*@
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+}
+
+<script type="text/javascript">
+    function deleteRole(id, thisrow) {
+
+        if (confirm("确定删除 ?")) {
+            $.ajax({
+                url: '@Url.Action("DeleteRole", "CouponAuditRole")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: "{\"sysNo\":" + id + "}",
+                success: function (result) {
+                    alert(result.DoResult);
+                    if (result.DoFlag) {
+                        $(thisrow).parent().parent().remove();
+                    }
+                }
+            });
+        }
+    }
+</script>

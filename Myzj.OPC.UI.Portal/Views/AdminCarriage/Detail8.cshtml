@@ -1,0 +1,31 @@
+﻿@{
+    ViewBag.Title = "运费策略管理";
+}
+<div><h2>运费策略管理>>运费0元</h2></div>
+<input id="btnNew" type="submit" value="新增" class="btn" disabled="disabled" />
+<input id="btnReturn" type="submit" value="返回" class="btn" />
+ <script src="../../Scripts/jquery-1.10.2.js"></script>
+<script>
+   
+    $("#btnReturn").click(function () {
+        $.QueryString = {
+            data: {},
+            Initial: function () {
+                var aPairs, aTmp;
+                var queryString = new String(window.location.search);
+                queryString = queryString.substr(1, queryString.length); //remove   "?"    
+                aPairs = queryString.split("&");
+                for (var i = 0; i < aPairs.length; i++) {
+                    aTmp = aPairs[i].split("=");
+                    this.data[aTmp[0]] = aTmp[1];
+                }
+            },
+            GetValue: function (key) {
+                return this.data[key];
+            }
+        }
+
+        $.QueryString.Initial();
+        window.location = "/AdminCarriage/Index?id=" + $.QueryString.GetValue('id');
+    });
+    </script>

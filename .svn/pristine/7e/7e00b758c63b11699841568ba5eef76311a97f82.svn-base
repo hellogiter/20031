@@ -1,0 +1,39 @@
+﻿@{
+    Layout = null;
+}
+
+@model List<Myzj.OPC.UI.Model.AdminCarriage.Carriage_Plug>
+
+<table class="resultTable" id="Carriage_Plugs">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>执行名称</th>
+            <th>配置参数</th>
+            <th>配置说明</th>
+            <th>创建时间</th>
+            <th>更新时间</th>                   
+            <th>备注</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td >@item.SysNo </td>
+                <td>@item.ExecMethod</td>
+                <td ><a href="javascript:route(@item.SysNo);" style="color:red;">详细信息</a></td>
+                <td>@item.Explain</td>
+                <td>@item.CreateTime </td>
+                <td>@item.UpdateTime</td>
+                <td>@item.Remark </td>
+            </tr> 
+        }
+    </tbody>
+</table> 
+
+<script>
+    function route(id) {       
+        window.location = window.webroot + "/AdminCarriage/detail" + id + "?id=" + $("#Carriage_Strategy").val();
+    }
+</script>

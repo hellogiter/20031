@@ -1,0 +1,115 @@
+﻿@using Myzj.OPC.UI.Model.UserRefer
+@model Myzj.OPC.UI.Model.UserRefer.GetUserRefer
+@{
+    var reportRecord = (GetUserRefer)ViewBag.UserRefer;
+    reportRecord.PageSize = 10;
+
+    reportRecord.Fun = "loadList";
+}
+
+<h2>咨询管理</h2>
+
+@using (Html.BeginForm("ExportExecl", "UserRefer", new { enctype = "multipart/form-data" }))
+{
+    <table class="showDetailTable">
+        <tbody>
+            <tr>
+                <td>商品id:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.IntProductID)
+                </td>
+                <td>用户ID:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.IntUserID)
+                </td>
+            </tr>
+            <tr>
+                <td>咨询开始时间:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.DtDatetime)
+                </td>
+                <td>咨询结束时间:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.DtEndDatetime)
+                </td>
+            </tr>
+            <tr>
+                <td>是否回复:</td>
+                <td>
+                    <select id="ReplyStatus">
+                        <option value="-1">全部</option>
+                        <option value="1">回复</option>
+                        <option value="0">未回复</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>咨询内容:</td>
+                <td colspan="3">
+                    @Html.TextAreaFor(m => m.VchContent)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="rowButton">
+        <input type="button" name="Query" id="Query" value="查询" onclick="loadList(1)" />
+        <input type="button" name="Query" id="BtnAdd" value="新增" onclick="javascript: window.open('/UserRefer/Detail');" />
+    </div>
+    <div>
+        <input type="submit" value="导出CSV" class="ExportExecl" />
+    </div>
+    <div id="item">
+        @Html.Action("Item", "UserRefer", @reportRecord)
+    </div>
+}
+
+<script type="text/javascript">
+
+    //修改状态
+    function updateState(obj) {
+        var id = $(obj).data("id");
+        var state = 0;
+        if (obj.checked) {
+            state = 1;
+        }
+        $.ajax({
+            url: "/UserRefer/UpdateState?id=" + id + "&state=" + state,
+            type: "Post",
+            success: function (res) {
+                if (res.DoFlag) {
+                    alert("更新成功");
+                    location.reload();
+                } else {
+                    alert("修改失败");
+                }
+            }
+        });
+    }
+
+    //条件查询
+    function loadList(index) {
+        var model = {};
+        model.IntProductID = $("#IntProductID").val();
+        model.IntUserID = $("#IntUserID").val();
+        model.ReplyStatus = $("#ReplyStatus").val();
+        model.DtDatetime = $("#DtDatetime").val();
+        model.DtEndDatetime = $("#DtEndDatetime").val();
+        model.VchContent = $("#VchContent").val();
+        model.Fun = "loadList";
+        model.PageIndex = index;
+        model.PageSize = '@reportRecord.PageSize';
+
+        $.ajax({
+            url: '@Url.Action("Item", "UserRefer")',
+            type: 'post',
+            dataType: 'html',
+            contentType: 'application/json',
+            data: JSON.stringify(model),
+            success: function (result) {
+                $("#item").html(result);
+            }
+        });
+    }
+</script>
+

@@ -1,0 +1,185 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.BaseDiscountCodeConfig.DiscountActivityRes
+<h2>@ViewBag.Title</h2>
+
+
+<div>
+    <input type="hidden" id="hd_SysNo" value="@Model.SysNo"/>
+    <table class="showDetailTable">
+        <tr>
+            <td>活动名称</td>
+            <td colspan="3">
+                <input type="text" id="txtActivityName" value="@Model.ActivityName" placeholder="必填、限30字符"/></td>
+            @*<td>关联优惠券Keys</td>
+            <td>
+                <input type="text" id="txtCouponKeys" value="@Model.CouponKeys" placeholder="必填、限256字符"/>
+                
+            </td>*@
+        </tr>
+        <tr>
+            <td>关联优惠券Keys</td>
+            <td colspan="3">
+                <textarea rows="3" disabled="disabled" id="txtCouponKeys" placeholder="必填、限256字符" >@Model.CouponKeys</textarea>
+                <span style="width: 300px; height: 20px; margin-top:30px;">
+                    <input type="button" value="选择" style="width: 60px;" onclick="newopen('txtCouponKeys');" />
+                    <input type="button" value="清空" id="cls_text" style="width: 60px; margin-left: 10px;" />
+                </span>
+               
+            </td>
+        </tr>
+        <tr>
+            <td>开始时间</td>
+            <td>
+                <input type="text" name="dateTime" id="txtStartTime" onfocus="dateFmt(this,1)" value="@Model.StartTime"  placeholder="必填"/>
+            </td>
+            <td>结束时间</td>
+            <td>
+                <input type="text" name="dateTime" id="txtEndTime" onfocus="dateFmt(this,2)" value="@Model.EndTime" placeholder="必填"/>
+            </td>
+        </tr>
+        <tr>
+            <td>设置码数量</td>
+            <td>
+                <input type="text" id="txtSetCodeCount" value="@Model.SetCodeCount" placeholder="必填、上限1000000000"/>
+            </td>
+            <td>限制次数</td>
+            <td>
+                <input type="text" id="txtLimitCount" value="@Model.LimitCount" placeholder="必填、上限1000000000" />
+            </td>
+        </tr>
+
+        <tr>
+            <td>已存在码数量：</td>
+            <td>
+                @if (Model.SysNo.HasValue)
+                {
+                    <input type="text" id="txtCodeCount" value="@Model.CreateCodeCount" disabled="disabled"/>
+                }
+                else
+                {
+                    <input type="text" id="txtCodeCount" value="0" disabled="disabled" />
+                }
+            </td>
+            <td>优惠码类型：</td>
+            <td>
+                @{
+                    var list = new Dictionary<int, string>();
+                    list.Add(0, "请选择");
+                    list.Add(4, "微信卡卷");
+                }
+                @Html.DropDownListFor(m => m.CodeType, new KvSelectList(list))
+
+            </td>
+        </tr>
+
+
+    </table>
+    <div class="rowButton">
+        <input type="button" value="保存" id="btnSave" onclick="SaveActivity();" />
+        <input type="button" value="关闭" id="btnCancel" onclick="window.location.href = '/DiscountCodeManager/Index'" />
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    $("#txtSetCodeCount").keyup(function () {
+        var tmptxt = $(this).val();
+        $(this).val(tmptxt.replace(/\D|^0/g, ''));
+    }).bind("paste", function () {
+        var tmptxt = $(this).val();
+        $(this).val(tmptxt.replace(/\D|^0/g, ''));
+    }).css("ime-mode", "disabled");
+
+    $("#txtLimitCount").keyup(function () {
+        var tmptxt = $(this).val();
+        $(this).val(tmptxt.replace(/\D|^0/g, ''));
+    }).bind("paste", function () {
+        var tmptxt = $(this).val();
+        $(this).val(tmptxt.replace(/\D|^0/g, ''));
+    }).css("ime-mode", "disabled");
+    function dateFmt(obj, type) {
+        if (type == 1) {
+            if (obj.value == "") {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd 00:00:00' });
+            } else {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' });
+            }
+        } else {
+            if (obj.value == "") {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd 23:59:59' });
+            } else {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' });
+            }
+        }
+
+    }
+
+    function SaveActivity() {
+        if ($("#txtActivityName").val().length > 30 || $("#txtActivityName").val().length < 1 || $.trim($("#txtActivityName").val()) == "") {
+            alert("请输入活动名称不能超过输入长度");
+            return;
+        }
+
+        if ($("#txtCouponKeys").val().length > 256 || $("#txtCouponKeys").val().length < 1 || $.trim($("#txtCouponKeys").val()) == "") {
+            alert("请输入的优惠券key不能超过输入长度");
+            return;
+        }
+
+        if ($.trim($("#txtStartTime").val()) == "") {
+            alert("请输入开始时间");
+            return;
+        }
+        if ($.trim($("#txtEndTime").val()) == "") {
+            alert("请输入结束时间");
+            return;
+        }
+
+        if (parseInt($("#txtSetCodeCount").val()) > 1000000000 || $("#txtSetCodeCount").val().length < 1) {
+            alert("请输入正确的码数量");
+            return;
+        }
+        if (parseInt($("#txtSetCodeCount").val()) < parseInt($("#txtCodeCount").val())) {
+            alert("码数量不能小于已存在的码数量");
+            return;
+        }
+        if (parseInt($("#txtLimitCount").val()) > 1000000000 || $("#txtLimitCount").val().length < 1) {
+            alert("请输入正确的限制次数");
+            return;
+        }
+
+
+        if (confirm("确定保存 ?")) {
+            var model = {};
+            model.SysNo = $.trim($("#hd_SysNo").val());
+            model.ActivityName = $.trim($("#txtActivityName").val());
+            model.CouponKeys = $.trim($("#txtCouponKeys").val());
+            model.StartTime = $.trim($("#txtStartTime").val());
+            model.EndTime = $.trim($("#txtEndTime").val());
+            model.SetCodeCount = $.trim($("#txtSetCodeCount").val());
+            model.LimitCount = $.trim($("#txtLimitCount").val());
+            model.CodeType = $.trim($("#CodeType").val());
+            
+            $.ajax({
+                url: '@Url.Action("SaveDiscountActivity", "DiscountCodeManager")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    alert(result.DoResult);
+                    if (result.DoFlag) {
+                        window.location.href = '/DiscountCodeManager/Index';
+                    }
+                }
+            });
+        }
+    }
+    $("#cls_text").click(function () {
+        $("#txtCouponKeys").val('');
+    });
+    
+    function newopen(id) {
+        window.open("/DiscountCodeManager/QueryCouponList?id=" + id, " newwindow", "height=500, width=1200, top=0, left=600,top=200,toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no");
+    }
+</script>

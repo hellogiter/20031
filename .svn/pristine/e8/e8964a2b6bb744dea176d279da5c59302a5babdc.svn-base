@@ -1,0 +1,86 @@
+﻿@{
+    var isEdit = (Model != null && Model.Id > 0);
+    var title = isEdit ? "编辑" : "新增";
+    ViewBag.Title = title;
+}
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.WordLibManage
+@using Myzj.OPC.UI.ServiceClient
+@model Myzj.OPC.UI.Model.WordLibManage.ForbiddenTypeDetail
+<style>
+    .showDetailTable tr td:nth-child(2n+1) { width: 15%; text-align: right; }
+
+    .showDetailTable tr td:nth-child(2n) { width: 45%; }
+
+    .showDetailTable .sBtn { width: 15%; height: 30px; margin-top: 10px; margin-bottom: 10px; cursor: pointer; }
+</style>
+<h2>@title</h2>
+
+<table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+    <tbody>
+        <tr>
+            <td>序号</td>
+            <td>
+               <input type="text" value="@Model.TypeId" id="typeid" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')"/>
+            </td>
+        </tr>
+        <tr>
+            <td>名称</td>
+            <td>
+               <input type="text" value="@Model.Type" id="type"/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="button" value="保存" class="sBtn" id="btnSave" style="margin-left: 45%" />
+            </td>
+        </tr>
+    </tbody>
+    <input type="hidden" value="@Model.Id" id="hdId"/>
+</table>
+
+
+<script type="text/javascript">
+    function necessaryinput() {
+        if ($("#typeid").val() == '' || $("#typeid").val() == undefined) {
+            alert("请填写序号");
+            return false;
+        }
+        if ($.trim($("#typeid").val()) > 100 || $.trim($("#typeid").val()) < 1) {
+            alert("请输入在1到100之间的正整数");
+            return false;
+        }
+        if ($("#type").val() == '' || $("#type").val() == undefined) {
+            alert("请填写名称");
+            return false;
+        }
+        return true;
+    }
+    var model = {};
+    $("#btnSave").click(function () {
+        model.Id = $.trim($("#hdId").val());
+        model.TypeId = $.trim($("#typeid").val());
+        model.Type = $.trim($("#type").val());
+        if (confirm("你确定保存吗？")) {
+            if (necessaryinput()) {
+                $.ajax({
+                    url: '@Url.Action("UpdateOrAddFbTpEntity", "WordLibManage")',
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: JSON.stringify(model),
+                    success: function (result) {
+                        if (result.DoFlag) {
+                            alert(result.DoResult);
+                            window.location.href = '@Url.Action("ForbiddenTypeList", "WordLibManage", new { id = @Model.Id })';
+                        } else {
+                            alert(result.DoResult);
+                        }
+                    }
+                });
+            }
+        }
+        });
+
+
+</script>

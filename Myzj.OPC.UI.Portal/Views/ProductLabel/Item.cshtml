@@ -1,0 +1,53 @@
+﻿@using System.Collections
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.SaleHotStyle
+
+@model IEnumerable<Myzj.OPC.UI.Model.ProductLabel.ProductLabelDetail>
+@{
+    Layout = null; 
+}
+
+@{
+    <div class="rowButton">
+        <input type="submit" name="Query" id="Query" value="查询" />
+        <input type="button" name="Query" id="btnPLUpdate" value="新增" onclick="javascript: window.open('/ProductLabel/Detail')" />
+    </div>
+  
+    if (Model != null && Model.Any())
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>操作</th>
+                    <th>标签</th>
+                    <th>颜色</th>
+                    <th>商品标签名称</th>
+                    <th>发布时间</th>
+                    <th>序列号</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr class="table_tr">
+                        <td>@item.ID</td>
+                        <td>
+                            <a href="@Url.Action("Detail", "ProductLabel", new { id = item.ID })" target="_blak">修改</a>
+                            <a href="javascript:(0)" pvalue="@item.ID" class="delFloorConfig">删除</a>
+                        </td>
+                        <td>@item.LabelName</td>
+                        <td style="background-color: @item.LabelColor">@item.LabelColor</td>
+                        <td>@item.LabelcontentValue</td>
+                        <td>@item.CreateDate</td>
+                        <td>@item.LabelSortNo</td>
+                    </tr>   
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+}

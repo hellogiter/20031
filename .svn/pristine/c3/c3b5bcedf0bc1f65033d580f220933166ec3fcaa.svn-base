@@ -1,0 +1,154 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.WebAward
+@using Myzj.OPC.UI.Model.WebIndex
+@model Myzj.OPC.UI.Model.WebAward.WebPrizeDetail
+@{
+    var isEdit = (Model != null && Model.IntNumId > 0);
+    var actionName = isEdit ? "Update" : "Add";
+
+    var prizeModel = (WebPrizeModelRefer)ViewBag.WebAwardPrizeModel;//活动类型
+}
+
+@if (isEdit)
+{
+    <h2>修改奖项配置</h2>
+}
+else
+{
+    <h2>新增奖项配置</h2>
+    Model.IntPrizeId = 0;
+}
+
+<div id="tableContainer">
+    <form id="detailForm">
+        <input type="hidden" id="hidIntPrizeId" value="@Model.IntPrizeId"/>
+        <input type="hidden" value="@ViewBag.intAwardId"id="hidintAwardId"/>
+        <input type="hidden" value="@ViewBag.vchAwardName" id="HidvchAwardName"/>
+        <input type="hidden" value="@ViewBag.intNumId" id="HidintNumId"/>
+
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>活动名称:</td>
+                    <td>
+                        <label>@ViewBag.vchAwardName</label>
+                    </td>
+                </tr>
+                <tr style="display: none">
+                    <td>活动ID:</td>
+                    <td>
+                        <label>@ViewBag.intAwardId</label>
+                    </td>
+                </tr>
+                <tr style="display: none">
+                    <td>次数配置ID:</td>
+                    <td>
+                        <label>@ViewBag.intNumId</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>奖项名称(*):</td>
+                    <td>@Html.TextBoxFor(m => m.VchPrizeName)</td>
+                </tr>
+                <tr>
+                    <td>类型选择(*):</td>
+                    <td>
+                        <select id="IntPrizeType" name="IntPrizeType">
+                            @{
+                                var check = "";
+                            }
+                            @if (prizeModel != null)
+                            {
+                                foreach (var item in prizeModel.List)
+                                {
+                                    if (item.IntModelId == Model.IntPrizeType)
+                                    {
+                                        check = "selected='selected'";
+                                    }
+                                    else
+                                    {
+                                        check = "";
+                                    }
+                                <option  @check  value="@item.IntModelId">@item.VchModelName</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>奖品编号:</td>
+                    <td>
+                        @Html.DropDownListFor(m => m.IntPrizeNo, new KvSelectList(typeof(AppEnum.IntPrizeNo).GetEnumList()), false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>权重(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.IntPrizeWeight)
+                    </td>
+                </tr>
+                <tr>
+                    <td>数量(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.IntPrizeCount)
+                    </td>
+                </tr>
+                <tr>
+                    <td>消息:</td>
+                    <td>@Html.TextAreaFor(m => m.VchRemark)</td>
+                </tr>
+        </table>
+    </form>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="保存" id="btnSave" />
+    <input type="button" value="返回" id="btnDel" onclick="window.close()" />
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        //保存
+        $("#btnSave").click(function () {
+            var model = {};
+            model.IntPrizeId = $("#hidIntPrizeId").val();
+            model.IntNumId = $("#HidintNumId").val();
+            model.IntAwardId = $("#hidintAwardId").val();
+            model.VchPrizeName = $("#VchPrizeName").val();
+            model.IntPrizeType = $("#IntPrizeType").val();
+            model.IntPrizeNo = $("#IntPrizeNo").val();
+            model.IntPrizeWeight = $("#IntPrizeWeight").val();
+            model.IntPrizeCount = $("#IntPrizeCount").val();
+            model.VchRemark = $("#VchRemark").val();
+
+            if (model.VchPrizeName == null || model.VchPrizeName == "") {
+                alert("请输入奖项名称");
+                return false;
+            }
+            if (model.IntPrizeWeight == "" || model.IntPrizeWeight == null) {
+                alert("请输入权重");
+                return false;
+            }
+            if (model.IntPrizeCount == "" || model.IntPrizeCount == null) {
+                alert("请输入数量");
+                return false;
+            }
+
+            $.ajax({
+                url: '@Url.Action("SaveWebAwardPrize", "WebAward")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("保存成功！");
+                        reloadPage();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>

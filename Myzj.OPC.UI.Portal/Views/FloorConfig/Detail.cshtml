@@ -1,0 +1,182 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.WebIndex
+@model Myzj.OPC.UI.Model.FloorConfig.FloorConfigDetail
+@{
+    var isEdit = (Model != null && Model.SysNo > 0);
+    var actionName = isEdit ? "Update" : "Add";
+
+    var floorItem = (IEnumerable<Myzj.OPC.UI.Model.FloorConfig.FloorItemsConfigDetail>)ViewBag.ItemModel;
+    
+}
+
+@if (isEdit)
+{
+    <h2>修改楼层配置</h2>
+}
+else
+{
+    <h2>新增楼层配置</h2>
+}
+
+<div id="tableContainer">
+    <form id="detailForm">
+        <input type="hidden" id="IntSysNo" value="@Model.SysNo"/>
+
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>楼层类型:</td>
+                    <td>
+                        <select id="FloorType" name="FloorType">
+                            @{
+                                var check = "";
+                            }
+                            @if (floorItem != null)
+                            {
+                                foreach (var item in floorItem)
+                                {
+                                    if (item.SysNo.ToString().Equals(Model.FloorType))
+                                    {
+                                        check = "selected='selected'";
+                                    }
+                                    else
+                                    {
+                                        check = "";
+                                    }
+                                <option @check value="@item.SysNo">@item.FloorTypeName</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>楼层名称(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.FloorName)
+                    </td>
+                </tr>
+                <tr>
+                    <td>楼层关键字(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.FloorKeyName)
+                    </td>
+                </tr>
+                <tr>
+                    <td>楼层关键值(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.FloorKeyValue)
+                    </td>
+                </tr>
+                <tr>
+                    <td>楼层链接(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.FloorLink)
+                    </td>
+                </tr>
+                <tr>
+                    <td>开始时间:</td>
+                    <td>
+                        <input type="text" id="ExpirationFrom" name="ExpirationFrom" value="@Model.ExpirationFrom" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" style="width: 60%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>结束时间:</td>
+                    <td>@Html.TextBoxFor(m => m.ExpirationEnd)</td>
+                </tr>
+                <tr>
+                    <td>楼层排序:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.Sequence)
+                    </td>
+                </tr>
+                <tr>
+                    <td>楼层状态:</td>
+                    <td>
+                        @{
+                            if (Model.Status == true)
+                            {
+                            <select id="Status" name="Status">
+                                <option value="false">否</option>
+                                <option value="true" selected="selected">是</option>
+                            </select>
+                            }
+                            else
+                            {
+                            <select id="Status" name="Status">
+                                <option value="false" selected="selected">否</option>
+                                <option value="true">是</option>
+                            </select>
+                            }
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>楼层描述:</td>
+                    <td>
+                        @Html.TextAreaFor(m => m.FloorDiscription)
+                    </td>
+                </tr>
+        </table>
+    </form>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="保存" id="btnSave" />
+    <input type="button" value="取消" id="btnDel" onclick="window.location.href = window.close()" />
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $("#btnSave").click(function () {
+            var model = {};
+            model.SysNo = $("#IntSysNo").val();
+            model.FloorType = $("#FloorType").val();
+            model.FloorName = $("#FloorName").val();
+            model.FloorKeyName = $("#FloorKeyName").val();
+            model.FloorKeyValue = $("#FloorKeyValue").val();
+            model.FloorLink = $("#FloorLink").val();
+            model.ExpirationFrom = $("#ExpirationFrom").val();
+            model.ExpirationEnd = $("#ExpirationEnd").val();
+            model.Sequence = $("#Sequence").val();
+            model.Status = $("#Status").val();
+            model.FloorDiscription = $("#FloorDiscription").val();
+
+            if (model.FloorName == null || model.FloorName == "") {
+                alert("请输入楼层名称！");
+                return false;
+            }
+            if (model.FloorKeyName == null || model.FloorKeyName == "") {
+                alert("请输入楼层关键字！");
+                return false;
+            }
+            if (model.FloorKeyValue == null || model.FloorKeyValue == "") {
+                alert("请输入楼层关键值！");
+                return false;
+            }
+            if (model.FloorLink == null || model.FloorLink == "") {
+                alert("请输入楼层链接！");
+                return false;
+            }
+            $.ajax({
+                url: '@Url.Action("Save", "FloorConfig")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("保存成功！");
+                        reloadPage();
+                        // window.top.location.replace("/FloorConfig/Index");
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+
+
+

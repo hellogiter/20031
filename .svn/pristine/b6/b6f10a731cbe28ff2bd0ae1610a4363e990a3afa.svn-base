@@ -1,0 +1,61 @@
+﻿@using Myzj.OPC.UI.Portal.Models
+@using Myzj.OPC.UI.Model.KeyWord
+@model IEnumerable<Myzj.OPC.UI.Model.KeyWord.SortProductDetail>
+
+@if (Model != null && Model.Any())
+{
+    <table class="resultTable" style="margin-top: 30px">
+    <thead>
+    <tr>
+        <th><input type="checkbox" id="CheckAll"></th>
+        <th>ID</th><th>操作</th>
+        <th>匹配类型</th>
+        <th>匹配数据</th>
+        <th>状态</th>
+        <th>有效期状态</th>
+        <th>开始时间</th>
+        <th>结束时间</th>
+        <th>最后更新时间</th>
+    </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+            var keywordDic = new Dictionary<int, string>()
+                    {
+                    {1,"搜索关键字"},
+                    {2,"分类id"},
+                    {3,"品牌id"}
+                    }; 
+            var keywordCode = keywordDic[(int)item.KeyWordType]; 
+            <tr>
+        <td><input type="checkbox"  name="checkitem" value="@item.Id"/></td>
+        <td>@item.Id</td>
+        <td><a style="color: #191970" target="_blank" href="@Url.Action("EditDetail", "SortProduct", new {id = item.Id})">编辑</a>&nbsp;|&nbsp;<a style="color: #191970" href="javascript:;" id="@item.Id" class="setIsDel">删除</a></td>
+                <td>@keywordCode</td>
+        <td>@item.KeyWord</td>
+        <td>@(item.Enable==true?"启用":"禁用")</td>
+                <td> 
+                    @if (item.StartTime > DateTime.Now)
+                    {
+                        <span>未开始</span>
+                    }
+                    @if (item.StartTime < DateTime.Now && DateTime.Now < item.EndTime)
+                    {
+                        <span>可使用</span>
+                    }
+                    @if (item.EndTime < DateTime.Now)
+                    {
+                        <span>已过期</span>
+                    }
+                </td>
+        <td>@item.StartTime</td>
+        <td>@item.EndTime</td>
+        <td>@item.LastUpdateTime</td>
+    </tr> 
+        }
+         
+    </tbody>
+</table>
+}

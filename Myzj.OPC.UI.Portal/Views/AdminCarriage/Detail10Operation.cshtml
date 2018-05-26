@@ -1,0 +1,176 @@
+﻿@{
+    Layout = null;
+}
+@model Myzj.OPC.UI.Model.AdminCarriage.BuyAppointGoodsParam
+<div id="OperationDiv" style="border: solid 0px black; padding:10px;">
+  <table class="resultTable">
+        <tr>
+            <td>平台</td>
+            <td style="text-align:left">
+                <input id="cb1" type="checkbox" value="1" @Model.Platforms.Contains("1").ToString().Replace("True","checked='checked'").Replace("False","") /><label>PC网站</label>
+                <input id="cb2" type="checkbox" value="2" @Model.Platforms.Contains("2").ToString().Replace("True","checked='checked'").Replace("False","") /><label>Web网站</label>
+                <input id="cb3" type="checkbox" value="4" @Model.Platforms.Contains("4").ToString().Replace("True","checked='checked'").Replace("False","")/><label>安卓APP</label>
+                <input id="cb4" type="checkbox" value="5" @Model.Platforms.Contains("5").ToString().Replace("True","checked='checked'").Replace("False","")/><label>苹果APP</label>
+                <input id="cb5" type="checkbox" value="8" @Model.Platforms.Contains("8").ToString().Replace("True","checked='checked'").Replace("False","")/><label>iPad</label>
+            </td>
+        </tr>
+        <tr>
+            <td>商品ID</td>
+            <td style="text-align:left">
+                <textarea id="taProductId" cols="100" rows="5">@string.Join(",", @Model.GoodsIds.ToArray())</textarea></td>
+        </tr>
+        <tr>
+            <td>开始时间</td>
+            <td style="text-align:left">
+                <input value="@Model.StartTime" id="txtDateFrom" type="text" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" /></td>
+        </tr>
+         <tr>
+            <td>结束时间</td>
+            <td style="text-align:left"><input value="@Model.EndTime" id="txtDateEnd" type="text" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" /></td>
+        </tr>
+         <tr>
+            <td>邮费</td>
+            <td style="text-align:left"><input value="@Model.FullCarriage" id="txtCarriage" type="text" /></td>
+        </tr>
+         <tr>
+            <td>优先级</td>
+            <td style="text-align:left"><input value="@Model.Priority" id="txtPriority" type="text" /></td>
+        </tr>
+        <tr>
+           <td colspan="2" style="text-align:center;"><input id="btnSave" type="submit" value="保存" class="btn" /> 
+               <span id="errormesg" style="color:red;"></span>
+           </td> 
+        </tr>
+    </table>
+    <input id="Hidden1" type="hidden" value="@ViewBag.rowindex" />
+    </div>
+
+<script src="../../Scripts/jquery-1.10.2.js"></script>
+<script>
+    $(document).ready(function () {
+        if ($("#Hidden1").val() == "-1") {
+            $("#btnSave").val("新增保存");
+        }
+        else {
+            $("#btnSave").val("修改保存");
+        }
+    });
+
+    $("#btnSave").click(function () {
+        var flag = false;
+        
+        $("[type='checkbox']").each(function (index, element) {
+            
+            if (element.checked) {
+                flag = true;
+            }
+        });
+
+        if (flag == false) {
+            return;
+        }
+
+        if ($("#taProductId").val().trim()) {
+        }
+        else {
+            return;
+        }
+
+        var flag2 = true;
+        $("[type='text']").each(function (index, element) {
+            if ($(element).val().trim()) {
+            }
+            else {
+                flag2 = false;
+            }
+        });
+
+        if (!flag2) {
+            return;
+        }
+
+        var platformArr = new Array();
+        $("[type='checkbox']").each(function (index, element) {
+
+            if (element.checked) {
+                
+                platformArr.push(parseInt($(element).attr("value")));
+                
+            }
+        });
+       
+        $("#Show").html("...loading...");
+        var data = {};
+        data.id = $("#Hidden1").val();
+        data.platform = platformArr.toString();
+        data.productids = $("#taProductId").val().trim();
+        data.dateFrom = $("#txtDateFrom").val().trim();
+        data.dateEnd = $("#txtDateEnd").val().trim();
+        data.priority = parseInt($("#txtPriority").val().trim());
+        data.carriage = parseInt($("#txtCarriage").val().trim());
+       
+        if (parseInt($("#Hidden1").val()) >= 0) {
+          
+            $.ajax({
+                url:  '/AdminCarriage/UpdatePlug10Configure',
+                type: 'POST',
+                dataType: 'html',
+                data: data,
+                success: function (result) {
+                    $("#errormesg").html("修改成功");
+                  
+                    $("#OperationDiv").hide(4000);
+                    $.ajax({
+                        url:  '/AdminCarriage/Detail10Show',
+                        type: 'GET',
+                        dataType: 'html',
+                        success: function (result) {
+
+                            if (result && $.trim(result).length > 0) {
+                                $("#Show").html(result);
+
+                                $(".xiugai").each(function (index, element) {
+                                    if (index == $("#Hidden1").val()) {
+                                        $(element).parent().parent().css("color", "green");
+                                       
+                                    }                                  
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+
+            
+               
+            
+
+        }
+        else {
+
+            $.ajax({
+                url: '/AdminCarriage/AddPlug10Configure',
+                type: 'POST',
+                dataType: 'html',
+                data: data,
+                success: function (result) {
+                    $("#errormesg").html("新增成功");
+
+                    $("#OperationDiv").hide(4000);
+                    $.ajax({
+                        url: '/AdminCarriage/Detail10Show',
+                        type: 'GET',
+                        dataType: 'html',
+                        success: function (result) {
+
+                            if (result && $.trim(result).length > 0) {
+                                $("#Show").html(result);
+                                $(".xiugai").last().parent().parent().css("color", "green");
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    });
+</script>

@@ -1,0 +1,115 @@
+﻿@{
+    ViewBag.Title = "RuleIndex";
+}
+@using Myzj.OPC.UI.Model.BaseCouponConfig;
+@using Myzj.OPC.UI.ServiceClient
+@model List<AuditRuleDetail>
+<h2>审核规则管理</h2>
+<style>
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+</style>
+
+
+
+<div class="rowButton">
+    @*<input type="button" value="创建" id="btnAdd" onclick="window.location.href = '/CouponAuditRole/EditRule';" />*@
+    <a  style="color: #191970" href="@Url.Action("UserRoleIndex", "CouponAuditRole")" >用户角色列表</a>
+</div>
+
+
+@if (Model != null && Model.Any())
+{
+    var listRole = BaseCouponConfigClient.Instance.GetAllRole();
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>规则名称</th>
+                    <th>规则</th>
+                    <th>备注</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr class="gl-title">
+                        <td>@item.AuditLevelRuleName</td>
+                        <td>
+                            @{
+                               var list = BaseCouponConfigClient.Instance.GetRule(item.AuditLevelRule);
+                               var str ="";
+
+                              
+                            
+                            }
+                            @if (list != null && list.ParamRule!=null && list.ParamRule.Any())
+                            {
+                                try
+                                {
+                                    str = list.ParamRule.Aggregate(str, (current, param) => current + ("<div style='line-height: 20px;'>开始金额：" + param.StartMoeny + "，结束金额：" + param.EndMoeny + ",审核等级：" +
+                                 listRole.First(m => m.Key == param.AuditLevel).Value + "</div>"));
+                              
+                                }
+                                catch (Exception ex)
+                                {
+
+                                    str = "规则错误，请编辑检查规则等级";
+                                }
+                             
+                            }
+                            @(new HtmlString(str))
+                           </td>
+                        <td>@item.Remarks</td>
+                        <td>
+                             <a  style="color: #191970" href="@Url.Action("EditRule", "CouponAuditRole", new { SysNo = item.SysNo })" >编辑</a>
+                            @* <a  style="color: #191970" href="javascript:void(0);" onclick="deleteRule(@item.SysNo,this);" >删除规则</a>*@
+                            @if (item.IsDelete == true)
+                            {
+                                <a  style="color: #191970" href="javascript:void(0);" onclick=" deleteRule(@item.SysNo, this,0); " >启用</a><font color="red"> 已禁用</font>
+                            }
+                            else
+                            {
+                                 <a  style="color: #191970" href="javascript:void(0);" onclick=" deleteRule(@item.SysNo, this,1); " >禁用</a><font color="#191970"> 已启用</font>
+                            }
+                        </td>
+                    </tr>
+                }
+               
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+}
+
+<script type="text/javascript">
+    function deleteRule(id,thisrow,isDelete) {
+
+        if (confirm("确定 ?")) {
+            $.ajax({
+                url: '@Url.Action("DeleteRule", "CouponAuditRole")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: "{\"sysNo\":" + id + ",\"isDelete\":" + isDelete + "}",
+                success: function (result) {
+                    alert(result.DoResult);
+                    if (result.DoFlag) {
+                    //    //  $(thisrow).parent().parent().remove();
+                        window.location.href = '/CouponAuditRole/RuleIndex';
+                    }
+                }
+            });
+        }
+    }
+</script>

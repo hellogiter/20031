@@ -1,0 +1,137 @@
+﻿@{
+    Layout = null;
+}
+
+@model Myzj.OPC.UI.Model.AdminCarriage.SeaWashesBuyCountParam  
+<div id="OperationDiv" style="border: solid 0px black; padding:10px;">
+  <table class="resultTable">
+        <tr>
+             <td>供应商ID</td>
+             <td style="text-align:left"><input value="@string.Join(",",@Model.Suppliers)" id="txtSuppliers" type="text" style="width:500px;"/></td>
+        </tr>
+      <tr>
+             <td>购买数量</td>
+             <td style="text-align:left"><input value="@Model.BuyCount" id="txtBuyCount" type="text" style="width:500px;"/></td>
+        </tr>
+         <tr>
+             <td>全邮费</td>
+             <td style="text-align:left"><input value="@Model.FullCarriage" id="txtFullCarriage" type="text" style="width:500px;"/></td>
+        </tr>
+      <tr>
+             <td>不全邮费</td>
+             <td style="text-align:left"><input value="@Model.NoFullCarriage" id="txtNoFullCarriage" type="text" style="width:500px;"/></td>
+        </tr>
+       <tr>
+            <td>优先级</td>
+            <td style="text-align:left"><input value="@Model.Priority" id="txtPriority" type="text" /></td>
+        </tr>
+      <tr>
+           <td colspan="2" style="text-align:center;"><input id="btnSave" type="submit" value="保存" class="btn" /> 
+               <span id="errormesg" style="color:red;"></span>
+           </td> 
+        </tr>
+      </table> 
+     <input id="Hidden1" type="hidden" value="@ViewBag.rowindex" />
+    </div> 
+<script src="../../Scripts/jquery-1.10.2.js"></script>
+<script>
+    $(document).ready(function () {
+        if ($("#Hidden1").val() == "-1") {
+            $("#btnSave").val("新增保存");          
+        }
+        else {
+            $("#btnSave").val("修改保存");
+        }
+    });
+    
+    $("#btnSave").click(function () {
+
+        var flag = true;
+
+        $("[type='text']").each(function (index, element) {
+            if (!$(element).val().trim()) {
+                flag = false;
+            }
+        });
+
+        if (!flag) {
+            return;
+        }
+       
+
+        
+
+     
+        var data = {};
+       
+        data.id = $("#Hidden1").val();
+       
+        data.Suppliers = $("#txtSuppliers").val().trim();
+     
+        data.BuyCount = $("#txtBuyCount").val().trim();
+        data.FullCarriage = $("#txtFullCarriage").val().trim();
+        data.NoFullCarriage = $("#txtNoFullCarriage").val().trim();
+     
+        data.priority = $("#txtPriority").val().trim();
+      
+        
+      
+        if (parseInt($("#Hidden1").val()) >= 0) {
+            $.ajax({
+                url: '/AdminCarriage/UpdatePlug6Configure',
+                type: 'POST',
+                dataType: 'html',
+                data: data,
+                success: function (result) {
+                    $("#errormesg").html("保存成功");
+
+                    $("#OperationDiv").hide(4000);
+                    $.ajax({
+                        url: '/AdminCarriage/Detail6Show',
+                        type: 'POST',
+                        dataType: 'html',
+                        success: function (result) {
+
+                            if (result && $.trim(result).length > 0) {
+                                $("#Show").html(result);
+                                $(".xiugai").each(function (index, element) {
+                                    if (index == $("#Hidden1").val()) {
+                                        $(element).parent().parent().css("color", "green");
+
+                                    }
+
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        else {
+            $.ajax({
+                url: '/AdminCarriage/AddPlug6Configure',
+                type: 'POST',
+                dataType: 'html',
+                data: data,
+                success: function (result) {
+                    $("#errormesg").html("新增成功");
+
+                    $("#OperationDiv").hide(4000);
+                    $.ajax({
+                        url: '/AdminCarriage/Detail6Show',
+                        type: 'POST',
+                        dataType: 'html',
+                        success: function (result) {
+
+                            if (result && $.trim(result).length > 0) {
+                                $("#Show").html(result);
+                                $(".xiugai").last().parent().parent().css("color", "green");
+
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    });
+</script>

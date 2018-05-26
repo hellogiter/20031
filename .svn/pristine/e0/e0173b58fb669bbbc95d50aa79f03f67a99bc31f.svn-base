@@ -1,0 +1,46 @@
+﻿@{
+    ViewBag.Title = "InterNationalItem";
+}
+
+@using Myzj.OPC.UI.Model.Base
+@model List<Myzj.OPC.UI.Model.ExpressModel.InterNationalModel>
+<style>
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+</style>
+@if (Model != null && Model.Any())
+{
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>SysNo</th>
+                    <th>订单号</th>
+                    <th>时间</th>
+                    <th>物流内容</th>
+                    <th>状态</th>
+                    <th>创建时间</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model)
+                {
+                    <tr class="gl-title">
+                        <td>@item.SysNo</td>
+                        <td>@item.OrderCode</td>
+                        <td>@item.LogisticsTime</td>
+                        <td>@item.Content</td>
+                        <td>@item.Status</td>
+                        <td>@item.RowCreateDate</td>
+                    </tr>
+                }
+
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+}

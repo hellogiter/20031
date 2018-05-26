@@ -1,0 +1,167 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@{
+    ViewBag.Title = "CompanyIndex";
+}
+@model Myzj.OPC.UI.Model.ExpressModel.ExpressAcessConfigRefer
+<h2></h2>
+<style>
+    .input-validation-error {
+        border: 1px solid #c0c0c0;
+        background-color: white;
+    }
+
+    .showDetailTable tbody tr.tk-guanli td {
+        width: 15%;
+    }
+
+        .showDetailTable tbody tr.tk-guanli td.tk-name {
+            width: 5%;
+            text-align: center;
+        }
+
+        .showDetailTable tbody tr.tk-guanli td input {
+            text-align: left;
+            width: 85%;
+        }
+
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+</style>
+@using (Html.BeginForm())
+{
+    <style>
+        .gl-title {
+            padding: 10px 0;
+            height: 36px;
+        }
+    </style>
+
+    if (Model.List != null && Model.List.Any())
+    {
+        <div class="resultDiv">
+            <table class="resultTable" id="calcTotalAmount">
+                <thead>
+                    <tr class="gl-title">
+                        @*<th>SysNo</th>*@
+                        <th>操作</th>
+                        <th>配送商ID</th>
+                        <th>配送商名称</th>
+                        <th>天数配置</th>
+                        <th>间隔时间(小时/订阅次)</th>
+                        <th>创建日期</th>
+                   
+                    </tr>
+                </thead>
+                <tbody>
+
+
+                    @foreach (var item in Model.List)
+                    {
+                        <tr class="gl-title">
+                            @*  <td>@item.SysNo</td>*@
+                            <td>
+                                <a style="color: #191970" href="javascript:;" onclick="del(@item.SysNo)">删除</a>
+                            </td>
+                            <td>@item.LogiscticId</td>
+                            <td>@item.LogiscticCompanyName</td>
+                            <td>@item.DayInterval</td>
+                            <td>@item.Frequence</td>
+                            <td>@item.RowCreateDate</td>
+
+                       
+
+                        </tr>
+                    }
+
+                </tbody>
+                <tfoot>
+                </tfoot>
+            </table>
+        </div>
+    
+    
+        <div id="tableContainer">
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>配送商ID</td>
+                    <td colspan="3">
+                        <input id="txtLogiscticId" type="text" placeholder="必填" style="width: 200px;" />
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td>天数配置</td>
+                    <td colspan="3">
+                        <input id="txtDayInterval" type="text" placeholder="必填" style="width: 200px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>间隔小时</td>
+                    <td colspan="3">
+                        <input id="txtFrequence" type="text" placeholder="必填" style="width: 200px;" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="rowButton">
+            <input type="button" value="添加" id="btnSave" />
+        </div>
+    </div>
+    }
+
+    <script type="text/javascript">
+
+        function del(sysNo) {
+
+            if (confirm("你确定删除吗？")) {
+
+                $.ajax({
+                    url: '../Exec/DelExpressAccessConfig?SysNo=' + sysNo,
+                    type: 'get',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    success: function (result) {
+                        if (result.DoFlag) {
+                            alert("已删除！");
+                            window.location.href = window.location.href;
+                        } else {
+                            alert(result.DoResult);
+                        }
+                    }
+                });
+            }
+        }
+        
+        $("#btnSave").click(function () {
+            var model = {};
+            model.LogiscticId = $.trim($("#txtLogiscticId").val());
+            model.DayInterval = $.trim($("#txtDayInterval").val());
+            model.Frequence = $.trim($("#txtFrequence").val());
+            
+        
+            if (confirm("你确定保存吗？")) {
+                $.ajax({
+                    url: '@Url.Action("AddExpressAccessConfig", "Exec")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("添加成功！");
+                        window.location.href = window.location.href;
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        }
+        });
+
+    </script>
+
+}

@@ -1,0 +1,191 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.WebIndex
+@model Myzj.OPC.UI.Model.FloorConfig.FloorLabelDetail
+@{
+    var isEdit = (Model != null && Model.SysNo > 0);
+
+    var floorItem = (IEnumerable<Myzj.OPC.UI.Model.FloorConfig.FloorItemsConfigDetail>)ViewBag.ItemModel;
+    
+}
+
+@if (isEdit)
+{
+    <h2>修改楼层配置-》@ViewBag.StrName-》@ViewBag.Name</h2>
+}
+else
+{
+    <h2>新增楼层配置-》@ViewBag.StrName</h2>
+}
+
+<div id="tableContainer">
+    <form id="detailForm">
+        <input type="hidden" id="IntSysNo" value="@Model.SysNo"/>
+
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <input type="hidden" value="@ViewBag.FloorId" id="FloorDetailID" name="FloorDetailID"/>
+                <tr>
+                    <td>楼层类型:</td>
+                    <td>
+                        <select id="FloorType" name="FloorType">
+                            @{
+                                var check = "";
+                            }
+                            @if (floorItem != null)
+                            {
+                                foreach (var item in floorItem)
+                                {
+                                    if (item.SysNo.Equals(Model.FloorType))
+                                    {
+                                        check = "selected='selected'";
+                                    }
+                                    else
+                                    {
+                                        check = "";
+                                    }
+                                <option @check value="@item.SysNo">@item.FloorTypeName</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>商品Id(*):</td>
+                    @if (Model.SysNo > 0)
+                    {
+                        <td>
+                            <input type="text" readonly="readonly" value="@Model.ProductID" id="ProductID"/>
+                            <label class="txtLable"></label>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            @Html.TextBoxFor(m => m.ProductID)
+                            <input type="button" value="检测" style="width: 50px;" class="checkProductId" />
+                            <label class="txtLable"></label>
+                            <label class="HidLable"></label>
+                        </td>
+                    }
+                </tr>
+                <tr>
+                    <td>商品链接(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.ProductLink)
+                    </td>
+                </tr>
+                <tr>
+                    <td>图片路径(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.ProductPicture)
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>开始时间:</td>
+                    <td>
+                        <input type="text" id="ExpirationFrom" name="ExpirationFrom" value="@Model.ExpirationFrom" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" style="width: 60%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>结束时间:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.ExpirationEnd)
+                    </td>
+                </tr>
+                <tr>
+                    <td>楼层排序:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.Sequence)
+                    </td>
+                </tr>
+                <tr>
+                    <td>描述:</td>
+                    <td>
+                        @Html.TextAreaFor(m => m.ProductDiscription)
+                    </td>
+                </tr>
+        </table>
+    </form>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="保存" id="btnSave" />
+    <input type="button" value="取消" id="btnDel" onclick="window.close()" />
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        //保存
+        $("#btnSave").click(function () {
+            var model = {};
+            model.SysNO = $("#IntSysNo").val();
+            model.FloorDetailID = $("#FloorDetailID").val();
+            model.FloorType = $("#FloorType").val();
+            model.ProductID = $("#ProductID").val();
+            model.ProductLink = $("#ProductLink").val();
+            model.ProductPicture = $("#ProductPicture").val();
+            model.ExpirationFrom = $("#ExpirationFrom").val();
+            model.ExpirationEnd = $("#ExpirationEnd").val();
+            model.Sequence = $("#Sequence").val();
+            model.Status = true;
+            model.ProductDiscription = $("#ProductDiscription").val();
+            var lable = $(".txtLable").text();
+            if (model.ProductID == null || model.ProductID == "" || model.ProductID <= 0) {
+                var result = "<font style='color:red'>请输入商品编号且大于0</font>";
+                $(".HidLable").html(result);
+                return false;
+            }
+            if (model.SysNO == "") {
+                if (lable == "" || lable == null) {
+                    alert("请检测商品ID是否存在商品表中... ...");
+                    return false;
+                }
+            }
+            if (model.ProductLink == "" || model.ProductLink == null) {
+                alert("请输入商品链接!");
+                return false;
+            } else if (model.ProductPicture == null || model.ProductPicture == "") {
+                alert("请输入图片路径!");
+                return false;
+            }
+            $.ajax({
+                url: '@Url.Action("SaveFloorLabel", "FloorConfig")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("保存成功！");
+                        reloadPage();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+        //检测商品Id是否存在商品表中
+        $(".checkProductId").click(function () {
+            var pid = $("#ProductID").val();
+            if (pid == null || pid == "" || pid <= 0) {
+                var result = "<font style='color:red'>请输入商品编号且大于0</font>";
+                $(".txtLable").html(result);
+                return false;
+            }
+
+            $.ajax({
+                url: "/FloorConfig/CheckPdtInfoById?id=" + pid,
+                type: "Post",
+                success: function (result) {
+                    if (result.DoFlag) {
+                        var result = "<font>商品Id验证通过</font>";
+                        $(".txtLable").html(result);
+                    } else {
+                        $(".HidLable").html(result.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>

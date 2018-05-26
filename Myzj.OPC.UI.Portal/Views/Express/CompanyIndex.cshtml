@@ -1,0 +1,70 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@{
+    ViewBag.Title = "CompanyIndex";
+}
+@model Myzj.OPC.UI.Model.ExpressModel.ExpressCompanyRefer
+<h2>配送商管理</h2>
+<style>
+    .input-validation-error {
+        border: 1px solid #c0c0c0;
+        background-color: white;
+    }
+
+    .showDetailTable tbody tr.tk-guanli td {
+        width: 15%;
+    }
+
+        .showDetailTable tbody tr.tk-guanli td.tk-name {
+            width: 5%;
+            text-align: center;
+        }
+
+        .showDetailTable tbody tr.tk-guanli td input {
+            text-align: left;
+            width: 85%;
+        }
+
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+</style>
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+        <tbody>
+            <tr class="tk-guanli">
+                <td class="tk-name">配送商ID:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.Search.LogiscticId)
+                </td>
+                <td class="tk-name">配送商名称:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.Search.LogiscticCompanyName)
+                </td>
+
+                <td class="tk-name">是否常用(商城):</td>
+                <td>
+                    @Html.DropDownListFor(m => m.Search.OfenFlag, new KvSelectList(typeof(AppEnum.ExpresCompanyOfenEnum).GetEnumList()), true)
+                </td>
+                <td class="tk-name">对接方式:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.Search.SetAccessMode, new KvSelectList(typeof(AppEnum.ExpressCompanyModeEnum).GetEnumList()), true)
+                </td>
+                <td class="tk-name">是否有效:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.Search.IsDel, new KvSelectList(typeof(AppEnum.ExpressCompanyEnableEnum).GetEnumList()), true)
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <div class="rowButton">
+        <input type="submit" value="查询" id="btnSearch" />
+        <input type="button" value="添加" id="btnAdd" onclick="window.open('/Express/CompanyAdd')" />
+        <input type="button" value="设置自对接频率"  onclick="window.open('/Express/CompanySetFreqIndex')"  />
+    </div>
+    @Html.Partial("CompanyItem", @Model.List)
+    @Html.Partial("Pager", @Model)
+}

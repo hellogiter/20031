@@ -1,0 +1,227 @@
+﻿@using MYZJ.Authorization.ClientHelper
+@using MYZJ.Authorization.Dto
+@using MYZJ.Framework.Service
+@using MYZJ.Framework.ServiceClient.Web
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewBag.Title</title>
+    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/Pager.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/Dialog/default/zebra_dialog.css")" rel="stylesheet" />
+    <script src="@Url.Content("~/Scripts/jquery-1.10.2.js")" type="text/javascript"></script>
+    <link href="@Url.Content("~/Content/Frame/style.css")" type="text/css" rel="stylesheet" />
+    <script src="@Url.Content("~/Scripts/my97/WdatePicker.js")"></script>
+    <script src="@Url.Content("~/Scripts/pager.js")"></script>
+    <script src="@Url.Content("~/Scripts/Dialog/zebra_dialog.js")"></script>
+    <script src="@Url.Content("~/Scripts/ajaxfileupload.js")"></script>
+    <script src="@Url.Content("~/Scripts/global.js")"></script>
+
+    @RenderSection("Header", false)
+</head>
+@{
+    IRestClient _client = new JsonServiceClient(Config.AuthorizationServiceUri);
+    var httpCookie = HttpContext.Current.Request.Cookies["session"];
+    string url = string.Format("/Session?SessionId={0}&ApplicationSysNo={1}&Includes={2}", httpCookie.Value,
+                               Config.ApplicationSysNo,
+                               ((int)(IncludeFlag.Page | IncludeFlag.Permission | IncludeFlag.Menu))
+                                   .ToString());
+    SessionResponse ssoRespponse = null;
+    ssoRespponse = _client.Get<SessionResponse>(url);
+}
+<body>
+    <div class="header">
+        <div class="header03">
+            <div>
+                当前时间：
+                <div id="currentTime" style="font-size: 15px">
+                    时间加载中......
+                </div>
+                <div id="currentWeek" style="font-size: 15px">
+                    星期加载中......
+                </div>
+            </div>
+        </div>
+        <div class="header01"></div>
+        <div class="header02">母婴之家网站后台管理系统</div>
+    </div>
+
+    <div class="left" id="LeftBox">
+        <div class="left01">
+            <div class="left01_right"></div>
+            <div class="left01_left"></div>
+            <div class="left01_c">欢迎：@ssoRespponse.UserName</div>
+        </div>
+
+        @{
+            if (ssoRespponse.Pages != null)
+            {
+                foreach (var page in ssoRespponse.Pages)
+                {
+                    if (page.ParentSysNo == null && page.PermissionSysNo != null)
+                    {
+            <div class="left02down">
+                <div class="left02down01">
+                    <a href="@page.Url">
+                        @page.Name</a>
+                </div>
+            </div>
+                    }
+                }
+            }
+            <div class="left02down">
+                <div class="left02down01">
+                    <a href="/RentManager/ActivityIndex">租赁活动管理</a>
+                </div>
+            </div>
+            <div class="left02down">
+                <div class="left02down01">
+                    <a href="/RentManager/RentGoodsIndex">租赁商品管理</a>
+                </div>
+            </div>
+            <div class="left02down">
+                <div class="left02down01">
+                    <a href="/RentManager/CartSplitIndex">购物车拆分商品管理</a>
+                </div>
+            </div>
+            <div class="left02down">
+                <div class="left02down01">
+                    <a href="/RentManager/AgreementIndex">租赁协议管理</a>
+                </div>
+            </div>
+            <div class="left02down">
+                <div class="left02down01">
+                    <a href="/RentManager/StatisticsIndex">租赁数据统计</a>
+                </div>
+            </div>
+           
+            <div class="left02down">
+                <div class="left02down01">
+                    <a href="/DiscountCodeManager/Index">优惠码活动管理</a>
+                </div>
+            </div>
+            <div class="left02down">
+                <div class="left02down01">
+                    <a href="/DiscountCodeManager/QueryDiscountCodeBatch">查询生成优惠码批次</a>
+                </div>
+            </div>
+            <div class="left02down">
+                <div class="left02down01">
+                   <a href="/DiscountCodeManager/QueryDiscountCode">查询优惠码明细</a>
+                </div>
+            </div>
+           <div class="left02down">
+                <div class="left02down01">
+                   <a href="/DiscountCodeManager/QueryDiscountCodeUser">查询优惠码</a>
+                </div>
+            </div>
+            <div class="left02down">
+                <div class="left02down01">
+                    <a href="/CouponAuditRole/Index">角色管理</a>
+                </div>
+            </div>
+            
+            <div class="left02down">
+                <div class="left02down01">
+                    <a href="/CouponLog/Index">优惠券操作记录</a>
+                </div>
+            </div>
+            <div class="left02down">
+                <div class="left02down01">
+                    <a href="/CouponManage/Index">优惠券管理</a>
+                </div>
+            </div>
+            <div class="left02down">
+                <div class="left02down01">
+                    <a href="/CouponAudit/Index">优惠券审核</a>
+                </div>
+            </div>
+            <div class="left02down">
+                <div class="left02down01">
+                    <a href="/CouponSendManager/Index">优惠券发送</a>
+                </div>
+            </div>
+            <div class="left02down">
+                <div class="left02down01">
+                    <a href="/CouponSendManager/SendRecord">优惠券发送记录</a>
+                </div>
+            </div>
+            
+            <div class="left02down">
+                <div class="left02down01">
+                    <a href="/BargainGroup/GroupActivityIndex">砍价团活动管理</a>
+                </div>
+            </div> 
+            <div class="left02down">
+                <div class="left02down01">
+                    <a href="/AppCouponActivity/Index">新人app抢券活动管理</a>
+                </div>
+            </div>@*   
+
+             <div class="left02down">
+                <div class="left02down01">
+                    <a href="/BargainGroup?GroupActivitySysNo=2">砍价团商品管理</a>
+                </div>
+            </div>
+<<<<<<< .working
+            <div class="left02down">
+||||||| .merge-left.r204
+            @*<div class="left02down">
+=======
+@*<div class="left02down">
+>>>>>>> .merge-right.r205
+                <div class="left02down01">
+                    <a href="/BargainGroup/GroupRecordIndex?groupActivitySysNo=2">参团记录列表</a>
+                </div>
+            </div>*@
+            if (ssoRespponse.Menus != null)
+            {
+                foreach (var menu in ssoRespponse.Menus)
+                {
+            <div class="left02">
+                <div class="left02top">
+                    <div class="left02top_right"></div>
+                    <div class="left02top_left"></div>
+                    <div class="left02top_c">
+                        <a onclick="show_menuB(this)" href="javascript:;">
+                            @menu.Name</a>
+                    </div>
+                </div>
+                @if (ssoRespponse.Pages != null)
+                {
+                    foreach (var page in ssoRespponse.Pages)
+                    {
+                        if (page.ParentSysNo == menu.SysNo && page.PermissionSysNo != null)
+                        {
+                    <div class="left02down">
+                        <div class="left02down01">
+                            <a href="@page.Url">
+                                @page.Name</a>
+                        </div>
+                    </div>
+                        }
+                    }
+                }
+            </div>
+                }
+            }
+        }
+
+        <div class="left01">
+            <div class="left03_right"></div>
+            <div class="left01_left"></div>
+            <div class="left03_c" onclick="logOut()">安全退出</div>
+        </div>
+    </div>
+
+    <div class="rrcc" id="RightBox">
+        <div class="center" id="Mobile" onclick="show_menuC()"></div>
+        <div class="right" id="li010">
+            <div class="right01">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

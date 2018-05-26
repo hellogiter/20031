@@ -1,0 +1,98 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model List<Myzj.OPC.UI.Model.ExpressModel.ExpressLogModel>
+<style>
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+
+    table {
+        table-layout: fixed;
+        word-wrap: break-word;
+    }
+
+    div {
+        word-wrap: break-word;
+    }
+</style>
+
+
+@if (Model != null && Model.Any())
+{
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>SysNo</th>
+                    <th>订单号</th>
+                   @* <th>日志类型</th>*@
+                    <th>日志业务类型</th>
+                    <th>日志信息</th>
+                    <th>记录时间</th>
+                    <th>订单状态</th>
+                  @*  <th>商城类型</th>*@
+                    <th>运单号</th>
+                    <th>配送商ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+    var logTypeArr = typeof(AppEnum.ExpressLogType).GetEnumList();
+    var businessTypeArr = typeof(AppEnum.ExpressBusinessType).GetEnumList();
+    var mallTypeArr = typeof(AppEnum.ExpressOrderStatusMallType).GetEnumList();
+    var orderStatusArr = typeof(AppEnum.ExpressOrderStatusType).GetEnumList();
+                }
+
+                @foreach (var item in Model)
+                {
+                    <tr class="gl-title">
+                        <td>@item.SysNo</td>
+                        <td>@item.OrderCode</td>
+                      @*  @if (logTypeArr.Any(c => c.Key == (item.LogType ?? 0)))
+                        {
+                            <td>@logTypeArr.First(c => c.Key == (item.LogType ?? 0)).Value</td>
+                        }
+                        else
+                        {
+                            <td>@item.LogType</td>
+                        }*@
+                        @if (businessTypeArr.Any(c => c.Key == (item.BusinessType ?? 0)))
+                        {
+                            <td>@businessTypeArr.First(c => c.Key == (item.BusinessType ?? 0)).Value</td>
+                        }
+                        else
+                        {
+                            <td>@item.BusinessType</td>
+                        }
+                        <td>@item.LogContent</td>
+                        <td>@item.CreateDate</td>
+
+                        @if (orderStatusArr.Any(c => c.Key == (item.OrderStatus ?? 0)) && item.BusinessType == 1)
+                        {
+                            <td>@orderStatusArr.First(c => c.Key == (item.OrderStatus ?? 0)).Value</td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+                      @*  @if (mallTypeArr.Any(c => c.Key == (item.OrderType ?? 0)) && item.BusinessType == 1)
+                        {
+                            <td>@mallTypeArr.First(c => c.Key == (item.OrderType ?? 0)).Value</td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }*@
+
+                        <td>@item.LogiscticNo</td>
+                        <td>@item.LogiscticId</td>
+                    </tr>
+                }
+
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+}
+

@@ -1,0 +1,162 @@
+﻿@{
+    ViewBag.Title = "白名单列表";
+}
+@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.ShortMessage.WhiteListRefer 
+<h2>白名单列表</h2>
+<style>
+    .input-validation-error {
+        border: 1px solid #c0c0c0;
+        background-color: white;
+    }
+
+    .showDetailTable tbody tr.tk-guanli td {
+        width: 15%;
+    }
+
+        .showDetailTable tbody tr.tk-guanli td.tk-name {
+            width: 5%;
+            text-align: center;
+        }
+
+        .showDetailTable tbody tr.tk-guanli td input {
+            text-align: left;
+            width: 85%;
+        }
+
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+
+        .rowButton input {
+            margin: 2px 15px;
+            height: 30px;
+            width: 11%;
+            text-align: center;
+        }
+
+    textarea {
+        min-height: 41px;
+        min-width: 94%;
+    }
+</style>
+
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+        <tbody>
+            <tr class="tk-guanli">
+                <td class="tk-name">手机号</td>
+                <td>
+                    @Html.TextBoxFor(m => m.Search.Mobile)
+                </td>
+                <td class="tk-name">姓名:</td>
+                <td>@Html.TextBoxFor(m => m.Search.UserName)</td>
+                <td class="tk-name">是否有效:</td>
+                <td>
+                    @{
+    var sort = new SortedList<int, string>();
+    sort.Add(1, "已启用");
+    sort.Add(0, "已禁用");
+                    }
+                    @Html.DropDownListFor(m => m.Search.IsEnable, new KvSelectList(sort), true)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="rowButton">
+        <input type="submit" value="查询" id="btnSearch" />
+        <input type="button" value="新增" id="btnAdd" onclick="window.open('/ShortMessage/WhiteListAdd')" />
+    </div>
+    
+    if (Model.List != null && Model.List.Any())
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>SysNo</th>
+                    <th>操作</th>
+                    <th>手机号</th>
+                    <th>姓名</th>
+                    <th>备注</th>
+                    <th>创建日期</th>
+                    <th>是否有效</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model.List)
+                {
+                    <tr class="gl-title">
+
+                        <td>
+                            <a style="color: #191970; font-weight:bold" title="修改" href="@Url.Action("WhiteListUpdate", "ShortMessage", new { sysNo = item.SysNo })" >@item.SysNo</a>
+
+                        </td>
+                        <td>
+                            @if (item.IsEnable == 1)
+                            {
+                                <a style="color: #191970;text-decoration: underline;"  href="javascript:enable(@item.SysNo,'0')">点击禁用</a>
+                            }
+                            else
+                            {
+                                <a style="color: red;text-decoration: underline"  href="javascript:enable(@item.SysNo,'1')">点击启用</a>
+                            }
+                        </td>
+
+                        <td>@item.Mobile</td>
+                        <td>@item.UserName</td>
+                        <td>@item.Remark</td>
+                        <td>@item.RowCreateTime</td>
+                        @if (item.IsEnable == 1)
+                        {
+                            <td>已启用</td>
+                        }
+                        else
+                        {
+                            <td>已禁用</td>
+                        }
+
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+
+    <script type="text/javascript">
+        function enable(sysNo, enable) {
+            var model = {};
+            model.SysNo = sysNo;
+            model.Enable = enable;
+
+            if (confirm("你确定修改吗？")) {
+                $.ajax({
+                    url: '@Url.Action("EnableWhiteList", "ShortMessageExec")',
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: JSON.stringify(model),
+                    success: function (result) {
+                        if (result.DoFlag) {
+                            window.location.href = '@Url.Action("WhiteListIndex", "ShortMessage")';
+                        } else {
+                            alert(result.DoResult);
+                        }
+                    }
+                });
+            }
+        }
+
+    </script>
+
+    
+    
+    @Html.Partial("Pager", @Model)
+}

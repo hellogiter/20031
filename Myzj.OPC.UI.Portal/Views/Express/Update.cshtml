@@ -1,0 +1,162 @@
+﻿@{
+    ViewBag.Title = "Update";
+}
+
+@model  Myzj.OPC.UI.Model.BargainGroup.GroupActivityDetailExt
+<h2>更新</h2>
+<style type="text/css">
+    .showDetailTableMultiColumnm .manjian textarea {
+        width: 500px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .showDetailTableMultiColumnm .tickename input {
+        width: 200px;
+    }
+</style>
+@using (Html.BeginForm())
+{
+    if (Model != null)
+    {
+    <div id="tableContainer">
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>活动名称</td>
+                    <td colspan="3">
+                        <input type="text" id="txtGroupActivityName" placeholder="必填" value="@Model.GroupActivityName"/>
+                        <input type="hidden" id="hdSysNo" value="@Model.SysNo"/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>活动描述</td>
+                    <td colspan="3">
+                        <textarea id="txtGroupActivityDes" placeholder="必填">@Model.GroupActivityDes</textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="color: red">每个会员可建团或参团的总数量</td>
+                    <td colspan="3">
+                        <input type="text" id="txtOpenOrCanCount" placeholder="必填" value="@Model.OpenOrCanCount" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>每个会员可建团的总数量</td>
+                    <td colspan="3">
+                        <input type="text" id="txtGroupUserInCount" placeholder="选填，缺省默认不限制" value="@Model.GroupUserInCount"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>每个会员可参团的总数量</td>
+                    <td colspan="3">
+                        <input type="text" id="txtGroupUserCanCount" placeholder="选填，缺省默认不限制" value="@Model.GroupUserCanCount"/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="color: red">是否支持优先付款</td>
+                    <td colspan="3" id="radList">
+                        @if (Model.BeforePay ?? false)
+                        {
+                            <span style="width: 40px; float: left;">
+                                <input type="radio" name="BeforePay" checked="checked" value="True" />是</span>
+                            <span style="width: 40px; margin-left: 50px;">
+                                <input type="radio" name="BeforePay" value="False" />否</span>
+                        }
+                        else
+                        {
+                            <span style="width: 40px; float: left;">
+                                <input type="radio" name="BeforePay" value="True" />是</span>
+                            <span style="width: 40px; margin-left: 50px;">
+                                <input type="radio" name="BeforePay" checked="checked" value="False" />否</span>
+                        }
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>活动头图</td>
+                    <td colspan="3">
+                        <input type="text" id="txtActivityHeadPicUrl" placeholder="请输入活动头图url" value="@Model.ActivityHeadPicUrl"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>开始时间</td>
+                    <td>
+                        <input id="txtStartTime" type="text" placeholder="必填" onfocus=" WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' }); " class="Wdate" style="width: 200px;" value="@Model.StartTime" />
+                    </td>
+                    <td>结束时间</td>
+                    <td>
+                        <input id="txtEndTime" type="text" placeholder="必填" onfocus=" WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' }); " class="Wdate" style="width: 200px;" value="@Model.EndTime" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>是否启用</td>
+                    <td colspan="3" id="radList">
+                        @if (Model.IsEnable == true)
+                        {
+                            <span style="width: 40px; float: left;">
+                                <input type="radio" name="IsEnable" checked="checked" value="True" />启用</span>
+                            <span style="width: 40px; margin-left: 50px;">
+                                <input type="radio" name="IsEnable" value="False" />禁用</span>
+                        }
+                        else
+                        {
+                            <span style="width: 40px; float: left;">
+                                <input type="radio" name="IsEnable" value="True" />启用</span>
+                            <span style="width: 40px; margin-left: 50px;">
+                                <input type="radio" name="IsEnable" checked="checked" value="False" />禁用</span>
+                        }
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="rowButton">
+            <input type="button" value="保存" id="btnSave" />
+            <input type="button" value="关闭" id="btnCancel" onclick="window.close();" />
+        </div>
+    </div>
+    }
+}
+
+<script type="text/javascript">
+    $("#btnSave").click(function () {
+        var model = {};
+        model.GroupActivityName = $.trim($("#txtGroupActivityName").val());
+        model.GroupActivityDes = $.trim($("#txtGroupActivityDes").val());
+        model.GroupUserInCount = $.trim($("#txtGroupUserInCount").val());
+        model.GroupUserCanCount = $.trim($("#txtGroupUserCanCount").val());
+        model.StartTime = $.trim($("#txtStartTime").val());
+        model.EndTime = $.trim($("#txtEndTime").val());
+        model.SysNo = $.trim($("#hdSysNo").val());
+        model.IsEnable = $('#radList input[name="IsEnable"]:checked').val();
+        model.ActivityHeadPicUrl = $.trim($("#txtActivityHeadPicUrl").val());
+        model.ActivityHeadPicUrl = $.trim($("#txtActivityHeadPicUrl").val());
+        model.ActivityHeadPicUrl = $.trim($("#txtActivityHeadPicUrl").val());
+        
+        model.OpenOrCanCount = $.trim($("#txtOpenOrCanCount").val());//每个会员可参团建团总数
+        model.BeforePay = $('#radList input[name="BeforePay"]:checked').val();//是否支持优先付款
+
+
+        if (confirm("你确定保存吗？")) {
+            $.ajax({
+                url: '@Url.Action("UpdateGroupActivity", "BargainGroup")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("更新成功！");
+                        window.location.href = '@Url.Action("GroupActivityIndex", "BargainGroup")';
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        }
+    });
+
+</script>

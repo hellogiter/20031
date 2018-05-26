@@ -1,0 +1,77 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.WebIndex
+@model Myzj.OPC.UI.Model.WebAward.WebLotteryNumberDetail
+@{
+    var isEdit = (Model != null && Model.IntTagsId > 0);
+    var actionName = isEdit ? "Update" : "Add";
+}
+
+@if (isEdit)
+{
+    <h2>修改抽奖次数配置</h2>
+}
+else
+{
+    <h2>新增抽奖次数配置</h2>
+}
+
+<div id="tableContainer">
+    <form id="detailForm">
+        <input type="hidden" id="hidIntNumId" value="@Model.IntNumId"/>
+        <input type="hidden" value="@ViewBag.TagsId" id="HidTagsId"/>
+        <input type="hidden" value="@ViewBag.vchTagsName" id="HidvchTagsName"/>
+
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>关联用户标签组:</td>
+                    <td>
+                        <label>@ViewBag.vchTagsName</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>抽奖次数(区间):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.VchLotteryNumber)-(“1-1”第一次抽奖，“1-3”第一次至第三次抽奖)
+                    </td>
+                </tr>
+        </table>
+    </form>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="保存" id="btnSave" />
+    <input type="button" value="返回" id="btnDel" onclick="window.close()" />
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        //保存
+        $("#btnSave").click(function () {
+            var model = {};
+            model.IntNumId = $("#hidIntNumId").val();
+            model.IntTagsId = $("#HidTagsId").val();
+            model.VchLotteryNumber = $("#VchLotteryNumber").val();
+            if (model.VchLotteryNumber == "" || model.VchLotteryNumber == null) {
+                alert("请输入抽奖次数(区间)");
+                return false;
+            }
+
+            $.ajax({
+                url: '@Url.Action("SaveWebLotteryNumber", "WebAward")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("保存成功！");
+                        reloadPage();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,504 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Web.Mvc;
+using Business.PanGu;
+using Myzj.OPC.UI.Common;
+using Myzj.OPC.UI.Model.Base;
+using Myzj.OPC.UI.Model.CommentsManage;
+using Myzj.OPC.UI.Portal.Controllers.Base;
+using Myzj.OPC.UI.Portal.Models;
+using Myzj.OPC.UI.ServiceClient;
+
+namespace Myzj.OPC.UI.Portal.Controllers
+{
+	public class CommentsManageController : CommonExportController<VipCommentProductDetail>
+	{
+
+		private CommentsManageRefer SearchExpar;
+
+		// GET: /CommentsManage/
+		/// <summary>
+		/// 审核列表
+		/// </summary>
+		/// <param name="search">请求参数</param>
+		/// <param name="pids">评论id（可为多个）</param>
+		/// <returns></returns>
+		public ActionResult Index(CommentsManageRefer search,string pids)
+		{
+			var result = new CommentsManageRefer();
+			if (!string.IsNullOrEmpty(pids))
+			{
+				search.CommentDetail.CommentIds = pids;
+				result = CommentManageClient.Instance.QueryCommentsPageList(search);
+			}
+			else
+			{
+				//会员昵称
+				if (!string.IsNullOrEmpty(search.CommentDetail.ShowNickName))
+				{
+					search.CommentDetail.ShowNickName = search.CommentDetail.ShowNickName.Trim();
+				}
+				//商品
+				if (!string.IsNullOrEmpty(search.CommentDetail.ProductCondition))
+				{
+					search.CommentDetail.ProductCondition = search.CommentDetail.ProductCondition.Trim();
+				}
+				//评论内容
+				if (!string.IsNullOrEmpty(search.CommentDetail.ContentInfo))
+				{
+					search.CommentDetail.ContentInfo = search.CommentDetail.ContentInfo.Trim();
+				}
+				//审核人
+				if (!string.IsNullOrEmpty(search.CommentDetail.CheckUser))
+				{
+					search.CommentDetail.CheckUser = search.CommentDetail.CheckUser.Trim();
+				}
+				//回复人
+				if (!string.IsNullOrEmpty(search.CommentDetail.ReplyUser))
+				{
+					search.CommentDetail.ReplyUser = search.CommentDetail.ReplyUser.Trim();
+				}
+				result = CommentManageClient.Instance.QueryCommentsPageList(search);
+			}
+			ViewBag.Sum = search.PageSize;
+			return View(result);
+		}
+
+		/// <summary>
+		/// 审核评论
+		/// </summary>
+		/// <param name="commonAuditparam"></param>
+		/// <returns></returns>
+		public JsonResult AuditCommnetManage(CommonAuditParam commonAuditparam)
+		{
+			var result = new BaseResponse();
+			string checkStr = commonAuditparam.CheJsonStr;
+			string checkInfo = commonAuditparam.RefusedReason;
+			int checkUserId = UserInfo.UserSysNo;
+
+			var res = CommentManageClient.Instance.AuditCommentManage(checkStr, checkInfo, checkUserId);
+			result.DoFlag = res.DoFlag;
+			result.DoResult = res.DoResult;
+			return Json(result, JsonRequestBehavior.AllowGet);
+		}
+
+		/// <summary>
+		/// 批量加精
+		/// </summary>
+		/// <param name="cids"></param>
+		/// <param name="uncids"></param>
+		/// <returns></returns>
+		public JsonResult SetEssence(string cids, string uncids)
+		{
+			var result = new BaseResponse() {DoFlag = false, DoResult = "加精设置失败"};
+			var implresult = CommentManageClient.Instance.SetEssence(cids, uncids);
+			if (implresult.DoFlag)
+			{
+				result.DoFlag = true;
+				result.DoResult = implresult.DoResult;
+			}
+			return Json(result, JsonRequestBehavior.AllowGet);
+		}
+
+		/// <summary>
+		/// 回复人
+		/// </summary>
+		/// <param name="rid">评论id</param>
+		/// <param name="replyinfo">回复内容</param>
+		/// <returns></returns>
+		public JsonResult ReplyComment(int rid, string replyinfo)
+		{
+			var result = new BaseResponse() { DoFlag = false, DoResult = "回复失败" };
+			int replyUserId = UserInfo.UserSysNo;
+			var implresult = CommentManageClient.Instance.ReplyComment(rid, replyinfo, replyUserId);
+			if (implresult.DoFlag)
+			{
+				result.DoFlag = true;
+				result.DoResult = implresult.DoResult;
+			}
+			return Json(result, JsonRequestBehavior.AllowGet);
+		}
+
+		///// <summary>
+		///// 刷新商品缓存
+		///// </summary>
+		///// <param name="refreshIds">商品Id</param>
+		///// <returns></returns>
+		//public JsonResult RefreshProducts(string refreshIds)
+		//{
+		//	var result = new BaseResponse() { DoFlag = false, DoResult = "刷新失败" };
+
+		//	var implresult = CommentManageClient.Instance.RefreshProducts(refreshIds);
+		//	if (implresult.DoFlag)
+		//	{
+		//		result.DoFlag = true;
+		//		result.DoResult = implresult.DoResult;
+		//	}
+		//	return Json(result, JsonRequestBehavior.AllowGet);
+		//}
+
+		//Excel导入视图页
+		public ActionResult ImportCommnets()
+		{
+			return View();
+		}
+
+		//Excel导入模板下载
+		public FileResult GetFile()
+		{
+			const string url = "~/TempExcel/商品评论模板.xls";
+			var fileName = Server.MapPath(url);
+			var name = Path.GetFileName(fileName);
+			return File(fileName, "application/ms-excel", Url.Encode(name));
+		}
+
+		/// <summary>
+		/// 导入Excel
+		/// </summary>
+		/// <returns></returns>
+		public ActionResult ImportCommentsFile()
+		{
+			var ptcp = new BaseResponse { DoFlag = true, DoResult = "" };
+			try
+			{
+				FileUploader uploader = new FileUploader("~/Upload");
+				uploader.SetExtensionLimit(".xls|.xlsx");
+				string error;
+				List<string> filenames=uploader.Process(this.Request, out error);
+				string fileName = filenames.FirstOrDefault();
+				if (!string.IsNullOrEmpty(error))
+				{
+					ptcp.DoFlag = false;
+					ptcp.DoResult = error;
+				}
+				else
+				{
+					fileName = Path.GetFileName(fileName);
+					string fullPath = Path.Combine(Server.MapPath("~/Upload"), fileName);
+					//将excel数据导入到列表中
+					ImportExcelToList import = new ImportExcelToList();
+					MessageList errors = new MessageList();
+					//获取表数据
+					ImportToListResult importedResult = import.DoImport(fullPath);
+					if (importedResult.Result.IsSuccess)
+					{
+						//获取验证返回的错误信息
+						errors.Merge(DoValidData(importedResult.Data.ImportedBody));
+						if (errors.Messages != null && errors.Messages.Any())
+						{
+							ptcp.DoFlag = false;
+							ViewBag.ErrorMsgs = errors.Messages.Select(s => s.Message).ToList();
+						}
+						else
+						{
+							//执行导入
+							Stopwatch during = new Stopwatch();
+							during.Start();
+							int success = DoImport(importedResult.Data.ImportedHeader, importedResult.Data.ImportedBody);
+							during.Stop();
+							string info = success>0?string.Format("导入成功!一共导入:{0}条记录,耗时{1}秒", success, during.Elapsed.TotalSeconds):"导入错误;插入失败";
+							ptcp.DoFlag = success > 0 ;
+							ptcp.DoResult = info;
+						}
+						
+					}
+					else
+					{
+						ptcp.DoFlag = false;
+						ptcp.DoResult = importedResult.Result.Error;
+					
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				ptcp.DoFlag = false;
+				ptcp.DoResult = "导入异常";
+			}
+
+			ViewBag.Result = ptcp;
+			return View("ImportCommnets");
+		}
+
+
+
+		/// <summary>
+		/// 校验导入Excel表中数据有效性
+		/// </summary>
+		/// <param name="bodyData">表数据</param>
+		/// <returns></returns>
+		private MessageList DoValidData(List<List<object>> bodyData)
+		{
+			MessageList rtn = new MessageList();
+			for (int i = 0; i < bodyData.Count; i++)
+			{
+				int no = i + 1;
+				var one = bodyData[i];
+				//校验商品id为int且不为空
+				if (one[0] != null)
+				{
+					int productid = 0;
+					bool tointproductid = int.TryParse(one[0].ToString(),out productid);
+					if (tointproductid == false)
+					{
+						rtn.Add(string.Format("第{0}行:填写的商品id不是数字", no));
+						continue;
+					}
+				}
+				else
+				{
+					rtn.Add(string.Format("第{0}行:商品id未填写", no));
+					continue;
+				}
+				//校验评分等级为1到5的数字且非空
+				if (one[2] != null)
+				{
+					int score = 0;
+					bool tointscore = int.TryParse(one[2].ToString(), out score);
+					if (tointscore == false)
+					{
+						rtn.Add(string.Format("第{0}行:填写的商品评分不是数字", no));
+						continue;
+					}
+					if (score < 1 || score > 5)
+					{
+						rtn.Add(string.Format("第{0}行:填写的商品评分等级数字不在1到5范围内", no));
+						continue;
+					}
+				}
+				else
+				{
+					rtn.Add(string.Format("第{0}行:商品评分等级未填写", no));
+					continue;
+				}
+				//如果填写手机号，校验手机号格式
+				if (!string.IsNullOrEmpty(one[3].ToString()))
+				{
+					//^[1][358][0-9]{9}$现在只有13、15和18开头的11位手机号码。以1开头，第2位数字为3或5或8，后面接9位数字。
+					if (!Regex.IsMatch(one[3].ToString(), @"^[1][358][0-9]{9}$"))
+					{
+						rtn.Add(string.Format("第{0}行:手机号码格式不正确", no));
+						continue;
+					}
+				}
+
+				//如果填写邮箱，校验邮箱格式
+				if (!string.IsNullOrEmpty(one[5].ToString()))
+				{
+					if (!Regex.IsMatch(one[5].ToString(), @"^[a-z0-9]([a-z0-9\\.]*[-_]{0,4}?[a-z0-9\\.]+)*@([a-z0-9]*[-_]?[a-z0-9]+)+([\.][\w_-]+){1,5}$"))
+					{
+						rtn.Add(string.Format("第{0}行:邮箱格式不正确", no));
+						continue;
+					}
+				}
+
+				DateTime addtime;
+				bool toaddtime = DateTime.TryParse(one[6].ToString(), out addtime); //评价时间
+				if (toaddtime == false)
+				{
+					rtn.Add(string.Format("第{0}行:评价时间不能为空", no));
+					continue;
+				}
+
+			}
+			return rtn;
+		}
+
+
+		/// <summary>
+		/// 执行导入
+		/// </summary>
+		/// <param name="headerDatas">表头</param>
+		/// <param name="bodyData">表体</param>
+		/// <returns></returns>
+		public int DoImport(List<string> headerDatas, List<List<object>> bodyData)
+		{
+			int successRec = 0;
+			List<VipCommentProductDetail> vipcomments=new List<VipCommentProductDetail>();
+			foreach (var row in bodyData)   //row表示一行的数据集合
+			{
+				if (row == null || row[0] == null) continue;  //如果Excel表中某行或某行的商品id为空就跳过
+
+				int productid = 0;
+				bool tointproductid = int.TryParse(row[0].ToString(), out productid);  //商品ID
+
+				string contentInfo = row[1].ToString().Trim();  //评价内容
+
+				int score = 0;
+				bool tointscore = int.TryParse(row[2].ToString(), out score);  //评分等级
+
+				string mobile = row[3].ToString().Trim();   //用户手机
+
+				string nickname = row[4].ToString().Trim();  //用户昵称
+
+				string email = row[5].ToString().Trim();  //用户邮箱
+
+				DateTime addtime;
+				bool toaddtime = DateTime.TryParse(row[6].ToString(), out addtime); //评价时间
+
+				VipCommentProductDetail commentDetail = new VipCommentProductDetail();
+				commentDetail.ProductId = tointproductid ? productid : 0;
+				commentDetail.ContentInfo = contentInfo;
+				commentDetail.Score = tointscore ? score : 0;
+				commentDetail.Mobile = mobile;
+				commentDetail.ShowNickName = nickname;
+				commentDetail.Email = email;
+				commentDetail.AddTime = addtime;
+				vipcomments.Add(commentDetail);
+				successRec++;
+			}
+			var implresult = CommentManageClient.Instance.ImportComments(vipcomments);
+			if (!implresult.DoFlag)
+			{
+				successRec = 0;
+			}
+			return successRec;
+		}
+
+		/// <summary>
+		/// 导出
+		/// </summary>
+		/// <param name="search"></param>
+		/// <returns></returns>
+		 [HttpPost]
+		 [MultipleButton(Name = "action", Argument = "Export")]
+		public ActionResult Export(CommentsManageRefer search)
+		{
+			search.PageIndex = 1;
+			search.PageSize = int.MaxValue;
+			//会员昵称
+			if (!string.IsNullOrEmpty(search.CommentDetail.ShowNickName))
+			{
+				search.CommentDetail.ShowNickName = search.CommentDetail.ShowNickName.Trim();
+			}
+			//商品
+			if (!string.IsNullOrEmpty(search.CommentDetail.ProductCondition))
+			{
+				search.CommentDetail.ProductCondition = search.CommentDetail.ProductCondition.Trim();
+			}
+			//评论内容
+			if (!string.IsNullOrEmpty(search.CommentDetail.ContentInfo))
+			{
+				search.CommentDetail.ContentInfo = search.CommentDetail.ContentInfo.Trim();
+			}
+			//审核人
+			if (!string.IsNullOrEmpty(search.CommentDetail.CheckUser))
+			{
+				search.CommentDetail.CheckUser = search.CommentDetail.CheckUser.Trim();
+			}
+			//回复人
+			if (!string.IsNullOrEmpty(search.CommentDetail.ReplyUser))
+			{
+				search.CommentDetail.ReplyUser = search.CommentDetail.ReplyUser.Trim();
+			}
+			SearchExpar = search;
+			return Export("评论导出报表");
+		}
+
+
+		/// <summary>
+		 /// 设置导出Excel文件的列标题
+		/// </summary>
+		/// <returns></returns>
+		public override IList<string> GetHead()
+		{
+			List<string> list = new List<string>();
+			list.Add("评论ID");
+			list.Add("会员ID");
+			list.Add("会员昵称");
+			list.Add("订单ID");
+			list.Add("商品ID");
+			list.Add("商品名字");
+			list.Add("总评");
+			list.Add("来源平台");
+			list.Add("评论内容");
+			list.Add("评论时间");
+			list.Add("评论图片");
+			list.Add("原评论ID");
+			list.Add("回复内容");
+			list.Add("回复人");
+			list.Add("回复时间");
+			list.Add("拒绝理由");
+			list.Add("审核人");
+			list.Add("审核时间");
+			list.Add("审核状态");
+			list.Add("是否精华");
+			return list;
+		}
+		/// <summary>
+		/// 获取导出文件的列标题
+		/// </summary>
+		/// <returns></returns>
+		public override IList<VipCommentProductDetail> GetDataSource()
+		{
+			IList<VipCommentProductDetail> exportCommentList = CommentManageClient.Instance.QueryCommentsPageList(SearchExpar).List;
+			return exportCommentList;
+		}
+
+		public override void OnRowExport(object sender, OnRowExportEventArgs<VipCommentProductDetail> e)
+		{
+			try
+			{
+				e.helper.SetCellValue("评论ID", e.Data.Id.ToString());
+				e.helper.SetCellValue("会员ID", e.Data.UserId.ToString());
+				e.helper.SetCellValue("会员昵称", e.Data.ShowNickName);
+				e.helper.SetCellValue("订单ID", e.Data.OrderId.ToString());
+				e.helper.SetCellValue("商品ID", e.Data.ProductId.ToString());
+				e.helper.SetCellValue("商品名字", e.Data.ProductName);
+				e.helper.SetCellValue("总评", e.Data.Score.ToString());
+				e.helper.SetCellValue("来源平台", e.Data.SystemType.ToString());
+				e.helper.SetCellValue("评论内容", e.Data.ContentInfo);
+				e.helper.SetCellValue("评论时间", e.Data.AddTime,"DateTime");
+				e.helper.SetCellValue("评论图片", e.Data.UserImgObj);
+				e.helper.SetCellValue("原评论ID", e.Data.ParentId>0?e.Data.ParentId.ToString():"无");
+				e.helper.SetCellValue("回复内容", e.Data.ReplyContent);
+				e.helper.SetCellValue("回复人", e.Data.ReplyUser);
+				e.helper.SetCellValue("回复时间", e.Data.ReplyTime,"DateTime");
+				e.helper.SetCellValue("拒绝理由", e.Data.CheckInfo);
+				e.helper.SetCellValue("审核人", e.Data.CheckUser);
+				e.helper.SetCellValue("审核时间", e.Data.CheckTime,"DateTime");
+				e.helper.SetCellValue("审核状态", GetCheckState(e.Data.CheckState));
+				e.helper.SetCellValue("是否精华", e.Data.IsHighLight > 0 ? "是" : "否");
+
+			}
+			catch (Exception ex)
+			{
+				string message = ex.Message;
+			}
+		}
+
+		//导出前，设置导出的Excel样式等
+		public override void BeginExport(object sender, BeginExportEventArgs e)
+		{
+			//命名sheet，，现在只允许添加一个sheet，添加两个会报错
+			e.AddSheet("评论管理");
+			//设置列的宽度
+			//e.SetColumnWidth("评论时间", 150);
+			base.BeginExport(sender, e);
+		}
+
+		protected string GetCheckState(int? m)
+		{
+			string result = "";
+			switch (m)
+			{
+				case 1:
+					result = "未审核";
+					break;
+				case 2:
+					result = "审核通过";
+					break;
+				case 3:
+					result = "审核未通过";
+					break;
+			}
+			return result;
+		}
+
+    }
+}

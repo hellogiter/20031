@@ -1,0 +1,136 @@
+﻿@model Myzj.OPC.UI.Model.Base.BaseRefer<Myzj.OPC.UI.Model.RentActivity.BaseRentActivityInfo>
+<h2>活动列表</h2>
+<style>
+    .input-validation-error {
+        border: 1px solid #c0c0c0;
+        background-color: white;
+    }
+
+    .showDetailTable tbody tr.tk-guanli td {
+        width: 15%;
+    }
+
+        .showDetailTable tbody tr.tk-guanli td.tk-name {
+            width: 5%;
+            text-align: center;
+        }
+
+        .showDetailTable tbody tr.tk-guanli td input {
+            text-align: left;
+            width: 85%;
+        }
+
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+        <tbody>
+            <tr class="tk-guanli">
+                <td class="tk-name">活动Key:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.ActivityKey)
+                </td>
+                <td class="tk-name">活动名称:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.ActivityName)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="rowButton">
+        <input type="submit" value="查询" id="btnSearch" />
+        <input type="button" value="创建" id="btnAdd" onclick="window.location.href = '/RentManager/ActivityDetail';" />
+    </div>
+    if (Model.List2 != null && Model.List2.Any())
+    {
+        var model = Model.List2;
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>活动Key</th>
+                    <th>活动名称</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                    @*<th>头图</th>
+                    <th>活动内容图</th>
+                    <th>申请流程图</th>
+                    <th>收回流程图</th>
+                    <th>租赁答疑图</th>*@
+                    <th>备注</th>
+                    <th>是否启用</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in model)
+                {
+                    <tr>
+                        <td>@item.ActivityKey</td>
+                        <td>@item.ActivityName</td>
+                        <td>@item.StartTime</td>
+                        <td>@item.EndTime</td>
+                       @* <td><img src="@item.Extend.HeadImgUrl" width="100px" /></td>
+                        <td><img src="@item.Extend.ActivityProcessImgUrl" width="100px" /></td>
+                        <td><img src="@item.Extend.RecycleProcessImgUrl" width="100px" /></td>
+                        <td><img src="@item.Extend.ReviewImgUrlList" width="100px" /></td>
+                        <td><img src="@item.Extend.QAndAImgUrl" width="100px" /></td>*@
+                        <td>@item.Remarks</td>
+                        @if (item.IsEnable.Value)
+                        {
+                            <td>启用</td>
+                        }
+                        else
+                        {
+                            <td>禁用</td>
+                        }
+                        <td>
+                            <a style="color: #191970; cursor: pointer" target="_blank" href="@Url.Action("RentGoodsIndex", "RentManager", new { ActivityKey = item.ActivityKey })">查看商品</a>
+                            <a style="color: #191970; cursor: pointer" target="_blank" href="@Url.Action("ActivityDetail", "RentManager", new { sysNo = item.SysNo })">编辑</a>
+                            <a style="color: #191970; cursor: pointer" target="_blank" onclick="DeleteItem(@item.SysNo,this);">删除</a>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+
+    }
+    
+    @Html.Partial("Pager", @Model)
+}
+
+<script type="text/javascript">
+
+    function DeleteItem(sysNo, obj) {
+        if (confirm("确定删除吗?")) {
+            var model = {};
+            model.SysNo = sysNo;
+            model.IsDelete = true;
+            $.ajax({
+                url: '@Url.Action("SaveActivityInfo", "RentManager")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("删除成功");
+                        $(obj).parent().parent().remove();
+                    } else {
+                        alert("删除失败");
+                    }
+                }
+            });
+        }
+    }
+</script>

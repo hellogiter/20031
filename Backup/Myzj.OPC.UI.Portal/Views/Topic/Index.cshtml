@@ -1,0 +1,79 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.Topic.Topics
+<h2>话题管理</h2>
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable" cellspacing="0">
+        <tr>
+            <td>专题编号:</td>
+            <td>@Html.TextBoxFor(m => m.SearchDetail.TopicId)</td>
+            <td>专题名称:</td>
+            <td>@Html.TextBoxFor(m => m.SearchDetail.TopicTitle)</td>
+        </tr>
+        <tr>
+            <td>专题状态:</td>
+            <td colspan="4">@Html.DropDownListFor(m => m.SearchDetail.TopicState, new KvSelectList(typeof(AppEnum.State).GetEnumList()), true)</td>
+        </tr>
+    </table>
+    
+    var success = @ViewData["SuccessMsg"];
+    if (null != success)
+    {
+    <span style="color: green">@success</span>
+    }
+    var notice = @ViewData["ErrorMsg"];
+    if (null != notice)
+    {
+    <span style="color: red">@notice</span>
+    }
+
+    <div id="item">
+        @Html.Partial("Item", @Model.List)
+    </div> 
+   
+    
+    @Html.Partial("Pager", @Model)
+
+}
+
+<script>
+
+    $(function () {
+        $("#SearchDetail_TopicId").val("");
+
+        //更新排序
+        $(".sort").change(function () {
+            var topicId = $(this).attr("data-topicId");
+            var sort = $(this).val();
+
+            $.ajax({
+                url: "/Topic/UpTopicSort",
+                data: { "topicId": topicId, "sort": sort },
+                success: function (res) {
+                    if (res.DoFlag) {
+                        alert("更新成功");
+                        //  $("item").html( );
+                    } else {
+                        alert(res.DoResult);
+                    }
+                }
+            });
+        });
+
+    });
+
+    //获取列表
+    function getTopicList() {
+        jQuery.ajax({
+            url: window.WebRoot + 'Cart/Items?cartFlag=',
+            type: 'GET',
+            dataType: 'html',
+            success: function (result) {
+
+            }, error: function (response) {
+                alert("系统繁忙，请稍后！");
+            }
+        });
+    }
+
+</script>

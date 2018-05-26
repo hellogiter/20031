@@ -1,0 +1,112 @@
+﻿@{
+    ViewBag.Title = "Add";
+}
+
+<h2>新增</h2>
+<style type="text/css">
+    .showDetailTableMultiColumnm .manjian textarea {
+        width: 500px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .showDetailTableMultiColumnm .tickename input {
+        width: 200px;
+    }
+</style>
+@using (Html.BeginForm())
+{
+   
+    <div id="tableContainer">
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>订单号</td>
+                    <td colspan="3">
+                        <input type="text" id="txtGroupActivityName" placeholder="必填" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>订单类型</td>
+                    <td colspan="3">
+                        <input type="text" id="txtGroupActivityName" placeholder="必填" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>订阅类型</td>
+                    <td colspan="3">
+                        <input type="text" id="txtOpenOrCanCount" placeholder="必填" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>运单号</td>
+                    <td colspan="3">
+                        <input type="text" id="txtGroupUserInCount" placeholder="选填，缺省默认不限制" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>配送商Id</td>
+                    <td colspan="3">
+                        <input type="text" id="txtGroupUserCanCount" placeholder="选填，缺省默认不限制" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>发货日期</td>
+                    <td colspan="3" id="radList">
+                        <span style="width: 40px; float: left;">
+                            <input type="radio" name="BeforePay" value="True" />是</span>
+                        <span style="width: 40px; margin-left: 50px;">
+                            <input type="radio" name="BeforePay" checked="checked" value="False" />否</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>备注</td>
+                    <td colspan="3">
+                        <input type="text" id="txtActivityHeadPicUrl" placeholder="请输入活动头图url" value="" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="rowButton">
+            <input type="button" value="添加" id="btnSave" />
+            <input type="button" value="关闭" id="btnCancel" onclick="history.back(-1);" />
+        </div>
+    </div>
+    
+}
+
+<script type="text/javascript">
+    $("#btnSave").click(function () {
+        var model = {};
+        model.GroupActivityName = $.trim($("#txtGroupActivityName").val());
+        model.GroupActivityDes = $.trim($("#txtGroupActivityDes").val());
+        model.GroupUserInCount = $.trim($("#txtGroupUserInCount").val());
+        model.GroupUserCanCount = $.trim($("#txtGroupUserCanCount").val());
+        model.StartTime = $.trim($("#txtStartTime").val());
+        model.EndTime = $.trim($("#txtEndTime").val());
+        model.IsEnable = $('#radList input[name="IsEnable"]:checked').val();
+        model.ActivityHeadPicUrl = $.trim($("#txtActivityHeadPicUrl").val());
+        model.OpenOrCanCount = $.trim($("#txtOpenOrCanCount").val());//每个会员可参团建团总数
+        model.BeforePay = $('#radList input[name="BeforePay"]:checked').val();//是否支持优先付款
+
+        if (confirm("你确定保存吗？")) {
+            $.ajax({
+                url: '@Url.Action("AddGroupActivity", "BargainGroup")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("添加成功！");
+                        window.location.href = '@Url.Action("GroupActivityIndex", "BargainGroup")';
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        }
+    });
+
+</script>

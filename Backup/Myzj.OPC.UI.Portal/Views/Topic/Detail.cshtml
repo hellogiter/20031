@@ -1,0 +1,283 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.ServiceClient
+@model Myzj.OPC.UI.Model.Topic.TopicDetail
+@{
+    var isEdit = (Model != null && Model.TopicId > 0);
+    var actionName = isEdit ? "Update" : "Add";
+}
+
+@Html.Action("ImgUpload", "Default")
+
+@if (isEdit)
+{
+    <h2>编辑话题</h2>
+}
+else
+{
+    <h2>新增话题</h2>
+}
+
+<div id="tableContainer">
+    <form id="detailForm">
+        @Html.HiddenFor(m => m.TopicId)
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>标题:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TopicTitle)
+                    </td>
+                </tr>
+                <tr>
+                    <td>内容:</td>
+                    <td>
+                        @Html.TextAreaFor(m => m.TopicContent)
+                    </td>
+                </tr>
+                <tr>
+                    <td>描述:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.TopicDescribe)
+                    </td>
+                </tr>
+                  <tr>
+                    <td>排序:</td>
+                    <td>
+                         @Html.TextBoxFor(m => m.Sort)
+                    </td>
+                </tr>
+                <tr>
+                <td>状态:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.TopicState, new KvSelectList(typeof(AppEnum.State).GetEnumList()), false)
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+    <div style="width: 90%; margin: 0 auto;">
+        <input id="btnAddImgTextItem" type="button" value="新增图文+" />
+    </div>
+    @if (isEdit && Model.Images != null && Model.Images.Any())
+    {
+        foreach (var topicImage in Model.Images)
+        {
+        <form class="imgTextForm">
+            <input type="hidden" name="ImageId" value="@topicImage.ImageId" />
+            <input type="hidden" name="ImageState" value="@topicImage.ImageState" />
+            <input type="hidden" name="ImageType" value="@topicImage.ImageType" />
+            <input type="hidden" name="_Deleted" value="0" />
+            <table class="showDetailTableMultiColumnm">
+                <tbody>
+                    
+                    @{
+                        var title = "";//标题
+                        var show = "";//显示删除
+                        
+                        if (topicImage.ImageType == 1)
+                        {
+                            title = "话题主图";
+                            show = "none";
+                        }
+                        else
+                        {
+                            title = "话题副图";
+                        }
+                    }
+
+                    <tr>
+                        <th colspan="4" style="text-align: left; padding-left: 5px;" id="title">@title</th>
+                    </tr>
+                    
+
+                    <tr style="display: @show" id="del">
+                        <td>
+                            <input type="button" class="delImg" value="删除" />
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>排序:</td>
+                        <td>
+                            <input type="text" name="Sort" value="@topicImage.Sort" style="width: 50px;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>图片路径:</td>
+                        <td>
+                            <input type="text" name="ImageUrl" value="@topicImage.ImageUrl" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>图片链接:</td>
+                        <td>
+                            <input type="text" name="ImageLink" value="@topicImage.ImageLink" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>标题:</td>
+                        <td>
+                            <input type="text" name="ImageTitle" value="@topicImage.ImageTitle" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>内容:</td>
+                        <td>
+                            <textarea rows="4" style="width: 80%" name="ImageContent">@topicImage.ImageContent</textarea>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+        }
+    }
+    else
+    {
+        <form class="imgTextForm">
+            <input type="hidden" name="ImageId" value="0" />
+            <input type="hidden" name="ImageState" value="1" />
+            <input type="hidden" name="ImageType" value="1" />
+            <input type="hidden" name="_Deleted" value="0" />
+            <table class="showDetailTableMultiColumnm">
+                <tbody>
+                  
+                    <tr>
+                        <th colspan="4" style="text-align: left; padding-left: 5px;" id="title">话题主图</th>
+                    </tr>
+                      <tr style="display: none" id="del">
+                        <td>
+                            <input type="button" class="delImg" value="删除" />
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>排序:</td>
+                        <td>
+                            <input type="text" name="Sort" value="0" style="width: 50px;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>图片:</td>
+                        <td>
+                            <input type="text" name="ImageUrl" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>图片链接:</td>
+                        <td>
+                            <input type="text" name="ImageLink" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>标题:</td>
+                        <td>
+                            <input type="text" name="ImageTitle" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>内容:</td>
+                        <td>
+                            <textarea rows="4" style="width: 80%" name="ImageContent"></textarea>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    }
+
+
+
+</div>
+
+<div class="rowButton">
+    <input type="button" value="保存" id="btnSave" />
+</div>
+
+<script type="text/javascript">
+    $(function () {
+
+        $("#btnAddImgTextItem").click(function () {
+
+            var html = $("#tableContainer .imgTextForm").eq(0).clone();
+            
+            html.find("input[name='ImageUrl']").val("");
+            html.find("input[name='ImageTitle']").val("");
+            html.find("input[name='ImageLink']").val("");
+            html.find("textarea[name='ImageContent']").val("");
+            
+            html.find("input[name='Sort']").val("0");
+            html.find("input[name='_Deleted']").val(0);
+            html.find("input[name='ImageType']").val("2");
+            html.find("input[name='ImageState']").val("1");
+            html.find("input[name='ImageId']").val("0");
+
+            html.find(".delImg").removeAttr("disabled");
+            html.find("#del").css("display","");
+            html.find("#title").html("话题副图");
+
+            $("#tableContainer").append(html);
+        });
+
+        $("#tableContainer").on("click", ".delImg", function () {
+            var obj = $(this).parents("form");
+
+            var deletedHid = obj.find("input[name='_Deleted']");
+            deletedHid.val(1);
+            $(this).attr("disabled", "disabled");
+        });
+
+        //保存
+        $("#btnSave").click(function () {
+
+            var fromData = {};
+            fromData.Topic = {};
+            fromData.Topic.TopicId = $("#TopicId").val();
+            fromData.Topic.Sort = $("#Sort").val();
+            fromData.Topic.TopicTitle = $("#TopicTitle").val();
+            fromData.Topic.TopicContent = $("#TopicContent").val();
+            fromData.Topic.TopicDescribe = $("#TopicDescribe").val();
+            fromData.Topic.TopicState = $("#TopicState").val();
+
+            var subFromArray = [];
+
+            $("#tableContainer .imgTextForm").each(function (i, item) {
+                var $obj = $(this);
+                var subFromData = {};
+                subFromData.ImageId = $obj.find("input[name='ImageId']").val();
+                subFromData.ImageUrl = $obj.find("input[name='ImageUrl']").val();
+                subFromData.ImageLink = $obj.find("input[name='ImageLink']").val();
+                subFromData.ImageTitle = $obj.find("input[name='ImageTitle']").val();
+                subFromData.ImageContent = $obj.find("textarea[name='ImageContent']").val();
+                subFromData.ImageDescribe = $obj.find("input[name='ImageDescribe']").val();
+                subFromData.Sort = $obj.find("input[name='Sort']").val();
+                subFromData.ImageType = $obj.find("input[name='ImageType']").val();
+                subFromData.Sort = $obj.find("input[name='Sort']").val();
+                if ($obj.find("input[name='_Deleted']").val() == 1) {
+                    subFromData.Deleted = true;
+                } else {
+                    subFromData.Deleted = false;
+                }
+                subFromArray.push(subFromData);
+            });
+            fromData.TopicImages = subFromArray;
+
+            $.ajax({
+                url: '@Url.Action("UpdateImages", "Topic")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(fromData),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("更新成功！");
+                        reloadPage();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+
+        });
+
+    });
+</script>

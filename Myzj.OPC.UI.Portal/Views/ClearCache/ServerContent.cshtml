@@ -1,0 +1,13 @@
+﻿@{
+    Layout = null; 
+}
+
+@foreach (var s in ViewBag.ServerList)
+{
+    var isChecked = "";
+    if (s.Selected)
+    {
+        isChecked = "checked='checked'";
+    }
+     <input name="servers" type="checkbox" value="@s.Value" @isChecked /> @s.Text
+}

@@ -1,0 +1,58 @@
+﻿
+@{
+    Layout = null;
+}
+@{
+    int rowindex = 0;
+} 
+
+@model Myzj.OPC.UI.Model.AdminCarriage._RemoteParams   
+    
+
+           <table class="resultTable" id="Plug_Configure">
+            <thead>
+                <tr>
+                     <th>操作</th>
+                    <th>区域ID</th>
+                    <th>不包含的区域ID</th>
+                    <th>开始金额</th>
+                     <th>截止金额</th>
+                    <th>起始重量</th>
+                     <th>起始金额</th>
+                    <th>增加重量</th>
+                     <th>增加金额</th>
+                    <th>优先级</th>                   
+                     
+                </tr>
+            </thead>
+            <tbody>
+               
+@foreach (var item in Model.RemoteParams)
+{  
+    <tr>
+        <td><a   class="xiugai" href='javascript:modify(@rowindex);'>修改</a></td>
+        <td>@string.Join(",", @item.AreaIds)</td>
+      
+        <td>@string.Join(",", @item.ExcludeAreaIds)</td>
+        <td colspan="6">
+             <table style="width:100%;border-collapse: collapse;">
+            @foreach (var om in item.RemoteSections)
+            {
+                 <tr>
+                     <td style="width:5%;">@om.StartMoney</td>
+                      <td style="width:5%;">@om.EndMoney </td>
+                      <td style="width:5%;">@om.FirstWeight</td>
+                      <td style="width:5%;">@om.FirstPrice </td>
+                      <td style="width:5%;">@om.AddWeight  </td>
+                      <td style="width:5%;">@om.AddPrice </td>
+                 </tr>
+            }
+                </table>
+        </td>
+        <td>@item.Priority</td>
+    </tr>
+    
+    rowindex++;
+}
+                 </tbody>
+                </table>      

@@ -1,0 +1,122 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Portal.Models
+@using Myzj.OPC.UI.Model.SearchManagement
+@model Myzj.OPC.UI.Model.SearchManagement.SearchManagementRefer
+	@{
+    ViewBag.Title = "商品搜索词审核管理";
+	}
+<style>
+	.showDetailTable tr td:nth-child(2n+1) {
+		width: 10%;
+		text-align: right;
+	}
+		.showDetailTable tr td:nth-child(2n) {
+		width: 15%;
+	}
+		.showDetailTable tr td input{
+			width:90%
+		}
+	.showDetailTable .sBtn {
+		width: 15%;
+		height: 30px;
+		margin-top: 10px;
+		margin-bottom: 10px;
+		cursor: pointer;
+	}
+	.resultTable thead tr {
+					  height: 36px;
+				  }
+</style>
+
+
+	<h2>商品搜索词审核管理</h2>
+
+@using (Html.BeginForm())
+{
+    var success = ViewData["SuccessMsg"];
+    if (null != success)
+    {
+		<span style="color: green">@success</span>
+    }
+	var notice = ViewData["ErrorMsg"];
+	if (null != notice)
+	{
+	<span style="color: red">@notice</span>
+	}
+
+	<table class="showDetailTable">
+		<tbody>
+			<tr>
+				<td>创建人:</td>
+				<td><input type="text" name="SearchManCheckDetail.CreateBy" value="@Model.SearchManCheckDetail.CreateBy" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" />
+				<td>审核人:</td>
+				<td>
+					<input type="text" name="SearchManCheckDetail.UpdateBy" value="@Model.SearchManCheckDetail.UpdateBy" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" />
+				</td>
+				<td>状态:</td>
+				<td>
+					@Html.DropDownListFor(m => m.SearchManCheckDetail.AuditState, new KvSelectList(typeof (AppEnum.SearchState).GetEnumList()))
+				</td>
+				<td>搜索词:</td>
+				<td><input type="text" name="SearchManCheckDetail.KeyWords" value="@Model.SearchManCheckDetail.KeyWords" id="KeyWords" />
+			</tr>
+			<tr>
+				<td colspan="10">
+					<input style="margin-left: 35%" type="submit" value="查询" id="btnSearch" class="sBtn" />
+					<input type="button" value="新增" onclick="javascript: RedirctToAdd(); " class="sBtn" />
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+
+	if (Model.SearchList != null && Model.SearchList.Any())
+	{
+	<table class="resultTable" style="margin-top: 30px">
+		<thead>
+			<tr>
+				<th>查看详情</th>
+				<th>搜索词</th>
+				<th>操作类型</th>
+				<th>创建人</th>
+				<th>创建时间</th>
+				<th>最后状态</th>
+				<th>审核人</th>
+				<th>审核时间</th>
+				<th>拒绝理由</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in Model.SearchList)
+					{
+				<tr>
+					<td>
+						<a onclick="window.open('/SearchManagement/AuditProducts?cid=@item.Id')" style="color: #0000FF;cursor: pointer">查看关联商品</a>
+					</td>
+					<td>@item.KeyWords</td>
+					<td>@(item.OperateType==1?"新增/追加":"删除搜索词")</td>
+					<td>@item.CreateBy</td>
+					<td>@item.CreateDate</td>
+					<td>@(item.AuditState>0?"已审核":"待审核")</td>
+					<td>@item.UpdateBy</td>
+					<td>@item.UpdateDate</td>
+					<td>@item.RefusedReason</td>
+					</tr>
+					}
+
+		</tbody>
+	</table>
+	}
+	@Html.Partial("Pager", @Model)
+}
+
+<script type="text/javascript">
+	function RedirctToAdd() {
+		var key = $.trim($("#KeyWords").val());
+		if (key.length > 0) {
+			window.open('/SearchManagement/PlDetail?key='+ key);
+		} else {
+			window.open('@Url.Action("PlDetail", "SearchManagement")');
+		}
+	}
+</script>

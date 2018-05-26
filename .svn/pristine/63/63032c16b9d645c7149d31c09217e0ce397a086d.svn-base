@@ -1,0 +1,293 @@
+﻿@using Myzj.OPC.UI.ServiceClient
+@model IEnumerable<Myzj.OPC.UI.Model.BaseCouponConfig.CouponInfoDetailExt>
+@{
+    Layout = null;
+}
+<style>
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+</style>
+@{
+    <div class="rowButton">
+        <input type="submit" name="Query" id="Query" value="查询" />
+        <input type="button" name="Query" id="BtnAdd" value="新增" onclick="javascript: window.open('/CouponManage/Detail')" />
+    </div>
+
+    if (Model != null && Model.Any())
+    {
+
+        var listRole = BaseCouponConfigClient.Instance.GetAllRole();
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    @* <th>Id</th>*@
+                    <th>操作</th>
+                    <th>编号</th>
+                    <th>优惠券Key</th>
+                    <th>优惠券名称</th>
+                    <th>优惠券类型</th>
+                    <th>是否码转券</th>
+                    <th>有效时间</th>
+                    @*  <th>结束时间</th>*@
+                    <th>满金额</th>
+                    <th>减金额</th>
+                    <th>折扣</th>
+                    <th>折扣上限</th>
+                    <th>限制数量</th>
+                    @*  <th>预估发放金额</th>*@
+                    <th>已领取</th>
+                    <th>应用平台</th>
+                    <th>描述</th>
+                    <th>使用状态</th>
+                    @* <th>是否启用</th>*@
+                    <th>最终审核等级</th>
+                    <th>审核进度</th>
+                    <th>审核状态</th>
+                    @*<th>审核人</th>
+                    <th>审核时间</th>*@
+                    <th>驳回原因</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @if (item.AuditState == 1 || item.AuditState == 2 || item.AuditState == -1)
+                            {
+                                //已审核
+                                <a  style="color: #191970" target="_blank" href="@Url.Action("Detail", "CouponManage", new { id = item.SysNo })" >编辑</a>
+                                <a style="color: #191970" target="_blank" pvalue="@item.SysNo" class="setIsCopy">复制</a>
+                                if (item.IsEnable == true)
+                                {
+                                    <a style="color: #191970" href="javascript:;" pvalue="@item.SysNo" ptype="2" class="setIsEnable">禁用</a>
+                                }
+                                else
+                                {
+                                    <a style="color: green" href="javascript:;" pvalue="@item.SysNo" ptype="1"  class="setIsEnable">启用</a>
+                                }
+                                <a style="color: #191970" href="javascript:;" pvalue="@item.SysNo" class="setIsDel">删除</a>
+                                
+                                <a  style="color: #191970" target="_blank" href="@Url.Action("Detail2", "CouponManage", new { id = item.SysNo })" >详细</a>
+                                if (item.AuditState == -1)
+                                {
+                                    <a style="color: #191970" href="javascript:;" pvalue="@item.SysNo" class="sumbitAudit">提交审核</a>
+                                }
+                                else
+                                {
+                                    <a style="color: gray">提交审核</a>
+                                }
+                            }
+                            else
+                            {
+                                //待审核
+                                <a style="color: gray" target="_blank">编辑</a>
+                                 <a style="color: #191970" target="_blank" pvalue="@item.SysNo" class="setIsCopy">复制</a>
+                                if (item.IsEnable == true)
+                                {
+                                    <a style="color: gray">禁用</a>
+                                }
+                                else
+                                {
+                                    <a style="color: gray">启用</a>
+                                }
+                                <a style="color: gray">删除</a>@*
+                                <a style="color: #191970" target="_blank" href="/CouponManage/Detail?copyId=@item.SysNo" pvalue="@item.SysNo" class="setIsCopy">复制</a>*@
+                                <a  style="color: #191970" target="_blank" href="@Url.Action("Detail2", "CouponManage", new { id = item.SysNo })" >详细</a>
+                                <a style="color: gray">提交审核</a>
+                            }
+
+
+                           
+
+                        </td>
+                        <td>@item.SysNo</td>
+                        <td>@item.CouponKey</td>
+                        <td><a title="@item.CouponName" style="cursor:pointer" onclick="GetCouponName(this,'@item.CouponName')">@{
+                                                            var couponname = "";
+                                                            if (!string.IsNullOrEmpty(item.CouponName))
+                                                            {
+                                                                if (item.CouponName.Length > 15)
+                                                                {
+                                                                    couponname = item.CouponName.Substring(0, 15) + "...";
+                                                                }
+                                                                else
+                                                                {
+                                                                    couponname = item.CouponName;
+                                                                }
+                                                            }
+                                                        }
+                               @couponname</a></td>
+                        <td>
+                            @if (item.CouponType == 2)
+                            {
+                                <span>折扣券</span>
+                            }
+                            else
+                            {
+                                <span>满减券</span>
+                            }
+                        </td>
+                        <td>
+                             @if (item.IsCodeToCoupon == 1)
+                            {
+                                <span>是</span>
+                            }
+                            else
+                            {
+                                <span>否</span>
+                            }
+                        </td>
+                        <td>@item.StartTime～@item.EndTime</td>
+                        <td>@Convert.ToDecimal(item.FillMoney).ToString("#0.00")</td>
+                        <td>@Convert.ToDecimal(item.SubtractMoney).ToString("#0.00")</td>
+                        <td>@Convert.ToDecimal(item.Discount).ToString("#0.00")</td>
+                        <td>@Convert.ToDecimal(item.DiscountUpperLimit).ToString("#0.00")</td>
+                        <td>@item.SendLimitCount</td>
+                        @*  <td>@Convert.ToDecimal(item.SubtractMoney * item.SendLimitCount).ToString("#0.00")</td>*@
+                        <td>@item.ReceiveCount</td>
+                        <td>
+                            @{
+                            var plat = "";
+                            if (item.Platform != null && item.Platform.Any())
+                            {
+                                plat = string.Join(",", item.Platform).Replace("1", "PC网站").Replace("2", "Wap网站").Replace("4", "安卓APP").Replace("5", "苹果APP").Replace("8", "Ipad").Replace("0,", "").Replace("[0],", "");
+                            }
+                                
+                            }@plat
+                        </td>
+                        <td>@item.CouponDescription</td>
+
+                        @if (item.IsDelete == true)
+                        {
+                            <td style="color: red">已删除</td>
+                        }
+                        else
+                        {
+                            if (item.IsEnable == true)
+                            {
+                                if (item.StartTime > DateTime.Now)
+                                {
+                            <td>未开始</td>
+                                }
+                                else if (item.EndTime > DateTime.Now && item.StartTime <= DateTime.Now)
+                                {
+                            <td>可使用</td>
+                                }
+                                else
+                                {
+                            <td>已过期</td>
+                                }
+                            }
+                            else
+                            {
+                            <td><span style="color: red">已禁用</span></td>
+                            }
+
+                        }
+                        @*  @if (item.IsEnable == true)
+                        {
+                            <td>启用</td>
+                        }
+                        else
+                        {
+
+                        }*@
+                        <td>@{
+                        var auditRole = "";
+                        try
+                        {
+                            auditRole = listRole.Where(m => m.Key == item.AuditLevel).First().Value;
+                        }
+                        catch (Exception)
+                        {
+
+                            auditRole = "";
+                        }
+                     
+                                
+                        }
+                             @auditRole
+                           
+                        </td>
+
+                        <td>
+                            @{
+                        var nowAudit = "";
+                        if (item.auditer == 0)
+                        {
+                            nowAudit = "提交审核";
+                        }
+                        else
+                        {
+                            nowAudit = listRole.Where(m => m.Key == item.auditer).First().Value;
+                        }
+                            }
+                            @nowAudit
+                        </td>
+                        @if (item.AuditState == 0)
+                        {
+                            <td>待审核</td>
+                        }
+                        else if (item.AuditState == 1)
+                        {
+                            <td><span style="color: red">已驳回</span></td>
+                        }
+                        else if (item.AuditState == 2)
+                        {
+                            <td><span style="color: gray">已审核</span></td>
+                        }
+                        else if (item.AuditState == -1)
+                        {
+                            <td style="color: red">编辑保存</td>
+                        }
+@* <td>@item.AuditPerson</td>
+                        <td>@item.AuditDateTime</td>*@
+                        <td><a title="@item.RejectReason">@{
+                        var reason = "";
+                        if (item.AuditState == 1)
+                        {
+                            if (!string.IsNullOrEmpty(item.RejectReason))
+                            {
+                                if (item.RejectReason.Length > 15)
+                                {
+                                    reason = item.RejectReason.Substring(0, 15) + "...";
+                                }
+                                else
+                                {
+                                    reason = item.RejectReason;
+                                }
+                            }
+                        }
+                        }
+                            @reason</a></td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+}
+
+
+<script type="text/javascript">
+
+    function GetCouponName(obj, v) {
+        obj.text = v;
+    }
+
+
+    //复制
+    $(".setIsCopy").click(function () {
+        var obj = $(this);
+        var sysno = obj.attr("pvalue");
+        if (confirm('确定复制吗？')) {
+            $(".setIsCopy").attr("href","/CouponManage/Detail?copyId="+sysno);
+        }
+    });
+</script>

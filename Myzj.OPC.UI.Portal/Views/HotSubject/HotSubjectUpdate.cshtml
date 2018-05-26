@@ -1,0 +1,278 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.HotStyle
+@using Myzj.OPC.UI.ServiceClient
+@model  Myzj.OPC.UI.Model.HotStyle.HotSubjectModel
+<h2>修改活动专题</h2>
+<style type="text/css">
+    .showDetailTableMultiColumnm .manjian textarea {
+        width: 500px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .showDetailTableMultiColumnm .tickename input {
+        width: 200px;
+    }
+</style>
+@{
+    var applyPlace = HotStyleClient.Instance.GetApplyPlace(new ApplyPlaceModel());
+}
+@using (Html.BeginForm())
+{
+    if (Model != null)
+    {
+    <div id="tableContainer">
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <input id="sysNo" value="@Model.Id" type="hidden"/>
+                    <td>活动专题名称</td>
+                    <td colspan="3">
+                        <input id="txtSubjectName" value="@Model.SubjectName" type="text" placeholder="必填" style="width: 500px;" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>图片地址</td>
+                    <td colspan="3">
+                        <input id="txtPictureUrl" value="@Model.PictureUrl" type="text" style="width: 600px;" />
+                        <span style="width: 50px">注意！图片路径不要包含任何中文和中文字符，否则app端图片出不来！</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>App图片地址</td>
+                    <td colspan="3">
+                        <input id="txtPictureUrlTrans" value="@Model.PictureUrlTrans" type="text" style="width: 600px;" />
+                        <span style="width: 50px">注意！图片路径不要包含任何中文和中文字符，否则app端图片出不来！</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>描述</td>
+                    <td colspan="3" style="padding: 7px 4px">
+                        <textarea id="txtSujectDesc" placeholder="必填">@Model.SujectDesc</textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>应用位置</td>
+                    <td colspan="3" style="white-space: normal; text-align: left; line-height: 25px; padding: 4px">
+                        @{
+        var appIds = new List<string>() { };
+        if (!string.IsNullOrEmpty(Model.ApplyPlace))
+        {
+            appIds = Model.ApplyPlace.Replace("][", ",").Replace("[", "").Replace("]", "").Split(',').ToList();
+        }
+
+        foreach (var item in applyPlace)
+        {
+            var index = applyPlace.IndexOf(item);
+            if (appIds.Any(c => c.Equals(item.ApplyPlaceId.ToString())))
+            {
+                            <input style="width: 20px;float: none" value="@item.ApplyPlaceId" checked="checked" type="checkbox" name="ApplyPlace"/>@item.ApplyPlaceName
+            }
+            else
+            {
+                            <input style="width: 20px;float: none" value="@item.ApplyPlaceId" type="checkbox" name="ApplyPlace"/>@item.ApplyPlaceName
+            }
+
+            if (index % 11 == 0 && index != 0)
+            {
+                            <br />
+            }
+        }
+                        }
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>应用标签</td>
+                    <td colspan="3" style="padding: 7px 4px">
+                        <input id="txtApplyLabel" value="@Model.ApplyLabel" type="text" style="width: 200px;" />
+                        <span style="width: 50px">注意！将用户标签以英文逗号分隔组合成字符</span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>价格/折扣</td>
+                    <td colspan="3">
+                        <input id="txtSetDiscount" value="@Model.SetDiscount" type="text" placeholder="必填" style="width: 200px;margin: 4px 9px;line-height: 20px;" />
+                        <span style="width: 50px;color: red">为避免出错！请直接复制括号内的内容后修改！<br/>设置价格如（￥100.00起） &nbsp;&nbsp;设置折扣如（5折起）！！！</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>pc跳转链接</td>
+                    <td colspan="3">
+                        <input id="txtClickUrl" value="@Model.ClickUrl" type="text" placeholder="必填" style="width: 600px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>app跳转链接</td>
+                    <td colspan="3">
+                        <input id="txtAppClickUrl" value="@Model.AppClickUrl" type="text" placeholder="必填" style="width: 600px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>开始时间</td>
+                    <td colspan="3">
+                        <input id="txStartTime" type="text" placeholder="必填" value="@Model.StartTime" class="Wdate" onfocus="dateFmt(this,1);" style="width: 200px;" />
+                        <span style="width: 10px;">至</span>
+                        <input id="txtEndTime" type="text" placeholder="必填" value="@Model.EndTime" class="Wdate" onfocus="dateFmt(this,2);" style="width: 200px;" />
+                </tr>
+                <tr>
+                    <td>是否启用</td>
+                    <td colspan="3" id="radList">
+                        @{
+        var enable = "";
+        var enable2 = "";
+        if ((Model.IsEnable) ?? false)
+        {
+            enable = "checked=\"checked\"";
+        }
+        else
+        {
+            enable2 = "checked=\"checked\"";
+        }
+                        }
+                        <span style="width: 40px; float: left;">
+                            <input type="radio" name="IsEnable" @enable  value="true" />启用</span>
+                        <span style="width: 40px; margin-left: 50px;">
+                            <input type="radio" name="IsEnable" @enable2 value="false" />禁用</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="rowButton">
+            <input type="button" value="修改" id="btnSave" />
+            <input type="button" value="关闭" id="btnDel" onclick="window.close();" />
+        </div>
+
+        <div>
+            <img id="imgUrl" src="" type="text" style="width: 600px;" />
+
+        </div>
+    </div>
+        
+    }
+    else
+    {
+    @Html.Partial("Error");
+    }
+}
+
+<script type="text/javascript">
+
+    $(function () {
+        $("#txtPictureUrlTrans").blur(function () {
+            $("#imgUrl").attr("src", "" + $("#txtPictureUrlTrans").val() + "");
+        });
+    });
+
+    function dateFmt(obj, type) {
+        if (type == 1) {
+            if (obj.value == "") {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd 00:00:00' });
+            } else {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' });
+            }
+        } else {
+            if (obj.value == "") {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd 23:59:59' });
+            } else {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' });
+            }
+        }
+
+    }
+    $("#btnSave").click(function () {
+
+        if ($("#txtSubjectName").val() == '') {
+            alert('活动专题名称必填');
+            return;
+        }
+
+
+        if ($("#txtPictureUrl").val() == '') {
+            alert('图片地址必填');
+            return;
+        }
+
+        if ($("#txtPictureUrlTrans").val() == '') {
+            alert('App图片地址必填');
+            return;
+        }
+
+        if ($("#txtSujectDesc").val() == '') {
+            alert('描述必填');
+            return;
+        }
+
+        //应用位置必选
+        if ($('input[name="ApplyPlace"]:checked').length == 0) {
+            alert('应用位置必填');
+            return;
+        }
+
+        if ($("#txtSetDiscount").val() == '') {
+            alert('价格/折扣必填');
+            return;
+        }
+        if ($("#txtClickUrl").val() == '') {
+            alert('Pc链接必填');
+            return;
+        }
+        if ($("#txtAppClickUrl").val() == '') {
+            alert('App链接必填');
+            return;
+        }
+
+        if ($("#txStartTime").val() == '') {
+            alert('开始时间必填');
+            return;
+        }
+        if ($("#txtEndTime").val() == '') {
+            alert('结束时间必填');
+            return;
+        }
+
+        var applyPlace = "";//应用位置
+        $('input[name="ApplyPlace"]:checked').each(function () {
+            applyPlace += "[" + $(this).val() + "]";
+        });
+
+        var model = {};
+        model.Id = $.trim($("#sysNo").val());
+        model.SubjectName = $.trim($("#txtSubjectName").val());//专题名称
+        model.PictureUrl = $.trim($("#txtPictureUrl").val());//图片
+        model.PictureUrlTrans = $.trim($("#txtPictureUrlTrans").val());//过度图片
+        model.SujectDesc = $.trim($("#txtSujectDesc").val());//描述
+        model.ApplyPlace = applyPlace;//应用位置
+        model.ApplyLabel = $.trim($("#txtApplyLabel").val());//应用标签
+        model.SetDiscount = $.trim($("#txtSetDiscount").val());//折扣
+        model.ClickUrl = $.trim($("#txtClickUrl").val());//点击链接
+        model.AppClickUrl = $.trim($("#txtAppClickUrl").val());//app链接
+        model.StartTime = $.trim($("#txStartTime").val());//开始时间
+        model.EndTime = $.trim($("#txtEndTime").val());//结束时间
+        model.IsEnable = $('#radList input[name="IsEnable"]:checked').val();//启用
+
+        console.log(JSON.stringify(model));
+
+        if (confirm("你确定保存吗？")) {
+            $.ajax({
+                url: '@Url.Action("UpdHotSubject", "HotExec")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("更新成功！");
+                        opener.location.reload();
+                        window.close();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        }
+    });
+</script>

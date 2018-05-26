@@ -1,0 +1,210 @@
+﻿@{
+    ViewBag.Title = "审核规则";
+}
+
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.BaseCouponConfig
+@using Myzj.OPC.UI.ServiceClient
+@model Myzj.OPC.UI.Model.BaseCouponConfig.AuditRuleDetail
+<h2>@ViewBag.Title</h2>
+<style type="text/css">
+    .table {
+        width: 90%;
+        margin: 5px auto;
+        border: 1px silver solid;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+        .table tr td {
+            border: silver 1px solid;
+            height: 30px;
+            text-align: center;
+            padding: 0 5px;
+            white-space: nowrap;
+        }
+</style>
+
+
+<input type="hidden" id="hdSysNo" value="@Model.SysNo"/>
+<div id="tableContainer">
+    <table class="table">
+        <tbody>
+            <tr>
+                <td>规则名称</td>
+                <td style="text-align: left">
+                    <input id="txtAuditLevelRuleName" style="width: 500px" type="text" placeholder="必填，限20字符" value="@Model.AuditLevelRuleName" onkeyup="cleanSpelChar(this);" />
+                </td>
+            </tr>
+            <tr>
+                <td>规则</td>
+                <td>
+                    @{
+                      
+                        var roles = BaseCouponConfigClient.Instance.GetAllRole();
+
+                        var list = BaseCouponConfigClient.Instance.GetRule(Model.AuditLevelRule);
+                        var str = "";
+                    }
+                    <input type="hidden" id="hd_ddlStr" value="@Html.DropDownListFor(m => m.AuditLevel, new KvSelectList(roles)).ToHtmlString()"/>
+                    <input type="hidden" id="hd_AuditLevelRule" value="@Model.AuditLevelRule"/>
+                    @if (list != null && list.ParamRule != null && list.ParamRule.Any())
+                    {
+                        str += "<table id='dataStr' class='table'>";
+                        foreach (ParamRule rule in list.ParamRule)
+                        {
+                            try
+                            {
+
+
+                                Model.AuditLevel = rule.AuditLevel;
+                                str += "<tr name='tr_rule'>";
+                                str += "<td>开始金额：</td><td style='text-align: left;'><input style='width: 200px' id='StartMoeny' name='StartMoeny' placeholder='必填' value='" + rule.StartMoeny + "' type='text' /></td>";
+                                str += "<td>结束金额(包含)：</td><td style='text-align: left;'><input style='width: 200px' id='EndMoeny' name='EndMoeny' placeholder='必填' value='" + rule.EndMoeny + "' type='text' /></td>";
+                                str += "<td>审核等级：</td><td style='text-align: left;'>" + Html.DropDownListFor(m => m.AuditLevel, new KvSelectList(roles)) + "</td>";
+                                str += "<td><input type='button' value='移除' onclick='removeCondition(this)'/></td></tr>";
+                            }
+                            catch (Exception ex)
+                            {
+                                str += "";
+                            }
+                        }
+                        str += "</table>";
+                        if (list.CheckMoeny.HasValue)
+                        {
+                            str += "<div style='text-align: left;'>减金额指定金额（包含）：<input style='width: 200px' id='CheckMoeny' name='CheckMoeny' placeholder='必填' value='" + list.CheckMoeny + "' type='text' /></div>";
+                        }
+                    }
+
+                    @(new HtmlString(str))
+                    <input style="width: 65px; margin: 20px;" type="button" value="添加" onclick="addDataCondition()">
+                </td>
+            </tr>
+            <tr>
+                <td>描述</td>
+                <td style="text-align: left;">
+                    <textarea id="txtRemarks" style="width: 500px; margin: 10px;" placeholder="限50字符" onkeyup="cleanSpelChar(this);">@Model.Remarks</textarea>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <div class="rowButton">
+        <input type="button" value="保存" id="btnSave" onclick="saveRule()" />
+        <input type="button" value="关闭" id="btnCancel" onclick="window.location.href = '/CouponAuditRole/RuleIndex'" />
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function addDataCondition() {
+
+        var obj = $("#dataStr");
+        var str = "";
+        str += "<tr name='tr_rule'>";
+        str += "<td>开始金额：</td><td style='text-align: left;'><input style='width: 200px' id='StartMoeny' name='StartMoeny' placeholder='必填' type='text' /></td>";
+        str += "<td>结束金额（包含）：</td><td style='text-align: left;'><input style='width: 200px' id='EndMoeny' name='EndMoeny' placeholder='必填' type='text' /></td>";
+        str += "<td>审核等级：</td><td style='text-align: left;'>";
+        str += $("#hd_ddlStr").val();
+        str += "</td>";
+        str += "<td><input type='button' value='移除' onclick='removeCondition(this)'/></td></tr>";
+        obj.append(str);
+    }
+
+    function removeCondition(obj) {
+        $(obj).parent().parent().remove();
+    }
+
+
+    function saveRule() {
+
+        var model = {};
+        model.SysNo = $.trim($("#hdSysNo").val());
+        model.AuditLevelRuleName = $.trim($("#txtAuditLevelRuleName").val());
+        if ($.trim($("#txtAuditLevelRuleName").val()) == "") {
+            alert("请填写规则名称");
+            return;
+        }
+        var list = {};
+        var ParamRule = [];
+        var obj = $("#dataStr tr");
+        var length = obj.length;
+        if (length > 0) {
+            var num = 0;
+            var each = $.each(obj, function (i, item) {
+               
+                var rule = {};
+                var StartMoeny = $(this).find("input[id='StartMoeny']").val();
+                var EndMoeny = $(this).find("input[id='EndMoeny']").val();
+                var AuditLevel = $(this).find("select[id='AuditLevel']").val();
+               
+                if (StartMoeny == null || StartMoeny == "" || !checkMoney(StartMoeny) || StartMoeny.length > 10 || parseFloat(StartMoeny) < 0) {
+                    alert("请输入正确的开始金额,长度限10！");
+                    return false;
+                }
+                if (EndMoeny == null || EndMoeny == "" || EndMoeny.length > 10 || parseFloat(EndMoeny)<0) {
+                    alert("请输入正确的结束金额，长度限10！");
+                    return false;
+                }
+                //if (parseFloat(StartMoeny) > parseFloat(EndMoeny)) {
+                //    alert("金额错误！开始："+StartMoeny+"   结束："+EndMoeny);
+                //    return;
+                //}
+                rule.StartMoeny = StartMoeny;
+                rule.EndMoeny = EndMoeny;
+                rule.AuditLevel = AuditLevel;
+                ParamRule.push(rule);
+                num++;
+            });
+            if (num != length) {
+                return;
+            }
+           
+        }
+        list.ParamRule = ParamRule;
+        if ($("#CheckMoeny").val()) {
+            if (!checkMoney($("#CheckMoeny").val()) || $("#CheckMoeny").val().length>10) {
+
+                alert("请输入正确的减金额，限长度10");
+                return;
+            }
+            list.CheckMoeny = $("#CheckMoeny").val();
+        }
+
+        model.AuditLevelRule = JSON.stringify(list);
+        model.Remarks = $.trim($("#txtRemarks").val());
+        if (confirm("确定保存 ?")) {
+            $.ajax({
+                url: '@Url.Action("SaveRule", "CouponAuditRole")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    alert(result.DoResult);
+                    if (result.DoFlag) {
+                        window.location.href = '/CouponAuditRole/RuleIndex';
+                    }
+                }
+            });
+        }
+    }
+    //验证金额
+    function checkMoney(v) {
+        var a = /^[0-9]*(\.[0-9]{1,2})?$/;
+        if (!a.test(v)) {
+            
+            return false;
+        }
+        return true;
+    }
+    
+
+    //验证输入框内不能输入特殊字符,输入就立刻清除
+    function cleanSpelChar(th) {
+        if (/["'<>%;)(&+]/.test(th.value)) {
+            $(th).val(th.value.replace(/["'<>%;)(&+]/, ""));
+        }
+    }
+</script>
+

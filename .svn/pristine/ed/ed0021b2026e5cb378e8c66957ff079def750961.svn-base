@@ -1,0 +1,128 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.SaleHotStyle
+@model Myzj.OPC.UI.Model.SearchManagement.SearchManagementRefer
+<h2>商品搜索词管理</h2>
+
+
+<script type="text/javascript">
+    //绑定状态
+    //name 名称
+    //val 值
+    function bingSate(name, val) {
+        $("#" + name).val(val);
+    }
+</script>
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable">
+        <tbody>
+            <tr>
+                <td>创建人:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.CreateBy)
+                </td>
+                <td>状态:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.SearchDetail.State, new KvSelectList(typeof(AppEnum.SearchState).GetEnumList()))
+                </td>
+            </tr>
+            <tr>
+                <td>搜索词:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.SearchWord)
+                </td>
+                <td>排除词:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.ExcludeWord)
+                </td>
+            </tr>
+            <tr>
+                <td>商品ID:</td>
+                <td colspan="3">
+                    @Html.TextAreaFor(m => m.SearchDetail.TempProductId)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    var success = @ViewData["SuccessMsg"];
+    if (null != success)
+    { 
+    <span style="color: green">@success</span>
+    }
+    var notice = @ViewData["ErrorMsg"];
+    if (null != notice)
+    {
+    <span style="color: red">@notice</span>
+    }
+    @Html.Partial("Item", @Model.List)
+    
+    @Html.Partial("Pager", @Model)
+}
+<script type="text/javascript">
+    //$(function () {
+    //    //双击变可编辑文本域
+    //    $(".table_tr").dblclick(function () {
+    //        var id = $(this).children().eq(1).text();
+    //        var oldsearchWord = $(this).children().eq(4).text();
+    //        var input = "<input type='text' id='searchWord' value='" + oldsearchWord + "'/>";
+    //        $(this).children().eq(4).html(input);
+    //        var oldexcludeWord = $(this).children().eq(5).text();
+    //        var inputExclude = "<input type='text' id='excludeWord' value='" + oldexcludeWord + "'/>";
+    //        $(this).children().eq(5).html(inputExclude);
+
+    //        //获取焦点
+    //        $("input").blur(function () {
+    //            var search = {};
+    //            var searchModel = [];
+    //            var newsearchword = $("#searchWord").val();
+    //            var newexcludeword = $("#excludeWord").val();
+
+    //            var iObj = {};
+    //            iObj.SId = id;
+    //            iObj.SearchWord = newsearchword;
+    //            iObj.ExcludeWord = newexcludeword;
+    //            searchModel.push(iObj);
+    //            search.SearchList = searchModel;
+
+    //            if (oldexcludeWord != newexcludeword || oldsearchWord != newsearchword) {
+    //                $.ajax({
+    //                    url: "/SearchManagement/UpdateWebSearchManagement",
+    //                    type: "post",
+    //                    dataType: "json",
+    //                    contentType: "application/json",
+    //                    data: JSON.stringify(search),
+    //                    success: function (result) {
+    //                        if (result.DoFlag) {
+    //                            alert(result.DoResult);
+    //                            reloadPage();
+    //                        } else {
+    //                            alert(result.DoResult);
+    //                        }
+    //                    }
+    //                });
+    //            } else {
+    //                reloadPage();
+    //            }
+    //        });
+    //    });
+    //});
+
+    //全选和反全选
+    $("#selectAll").click(function () {//当点击全选框时 
+        var flag = $("#selectAll").is(":checked");//判断全选按钮的状态 
+        var checkItems = document.getElementsByName("all");
+        for (var i = 0; i < checkItems.length; i++) {
+            checkItems[i].checked = flag;
+        }
+    });
+    //点击子项
+    $("input:checkbox[name='all']").each(function () {
+        $(this).click(function () {
+            if ($("input:checkbox[name='all']:checked").length == $("input:checkbox[name='all']").length) {
+                document.getElementById("selectAll").checked = true;
+            } else {
+                document.getElementById("selectAll").checked = false;
+            }
+        });
+    });
+</script>

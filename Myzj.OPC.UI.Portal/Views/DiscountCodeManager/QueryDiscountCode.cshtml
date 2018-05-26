@@ -1,0 +1,134 @@
+﻿@{
+    ViewBag.Title = "QueryDiscountCode";
+}
+
+@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.BaseDiscountCodeConfig
+@using Myzj.OPC.UI.ServiceClient
+@model BaseRefer<DiscountCodeDetailRes, DiscountCodeDetailRes>
+<h2>生成优惠码明细</h2>
+
+<style>
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+
+    .gl-title {
+        padding: 10px 0;
+        height: 36px;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+    <div>
+        <table class="showDetailTable">
+            @if (string.IsNullOrWhiteSpace(Request.QueryString["BatchSysNo"]))
+            {
+
+                <tr>
+                    <td>活动Key</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.SearchDetail.ActivityKey)
+                    </td>
+                    <td>优惠码</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.SearchDetail.DiscountCode)
+                    </td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td>优惠码</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.SearchDetail.DiscountCode)
+                    </td>
+                    <td></td>
+                    <td>
+                       
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td>开始时间</td>
+                <td>
+                    <input type="text" name="SearchDetail.STime" id="SearchDetail.STime" value="@ViewBag.STime" onfocus="dateFmt(this,1) " />
+                </td>
+                <td>结束时间</td>
+                <td>
+                    <input type="text" name="SearchDetail.ETime" id="SearchDetail.ETime" value="@ViewBag.ETime" onfocus=" dateFmtStr(this,2) " /></td>
+            </tr>
+        </table>
+    </div>
+    <div class="rowButton">
+        <input type="submit" id="btnSearch" value="查询" />
+        <input type="button" id="btnToExcel" value="导出" onclick="window.location.href='@Url.Action("DiscountCodeExport", "DiscountCodeManager", new { BatchSysNo = ViewBag.BatchSysNo, ActivityKey = ViewBag.ActivityKey, DiscountCode = ViewBag.DiscountCode, STime = ViewBag.STime, ETime = ViewBag.ETime })    '"/>
+    </div>
+            if (Model.List2 != null && Model.List2.Any())
+            {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr class="gl-title">
+                    <th>活动Key</th>
+                    <th>活动名称</th>
+                    <th>设置数量</th>
+                    <th>优惠码</th>
+                    <th>申请人</th>
+                    <th>创建时间</th>
+                    <th>预约执行时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.List2)
+                {
+                    <tr>
+                        <td>@item.ActivityKey</td>
+                        <td>@item.ActivityName</td>
+                        <td>@item.SetCodeCount</td>
+                        <td>@item.DiscountCode</td>
+                        <td>@item.ApplyUserName</td>
+                        <td>@item.RowCreateDate</td>
+                        <td>@item.AdvanceTime</td>
+                        <td>
+                            <a style="color: #191970; cursor: pointer" target="_blank" onclick="deleteCode('@item.DiscountCode',this)">删除</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    @Html.Partial("Pager", @Model)
+            }
+}
+
+<script type="text/javascript">
+  
+    //删除
+    function deleteCode(discountCode, obj) {
+        if (confirm("你确定删除吗？")) {
+            $.ajax({
+                type: "Post",
+                url: "/DiscountCodeManager/DeleteDiscountCode",
+                data: "{DiscountCode:'" + discountCode + "'}",
+                contentType: "application/json;utf-8",
+                dataType: "json",
+                success: function (re) {
+                    alert(re.DoResult);
+                    if (re.DoFlag == true) {
+                        //window.location.href = window.location.href;
+                        location.reload();
+                    }
+
+                }
+            });
+        }
+    }
+
+</script>

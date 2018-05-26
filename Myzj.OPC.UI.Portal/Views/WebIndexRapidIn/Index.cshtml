@@ -1,0 +1,102 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.WebIndex.WebIndexRefer
+<h2>快速入口管理 </h2>
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable">
+        <tbody>
+            <tr>
+                <td>名称:</td>
+                <td>@Html.TextBoxFor(m => m.SearchDetail.VchName)</td>
+                <td>所属:</td>
+                <td>@Html.DropDownListFor(m => m.SearchDetail.IntSystemType, new KvSelectList(typeof(AppEnum.SystemType).GetEnumList()), true)</td>
+            </tr>
+            <tr>
+                <td>是否验证:</td>
+                <td>@Html.DropDownListFor(m => m.SearchDetail.IntNewUserVerify, new KvSelectList(typeof(AppEnum.NewUserVerify).GetEnumList()), true)</td>
+                <td>是否启用:</td>
+                <td>@Html.DropDownListFor(m => m.SearchDetail.IntIsVisibleIndex, new KvSelectList(typeof(AppEnum.IsEnable).GetEnumList()), true)</td>
+            </tr>
+        </tbody>
+    </table>
+    var success = @ViewData["SuccessMsg"];
+    if (null != success)
+    {
+    <span style="color: green">@success</span>
+    }
+    var notice = @ViewData["ErrorMsg"];
+    if (null != notice)
+    {
+    <span style="color: red">@notice</span>
+    }
+    @Html.Partial("Item", @Model.List)
+    
+    @Html.Partial("Pager", @Model)
+}
+
+<script type="text/javascript">
+    $(function () {
+        //更新排序
+        $(".IntSort").change(function () {
+            var obj = $(this);
+            var id = obj.attr("pvalue");
+            var sort = $(this).val();
+            $.ajax({
+                url: "/WebIndexRapidIn/UpdateSort",
+                data: { "id": id, "sort": sort },
+                success: function (res) {
+                    if (res.DoFlag) {
+                      //  alert("更新成功");
+                        location.reload();
+                    } else {
+                        alert(res.DoResult);
+                    }
+                }
+            });
+        });
+        //删除 
+        $(".delWebIndexRapidIn").click(function () {
+            var obj = $(this);
+            var id = obj.attr("pvalue");
+            $.ajax({
+                url: "/WebIndexRapidIn/Del",
+                data: { "id": id },
+                dataType: 'json',
+                type: 'POST',
+                success: function (res) {
+                    if (res.DoFlag) {
+                        location.reload();
+                    } else {
+                        alert(res.DoResult);
+                    }
+                }
+            });
+        });
+    });
+    //更新状态
+    function updateState(obj) {
+        var id = $(obj).data("id");
+        var state = 0;
+        if (obj.checked) {
+            state = 1;
+        }
+        $.ajax({
+            url: "/WebIndexRapidIn/Updatevisible?id=" + id + "&isvisible=" + state,
+            type: "Post",
+            success: function (res) {
+                if (res.DoFlag) {
+                    location.reload();
+                } else {
+                    alert("修改失败");
+                }
+            }
+        });
+    }
+</script>
+
+
+
+
+
+

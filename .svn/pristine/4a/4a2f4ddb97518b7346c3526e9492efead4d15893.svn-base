@@ -1,0 +1,391 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Web;
+using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
+
+namespace Myzj.OPC.UI.Common
+{
+    public class ExcelHelper
+    {
+        /// <summary>
+        /// 私有化构造函数，不允许外部利用new关键字构造类
+        /// </summary>
+        private ExcelHelper()
+        { }
+        private static ExcelHelper _instance;
+        public static ExcelHelper GetInstance()
+        {
+            if (null == _instance)
+            {
+                _instance = new ExcelHelper();
+            }
+            return _instance;
+        }
+
+        private HSSFWorkbook workBook;
+        private Sheet workSheet;
+        private MemoryStream ms;
+
+        /// <summary>
+        /// 导出Excel
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list">数据结果List</param>
+        /// <param name="dicProperties">以字段-名称的形式</param>
+        /// <param name="fileName">导出文件名</param>
+        public void WriteListToExcel<T>(List<T> list, Dictionary<string, string> dicProperties, string fileName) where T : class
+        {
+            var size = 60000;
+            var count = list.Count / size;
+            if (list.Count%size != 0)
+            {
+                count += 1;
+            }
+            workBook = new HSSFWorkbook();
+            ms = new MemoryStream();
+            fileName = fileName == "" ? "导出Excel" : fileName;
+            //fileName不能包含 : / \ ? * [ ]等特殊字符
+            for (int a = 0; a < count; a++)
+            {
+                #region 创建sheet
+
+                workSheet = workBook.CreateSheet(fileName+(a+1));
+
+                DataTable dt = new DataTable();
+                if (dicProperties.Count > 0 && list.Count > 0)
+                {
+                    Type type = typeof(T);
+                    foreach (KeyValuePair<string, string> property in dicProperties)
+                    {
+                        //建立DataTable表头
+                        dt.Columns.Add(new DataColumn(property.Value));
+                    }
+                    foreach (T t in list.Skip(size*a).Take(size))
+                    {
+                        DataRow dr = dt.NewRow();
+                        int i = 0;
+                        foreach (KeyValuePair<string, string> property in dicProperties)
+                        {
+                            PropertyInfo pi = type.GetProperty(property.Key);
+                            object obj = pi.GetValue(t, null);
+                            //为DataTable表内容赋值
+                            dr[i] = obj == null ? "" : obj.ToString();
+                            i++;
+                        }
+                        dt.Rows.Add(dr);
+                    }
+
+                    CreateExcel(dt, dicProperties);
+
+                  
+                }
+                #endregion
+            }
+            WriteToExcel(fileName);
+          
+        }
+
+        /// <summary>
+        /// 导出Excel
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list">数据结果List</param>
+        /// <param name="dicProperties">以字段-名称的形式</param>
+        /// <param name="fileName">导出文件名</param>
+        public void WriteListToExcel<T>(IEnumerable<T> list, Dictionary<string, string> dicProperties, string fileName) where T : class
+        {
+            workBook = new HSSFWorkbook();
+            ms = new MemoryStream();
+            fileName = fileName == "" ? "导出Excel" : fileName;
+            //fileName不能包含 : / \ ? * [ ]等特殊字符
+            workSheet = workBook.CreateSheet(fileName);
+
+            DataTable dt = new DataTable();
+            if (dicProperties.Count > 0 && list.Count() > 0)
+            {
+                Type type = typeof(T);
+                foreach (KeyValuePair<string, string> property in dicProperties)
+                {
+                    //建立DataTable表头
+                    dt.Columns.Add(new DataColumn(property.Value));
+                }
+                foreach (T t in list)
+                {
+                    DataRow dr = dt.NewRow();
+                    int i = 0;
+                    foreach (KeyValuePair<string, string> property in dicProperties)
+                    {
+                        PropertyInfo pi = type.GetProperty(property.Key);
+                        object obj = pi.GetValue(t, null);
+                        //为DataTable表内容赋值
+                        dr[i] = obj == null ? "" : obj.ToString();
+                        i++;
+                    }
+                    dt.Rows.Add(dr);
+                }
+
+                CreateExcel(dt, dicProperties);
+                WriteToExcel(fileName);
+            }
+        }
+
+        /// <summary>
+        /// 创建Excel
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <param name="dicProperties"></param>
+        private void CreateExcel(DataTable dt, Dictionary<string, string> dicProperties)
+        {
+            Row rowExcel;
+            Cell cellExcel;
+            int rowIndex = 0;
+
+            rowExcel = workSheet.CreateRow(rowIndex);
+            int intColumn = 0;
+
+            foreach (KeyValuePair<string, string> dicProperty in dicProperties)
+            {
+                cellExcel = rowExcel.CreateCell(intColumn);
+                cellExcel.SetCellValue(dicProperty.Value);
+                ++intColumn;
+            }
+
+            foreach (DataRow row in dt.Rows)
+            {
+                ++rowIndex;
+                rowExcel = workSheet.CreateRow(rowIndex);
+                int intColumnContent = 0;
+                foreach (KeyValuePair<string, string> property in dicProperties)
+                {
+                    cellExcel = rowExcel.CreateCell(intColumnContent);
+                    cellExcel.SetCellValue(row[property.Value].ToString());
+                    ++intColumnContent;
+                }
+            }
+        }
+        /// <summary>
+        /// 导出Excel文件
+        /// </summary>
+        /// <param name="fileName"></param>
+        private void WriteToExcel(string fileName)
+        {
+            workBook.Write(ms);
+            ms.Flush();
+            ms.Position = 0;
+            workBook = null;
+            HttpContext current = HttpContext.Current;
+            current.Response.ContentType = "application/ms-excel";
+            current.Response.AppendHeader("Content-Disposition", "attachment;filename=" + fileName + ".xls");
+
+            current.Response.BinaryWrite(ms.ToArray());
+            current.Response.End();
+            ms.Close();
+            ms = null;
+        }
+
+        /// <summary>
+        /// 读取Excel文件转化为DataTable
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        public DataTable ReadExcelToDataTable(Stream stream)
+        {
+            DataTable dt = new DataTable();
+            workBook = new HSSFWorkbook(stream);
+            workSheet = workBook.GetSheetAt(0);
+            IEnumerator rows = workSheet.GetRowEnumerator();
+            rows.MoveNext();
+            HSSFRow row = (HSSFRow)rows.Current;
+            for (int i = 0; i < workSheet.GetRow(0).LastCellNum; i++)
+            {
+                dt.Columns.Add(row.GetCell(i).StringCellValue);
+            }
+            while (rows.MoveNext())
+            {
+                row = (HSSFRow)rows.Current;
+                DataRow dr = dt.NewRow();
+                for (int i = 0; i < row.LastCellNum; i++)
+                {
+                    Cell cell = row.GetCell(i);
+                    if (cell != null)
+                    {
+                        dr[i] = cell.ToString();
+                    }
+                    else
+                    {
+                        dr[i] = null;
+                    }
+                }
+                dt.Rows.Add(dr);
+            }
+            return dt;
+        }
+
+        /// <summary>
+        /// 读取Excel文件转为Json格式
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="t">泛型类（需要类的属性名和Excel的每列的值相对应）</param>
+        /// <param name="stream">流</param>
+        /// <param name="isNeedQuote">是否需要引号（选填，默认为true，为适应服务端的特殊Json格式，请传入false）</param>
+        /// <returns></returns>
+        public string ReadExcelToJsonFromClass<T>(T t, Stream stream, bool isNeedQuote = true) where T : class
+        {
+            StringBuilder jsonBuilder = new StringBuilder();
+            PropertyInfo[] propertyInfos = t.GetType().GetProperties();
+            if (propertyInfos.Length <= 0)
+            {
+                return jsonBuilder.ToString();
+            }
+            DataTable dt = new DataTable();
+            workBook = new HSSFWorkbook(stream);
+            workSheet = workBook.GetSheetAt(0);
+            IEnumerator rows = workSheet.GetRowEnumerator();
+            rows.MoveNext();
+            HSSFRow row = (HSSFRow)rows.Current;
+
+            jsonBuilder.Append("[");
+            while (rows.MoveNext())
+            {
+                jsonBuilder.Append("{");
+                row = (HSSFRow)rows.Current;
+                DataRow dr = dt.NewRow();
+                for (int i = 0; i < row.LastCellNum; i++)
+                {
+                    Cell cell = row.GetCell(i);
+                    if (isNeedQuote)
+                    {
+                        jsonBuilder.Append("\"" + propertyInfos[i].Name + "\":\"" + cell + "\",");
+                    }
+                    else
+                    {
+                        jsonBuilder.Append(propertyInfos[i].Name + ":" + cell + ",");
+                    }
+                }
+                jsonBuilder.Append("},");
+                //去除 } 之前的 ,
+                if (isNeedQuote)
+                {
+                    jsonBuilder = jsonBuilder.Replace("\",}", "\"}");
+                }
+                else
+                {
+                    jsonBuilder = jsonBuilder.Replace(",}", "}");
+                }
+            }
+            jsonBuilder.Append("]");
+            jsonBuilder = jsonBuilder.Replace("},]", "}]");
+
+            return jsonBuilder.ToString();
+        }
+
+        /// <summary>
+        /// 根据数组和Excel组装Json
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="stream"></param>
+        /// <param name="isNeedQuote"></param>
+        /// <returns></returns>
+        public string ReadExcelToJsonFromArray(string[] array, Stream stream, bool isNeedQuote = true)
+        {
+            StringBuilder jsonBuilder = new StringBuilder();
+            if (array.Length <= 0)
+            {
+                return jsonBuilder.ToString();
+            }
+            DataTable dt = new DataTable();
+            workBook = new HSSFWorkbook(stream);
+            workSheet = workBook.GetSheetAt(0);
+            IEnumerator rows = workSheet.GetRowEnumerator();
+            rows.MoveNext();
+            HSSFRow row = (HSSFRow)rows.Current;
+
+            jsonBuilder.Append("[");
+            while (rows.MoveNext())
+            {
+                jsonBuilder.Append("{");
+                row = (HSSFRow)rows.Current;
+                DataRow dr = dt.NewRow();
+                for (int i = 0; i < row.LastCellNum; i++)
+                {
+                    Cell cell = row.GetCell(i);
+                    if (isNeedQuote)
+                    {
+                        jsonBuilder.Append("\"" + array[i] + "\":\"" + cell + "\",");
+                    }
+                    else
+                    {
+                        jsonBuilder.Append(array[i] + ":" + cell + ",");
+                    }
+                }
+                jsonBuilder.Append("},");
+                //去除 } 之前的 ,
+                if (isNeedQuote)
+                {
+                    jsonBuilder = jsonBuilder.Replace("\",}", "\"}");
+                }
+                else
+                {
+                    jsonBuilder = jsonBuilder.Replace(",}", "}");
+                }
+            }
+            jsonBuilder.Append("]");
+            jsonBuilder = jsonBuilder.Replace("},]", "}]");
+
+            return jsonBuilder.ToString();
+        }
+
+        /// <summary>
+        /// Excel表中有多张Sheet表，操作返回DataSet
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        public DataSet ReadExcelToDataSet(Stream stream)
+        {
+            DataSet ds = new DataSet();
+            DataTable dt;
+
+            workBook = new HSSFWorkbook(stream);
+            int sheetsCount = workBook.NumberOfSheets;
+            for (int k = 0; k < sheetsCount; k++)
+            {
+                dt = new DataTable();
+                workSheet = workBook.GetSheetAt(k);
+                var rows = workSheet.GetRowEnumerator();
+                rows.MoveNext();
+                HSSFRow row = (HSSFRow)rows.Current;
+                for (int i = 0; i < workSheet.GetRow(0).LastCellNum; i++)
+                {
+                    dt.Columns.Add(row.GetCell(i).StringCellValue);
+                }
+                while (rows.MoveNext())
+                {
+                    row = (HSSFRow)rows.Current;
+                    DataRow dr = dt.NewRow();
+                    for (int i = 0; i < row.LastCellNum; i++)
+                    {
+                        Cell cell = row.GetCell(i);
+                        if (cell != null)
+                        {
+                            dr[i] = cell.ToString();
+                        }
+                        else
+                        {
+                            dr[i] = null;
+                        }
+                    }
+                    dt.Rows.Add(dr);
+                }
+                ds.Tables.Add(dt);
+            }
+            return ds;
+        }
+    }
+}

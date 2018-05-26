@@ -1,0 +1,162 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.KeyWord.SortProductRefer
+<style type="text/css">
+    .showDetailTable tr.menuTool td:nth-child(2n+1) { width: 8%; text-align: center; }
+    .showDetailTable tr.menuTool td:nth-child(2n) { width: 10%; text-align: center; }
+    .showDetailTable .sBtn { width: 15%; height: 30px; margin-top: 10px; margin-bottom: 10px; cursor: pointer; }
+    .resultTable thead tr { height: 36px; }
+</style>
+
+<h2>搜索推荐管理</h2>
+
+@using (Html.BeginForm())
+{
+    var success = @ViewData["SuccessMsg"];
+    if (null != success)
+    {
+    <span style="color: green">@success</span>
+    }
+    var notice = @ViewData["ErrorMsg"];
+    if (null != notice)
+    {
+    <span style="color: red">@notice</span>
+    } 
+    <table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+        <tr class="menuTool">
+            <td>匹配类型：</td>
+            <td>
+            @{
+    var list = new Dictionary<int, string>();
+    list.Add(0, "全部");
+    list.Add(1, "搜索关键字");
+    list.Add(2, "分类id");
+    list.Add(3, "品牌id"); 
+            }
+            @Html.DropDownListFor(m => m.SortProductDetail.KeyWordType, new KvSelectList(list))
+            <td>匹配数据：</td>
+            <td>
+                <input type="text" style="width: 93%" name="SortProductDetail.KeyWord" value="@Model.SortProductDetail.KeyWord"/></td>
+            <td>推荐商品ID：</td>
+            <td>
+                <input type="text" style="width: 93%" name="SortProductDetail.ProductJson" value="@Model.SortProductDetail.ProductJson"/></td>
+            <td>状态：</td>
+            <td>
+                <select style="width: 63%" name="SortProductDetail.Enable">
+                    <option value="-1">全部</option>
+                    @if (Model.SortProductDetail.Enable == true)
+                    {
+                        <option value="true" selected="selected">启用</option>
+                        <option value="false">禁用</option>
+                    }
+                    else if (Model.SortProductDetail.Enable == false)
+                    {
+                        <option value="true">启用</option>
+                        <option value="false" selected="selected">禁用</option>
+
+                    }
+                    else
+                    {
+                        <option value="true">启用</option>
+                        <option value="false">禁用</option>
+
+                    }
+                </select>
+            </td>
+            <td>有效期状态：</td>
+            <td> 
+                @{
+                    var liststas = new Dictionary<int, string>();
+                    liststas.Add(-1, "全部");
+                    liststas.Add(0, "未开始");
+                    liststas.Add(1, "可使用");
+                    liststas.Add(2, "已过期"); 
+                }
+                @Html.DropDownListFor(m => m.SortProductDetail.Usablestatus, new KvSelectList(liststas))
+            </td>
+        </tr>
+        <tr>
+            <td colspan="10">
+                <input type="button" value="删除" class="sBtn" style="margin-left: 30%" onclick="javascript: DeleteList();" />
+                <input type="button" class="sBtn" value="新增" onclick="window.location.href = '/SortProduct/EditDetail';" />
+                <input type="submit" value="搜索" id="btnSearch" class="sBtn" />
+            </td>
+        </tr>
+    </table>  
+    @Html.Partial("SortProductItem", @Model.List) 
+    @Html.Partial("Pager", @Model)
+}
+
+<script type="text/javascript">
+    //全选和反选
+    $("#CheckAll").click(function () {
+        var flag = $("#CheckAll").is(":checked"); //判断全选按钮的状态 
+        $("input[name=checkitem]").prop("checked", flag);
+    });
+
+    //删除多条信息
+    function DeleteList() {
+        var array = new Array();
+        $.each($("input[name=checkitem]:checked"), function (index, content) {
+            var iindex = $("input[name=checkitem]:checked")[index].value;
+            array.push(iindex);
+
+        });
+        if (array.length < 1) {
+            alert("请选择要删除的项！");
+            return false;
+        } else {
+            var delIds = array.join(",");
+            if (confirm("你确定删除吗？")) {
+                $.ajax({
+                    url: '@Url.Action("DelSortProduct", "SortProduct")',
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: "{ \"ids\":\"" + delIds + "\"}",
+                    success: function (result) {
+                        if (result.DoFlag) {
+                            alert(result.DoResult);
+                            location.reload();
+                        } else {
+                            alert(result.DoResult);
+                        }
+
+                    },
+                    error: function (data) {
+                        alert(data.responseText);
+                    }
+                });
+            }
+        }
+    }
+
+    $(".setIsDel").click(function () {
+        var id = $(this).prop("id");
+        if (confirm('确定删除？')) {
+            $.ajax({
+                url: '@Url.Action("DelSortProduct", "SortProduct")',
+                data: { "ids": id },
+                //data: "{ \"ids\":\"" + id + "\"}",
+                success: function (res) {
+                    if (res.DoFlag) {
+                        alert(res.DoResult);
+                        location.reload();
+                    } else {
+                        alert(res.DoResult);
+                    }
+                },
+                error: function (data) {
+                    alert(data.responseText);
+                }
+            });
+        }
+    });
+
+
+</script>
+
+

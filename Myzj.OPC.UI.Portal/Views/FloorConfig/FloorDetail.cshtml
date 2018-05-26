@@ -1,0 +1,227 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.WebIndex
+@model Myzj.OPC.UI.Model.FloorConfig.FloorDetailDetail
+@{
+    var isEdit = (Model != null && Model.SysNO > 0);
+
+    var floorItem = (IEnumerable<Myzj.OPC.UI.Model.FloorConfig.FloorItemsConfigDetail>)ViewBag.ItemModel;
+    
+}
+
+@if (isEdit)
+{
+    <h2>修改楼层配置-》@ViewBag.StrName-》@ViewBag.Name</h2>
+}
+else
+{
+    <h2>新增楼层配置-》@ViewBag.StrName</h2>
+}
+
+<div id="tableContainer">
+    <form id="detailForm">
+        <input type="hidden" id="IntSysNo" value="@Model.SysNO"/>
+
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr style="display: none">
+                    <td>楼层Id:</td>
+                    <td>
+                        <input type="text" value="@ViewBag.FloorID" id="FloorID"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>楼层类型:</td>
+                    <td>
+                        <select id="FloorTypeID" name="FloorTypeID">
+                            @{
+                                var check = "";
+                            }
+                            @if (floorItem != null)
+                            {
+                                foreach (var item in floorItem)
+                                {
+                                    if (item.SysNo.Equals(Model.FloorTypeID))
+                                    {
+                                        check = "selected='selected'";
+                                    }
+                                    else
+                                    {
+                                        check = "";
+                                    }
+                                <option @check value="@item.SysNo">@item.FloorTypeName</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>商品Id(*):</td>
+                    @if (Model.SysNO == null)
+                    {
+                        <td>@Html.TextBoxFor(m => m.ProductId)
+                            <input type="button" value="检测" style="width: 50px;" class="checkProductId" />
+                            <label class="txtLable"></label>
+                            <label class="HidLable"></label>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            <input type="text" readonly="readonly" value="@Model.ProductId" id="ProductId"/>
+                            <label class="txtLable"></label>
+                        </td>
+                    }
+                </tr>
+                <tr>
+                    <td>商品编号(只读):</td>
+                    <td>
+                        <input type="text" value="@Model.ProductNo" id="ProductNo" name="ProductNo" readonly="readonly" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>楼层名称(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.ConfigItemName)
+                    </td>
+                </tr>
+                <tr>
+                    <td>楼层关键字(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.ConfigItemKeyName)
+                    </td>
+                </tr>
+                <tr>
+                    <td>楼层关键值(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.ConfigItemKeyValue)
+                    </td>
+                </tr>
+                <tr>
+                    <td>楼层链接(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.ConfigLink)
+                    </td>
+                </tr>
+                <tr>
+                    <td>图片路径(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.Picture)
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>开始时间:</td>
+                    <td>
+                        <input type="text" id="ExpirationFrom" name="ExpirationFrom" value="@Model.ExpirationFrom" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" style="width: 60%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>结束时间:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.ExpirationEnd)
+                    </td>
+                </tr>
+                <tr>
+                    <td>楼层排序:</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.Sequence)
+                    </td>
+                </tr>
+        </table>
+    </form>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="保存" id="btnSave" />
+    <input type="button" value="取消" id="btnDel" onclick="window.location.href = window.close()" />
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        //保存
+        $("#btnSave").click(function () {
+            var model = {};
+            model.SysNO = $("#IntSysNo").val();
+            model.FloorID = $("#FloorID").val();
+            model.FloorTypeID = $("#FloorTypeID").val();
+            model.ConfigItemName = $("#ConfigItemName").val();
+            model.ConfigItemKeyName = $("#ConfigItemKeyName").val();
+            model.ConfigItemKeyValue = $("#ConfigItemKeyValue").val();
+            model.ConfigLink = $("#ConfigLink").val();
+            model.Picture = $("#Picture").val();
+            model.ExpirationFrom = $("#ExpirationFrom").val();
+            model.ExpirationEnd = $("#ExpirationEnd").val();
+            model.Sequence = $("#Sequence").val();
+            model.Status = true;
+            model.ProductNo = $("#ProductNo").val();
+            model.ProductId = $("#ProductId").val();
+
+            if (model.ProductId == null || model.ProductId == "" || model.ProductId <= 0) {
+                var result = "<font style='color:red'>请输入商品编号且大于0</font>";
+                $(".HidLable").html(result);
+                return false;
+            }
+            if (model.SysNO == "" || model.SysNO == null) {
+                if (model.ProductNo == "" || model.ProductNo == null) {
+                    var result = "<font style='color:red'>请检测商品Id</font>";
+                    $(".HidLable").html(result);
+                    return false;
+                }
+            }
+            if (model.ConfigItemName == "" || model.ConfigItemName == null) {
+                alert("请输入楼层名称！");
+                return false;
+            } else if (model.ConfigItemKeyName == "" || model.ConfigItemKeyName == null) {
+                alert("请输入楼层关键字！");
+                return false;
+            } else if (model.ConfigItemKeyValue == "" || model.ConfigItemKeyValue == null) {
+                alert("请输入楼层关键值！");
+                return false;
+            } else if (model.ConfigLink == "" || model.ConfigLink == null) {
+                alert("请输入楼层链接！");
+                return false;
+            } else if (model.Picture == "" || model.Picture == null) {
+                alert("请输入图片路径！");
+                return false;
+            }
+
+            $.ajax({
+                url: '@Url.Action("SaveFloorDetail", "FloorConfig")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("保存成功！");
+                        reloadPage();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+        //检测商品Id是否存在商品表中
+        $(".checkProductId").click(function () {
+            var pid = $("#ProductId").val();
+            if (pid == null || pid == "" || pid <= 0) {
+                var result = "<font style='color:red'>请输入商品编号且大于0</font>";
+                $(".txtLable").html(result);
+                return false;
+            }
+            $.ajax({
+                url: "/FloorConfig/CheckPdtInfoById?id=" + pid,
+                type: "Post",
+                success: function (res) {
+                    if (res.DoFlag) {
+                        var result = "<font>商品Id验证通过</font>";
+                        $(".txtLable").html(result);
+                        $("#ProductNo").val(res.DoResult);
+                    } else {
+                        $(".HidLable").html(res.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>

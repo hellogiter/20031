@@ -1,0 +1,81 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.FloorConfig
+@model  Myzj.OPC.UI.Model.FloorConfig.FloorConfigRefer
+
+<h2>楼层配置</h2>
+<style>
+    /*.input-validation-error{ border: 0px;}*/
+    .input-validation-error{border: 1px solid #c0c0c0;background-color:white}
+    
+</style>
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable">
+        <tbody>
+            <tr>
+                <td>楼层名称:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.FloorName)
+                </td>
+                <td>楼层类型:</td>
+                <td style="border: 0px;">
+                       @Html.DropDownList("SearchDetail.TempFloorType", "--All--")
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    var success = @ViewData["SuccessMsg"];
+    if (null != success)
+    { 
+    <span style="color: green">@success</span>
+    }
+    var notice = @ViewData["ErrorMsg"];
+    if (null != notice)
+    {
+    <span style="color: red">@notice</span>
+    }
+    @Html.Partial("Item", @Model.List)
+    
+    @Html.Partial("Pager", @Model)
+}
+<script type="text/javascript">
+    $(function () {
+        //修改排序
+        $(".Sequence").change(function () {
+            var id = $(this).attr("pvalue");
+            var number = $(this).val();
+
+            $.ajax({
+                url: "/FloorConfig/UpdateSort",
+                data: { "id": id, "sort": number },
+                success: function (res) {
+                    if (res.DoFlag) {
+                        alert("更新成功");
+                        location.reload();
+                    } else {
+                        alert(res.DoResult);
+                    }
+                }
+            });
+        });
+        //删除楼层配置
+        $(".delFloorConfig").click(function () {
+            var obj = $(this);
+            var id = obj.attr("pvalue");
+            $.ajax({
+                url: "/FloorConfig/Del",
+                data: { "id": id },
+                dataType: 'json',
+                type: 'POST',
+                success: function (res) {
+                    if (res.DoFlag) {
+                        location.reload();
+                    } else {
+                        alert(res.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>

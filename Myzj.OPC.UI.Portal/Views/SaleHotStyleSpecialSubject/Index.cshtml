@@ -1,0 +1,166 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.SaleHotStyleSpecialSubject.SaleHotStyleSpecialSubjectRefer
+<h2>活动专题管理</h2>
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable">
+        <tbody>
+            <tr>
+                <td>活动专题名称:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.SearchDetail.SubjectName)
+                </td>
+                <td>应用位置:</td>
+                <td>
+                    @Html.DropDownList("SearchDetail.ApplyPlace", "--ALL--")
+                </td>
+            </tr>
+            <tr>
+                <td>是否过期:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.SearchDetail.isExpire, new KvSelectList(typeof(AppEnum.IsExpire).GetEnumList()), true)
+                </td>
+                <td>是否置顶:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.SearchDetail.IsTop, new KvSelectList(typeof(AppEnum.IsTop).GetEnumList()), true)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    var success = @ViewData["SuccessMsg"];
+    if (null != success)
+    { 
+    <span style="color: green">@success</span>
+    }
+    var notice = @ViewData["ErrorMsg"];
+    if (null != notice)
+    {
+    <span style="color: red">@notice</span>
+    }
+    @Html.Partial("Item", @Model.List)
+    
+    @Html.Partial("Pager", @Model)
+}
+
+<script type="text/javascript">
+    $(function () {
+        //置顶
+        $(".btnUpdateIstop").click(function () {
+            var id = $(this).attr("pvalue");
+            $("#bg").css({
+                display: "block", height: $(document).height()
+            });
+            var $box = $('.box');
+            $box.css({
+                //设置弹出层距离左边的位置
+                left: ($("body").width() - $box.width()) / 2 - 20 + "px",
+                //设置弹出层距离上面的位置
+                top: ($(window).height() - $box.height()) / 2 + $(window).scrollTop() + "px",
+                display: "block"
+            });
+
+            //保存置顶信息
+            $("#btnSaveIsTop").click(function () {
+                var beginTime = $("#TopBeginTime").val();
+                var endTime = $("#TopEndTime").val();
+
+                if (beginTime == null || beginTime == "") {
+                    alert("请选择置顶开始时间");
+                    return false;
+                }
+                if (endTime == null || endTime == "") {
+                    alert("请选择置顶结束时间");
+                    return false;
+                }
+
+                $.ajax({
+                    url: "/SaleHotStyleSpecialSubject/UpdateTop?id=" + id + "&top=1&startDate=" + beginTime + "&endDate=" + endTime,
+                    type: "Post",
+                    success: function (res) {
+                        if (res.DoFlag) {
+                            alert("设置爆品置顶成功!");
+                            $("#bg,.box").css("display", "none");
+                            location.reload();
+                        } else {
+                            alert("取消爆品置顶失败");
+                        }
+                    }
+                });
+            });
+        });
+        //取消置顶
+        $(".btnDelIstop").click(function () {
+            var id = $(this).attr("pvalue");
+            var beginTime = $("#TopBeginTime").val();
+            var endTime = $("#TopEndTime").val();
+            $.ajax({
+                url: "/SaleHotStyleSpecialSubject/UpdateTop?id=" + id + "&top=0&startDate=" + beginTime + "&endDate=" + endTime,
+                type: "Post",
+                success: function (res) {
+                    if (res.DoFlag) {
+                        alert("取消爆品置顶成功!");
+                        $("#bg,.box").css("display", "none");
+                        location.reload();
+                    } else {
+                        alert("取消爆品置顶失败");
+                    }
+                }
+            });
+        });
+        //关闭弹出层
+        $("#btnDel").click(function () {
+            $("#bg,.box").css("display", "none");
+        });
+        //修改排序
+        $(".Sort").change(function () {
+            var id = $(this).attr("pvalue");
+            var sort = $(this).val();
+            $.ajax({
+                url: "/SaleHotStyleSpecialSubject/UpdateSort?id=" + id + "&sort=" + sort,
+                type: "Post",
+                success: function (res) {
+                    if (res.DoFlag) {
+                        location.reload();
+                    } else {
+                        alert(res.doResult);
+                    }
+                }
+            });
+        });
+        //删除专题
+        $(".delSubject").click(function () {
+            var id = $(this).attr("pvalue");
+            $.ajax({
+                url: "/SaleHotStyleSpecialSubject/Del?id=" + id,
+                type: "Post",
+                success: function (res) {
+                    if (res.DoFlag) {
+                        location.reload();
+                    } else {
+                        alert(res.doResult);
+                    }
+                }
+            });
+        });
+    });
+    //修改状态
+    function updateState(obj) {
+        var id = $(obj).data("id");
+        var state = 0;
+        if (obj.checked) {
+            state = 1;
+        }
+        $.ajax({
+            url: "/SaleHotStyleSpecialSubject/UpdateState?id=" + id + "&state=" + state,
+            type: "Post",
+            success: function (res) {
+                if (res.DoFlag) {
+                    location.reload();
+                } else {
+                    alert(res.doResult);
+                }
+            }
+        });
+    }
+</script>

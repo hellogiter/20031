@@ -1,0 +1,52 @@
+﻿@model Myzj.OPC.UI.Model.QueryOrderBySearchReq
+
+<h2>退款单管理</h2>
+@using (Html.BeginForm())
+{
+    <table class="showDetailTableMultiColumnm">
+        <tbody>
+            <tr>
+                创建时间（开始）
+            </tr>
+            <tr>
+                @Html.TextBoxFor(m => m.RowCreateDateStart)
+            </tr>
+            <tr>
+                创建时间（结束）
+            </tr>
+            <tr>
+                @Html.TextBoxFor(m => m.RowCreateDateEnd)
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="8">
+                    <input type="submit" name="Query" id="Query" value="查询" />
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+    var success = @ViewData["Success"];
+    if (null != success)
+    {
+    <span style="color: green">@success</span>
+    }
+    var notice = @ViewData["Notice"];
+    if (null != notice)
+    {
+    <span style="color: red">@notice</span>
+    }
+
+    var detail = @ViewData["Detail"];
+    if (null != detail)
+    {
+    @Html.Partial("Detail", detail)
+    }
+
+    var pager = @ViewData["Pager"];
+    if (null != pager)
+    {
+    @Html.Partial("Pager", pager)
+    }
+}
+

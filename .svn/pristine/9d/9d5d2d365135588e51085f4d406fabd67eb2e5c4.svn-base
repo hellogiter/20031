@@ -1,0 +1,163 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.ServiceClient
+@{
+    ViewBag.Title = "词库管理";
+}
+
+@model Myzj.OPC.UI.Model.WordLibManage.WordLibManageRefer
+<style type="text/css">
+    .showDetailTable tr.menuTool td:nth-child(2n+1) { width: 8%; text-align: center; }
+    .showDetailTable tr.menuTool td:nth-child(2n) { width: 12%; text-align: center; }
+    .showDetailTable tr.menuTool td select { width: 200px; }
+    .showDetailTable .sBtn { width: 10%; height: 30px; margin-top: 10px; margin-bottom: 10px; cursor: pointer; }
+    .resultTable thead tr { height: 36px; }
+</style>
+
+<h2>词库管理</h2>
+
+@using (Html.BeginForm())
+{
+    var success = @ViewData["SuccessMsg"];
+    if (null != success)
+    {
+    <span style="color: green">@success</span>
+    }
+    var notice = @ViewData["ErrorMsg"];
+    if (null != notice)
+    {
+    <span style="color: red">@notice</span>
+    } 
+    <table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+        <tr class="menuTool">
+            <td>使用状态</td>
+            <td>
+                @{
+                    var enableList = new Dictionary<int, string>()
+                    {
+                        {-1, "全部"},
+                        {0, "禁用"},
+                        {1, "启用"}
+                    };
+                    @Html.DropDownListFor(m => m.WordLibManageDetail.EnableStr, new KvSelectList(enableList))
+                }
+            </td>
+            <td>应用位置</td>
+            <td>
+                @{
+                var lisforbiddentype = WordLibManageConfigClient.Instance.GetForbiddenTypeList();
+                }
+                @Html.DropDownListFor(m => m.WordLibManageDetail.ForbiddenType, new KvSelectList(lisforbiddentype),true)
+            </td>
+            <td>类型</td>
+            <td>
+                @{
+                var listtype = new Dictionary<int, string>();
+                listtype.Add(-1, "--All--");
+                listtype.Add(0, "白名单");
+                listtype.Add(1, "违禁词(黑名单)");
+                }
+                @Html.DropDownListFor(m => m.WordLibManageDetail.Type, new KvSelectList(listtype))
+            </td>
+            <td>显示词</td>
+            <td>
+                <input type="text" style="width: 93%" name="WordLibManageDetail.KeyWord" value="@Model.WordLibManageDetail.KeyWord"/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="10">
+                <input type="button" class="sBtn" value="重建索引" style="margin-left: 40%" onclick=" ResetIndex(); "/>
+                <input type="button" class="sBtn" value="应用位置管理" onclick=" window.location.href = '/WordLibManage/ForbiddenTypeList'; "/>
+                <input type="button" class="sBtn" value="新增" onclick=" window.location.href = '/WordLibManage/EditDetail'; "/>
+                <input type="submit" value="查询" id="btnSearch" class="sBtn"/>
+            </td>
+        </tr>
+    </table>  
+    @Html.Partial("WordLibManageItem", @Model.List) 
+    @Html.Partial("Pager", @Model)
+}
+
+<script type="text/javascript">
+
+    //全选和反选
+    $("#CheckAll").click(function() {
+        var flag = $("#CheckAll").is(":checked"); //判断全选按钮的状态 
+        $("input[name=checkitem]").prop("checked", flag);
+    });
+
+    //删除多条信息
+    function DelOrLockList(isDel, isEnable, onlyone) {
+        var array = new Array();
+        if (onlyone > 0) {
+            array.push(onlyone);
+        } else {
+            $.each($("input[name=checkitem]:checked"), function(index, content) {
+                var iindex = $("input[name=checkitem]:checked")[index].value;
+                array.push(iindex);
+            });
+        }
+
+        var todostr;
+        if (isDel > 0) {
+            todostr = "删除";
+        } else {
+            if (isEnable > 0) {
+                todostr = "禁用";
+            } else {
+                todostr = "启用";
+            }
+        }
+        if (array.length < 1) {
+            alert("请您先勾选要" + todostr + "的选项！");
+            return false;
+        } else {
+            var delIds = array.join(",");
+            var postdata = { Ids: delIds, IsDel: isDel, IsEnable: isEnable };
+            if (confirm("你确定" + todostr + "吗？")) {
+                $.ajax({
+                    url: '@Url.Action("DelOrLockEntity", "WordLibManage")',
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: JSON.stringify(postdata),
+                    success: function(result) {
+                        if (result.DoFlag) {
+                            alert(result.DoResult);
+                            location.reload();
+                        } else {
+                            alert(result.DoResult);
+                        }
+                    },
+                    error: function(data) {
+                        alert(data.responseText);
+                    }
+                });
+            }
+        }
+    }
+
+    //单个禁用或启用
+    function SetUnused(hasUnused, onelyone) {
+        if (hasUnused > 0) {
+            DelOrLockList(0, 1, onelyone);  //禁用
+        } else if (hasUnused < 1) {
+            DelOrLockList(0, 0, onelyone);   //启用
+        }
+    }
+
+    function ResetIndex() {
+        $.ajax({
+            url: '@Url.Action("ResetIndex", "WordLibManage")',
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: '{}',
+                    success: function (result) {
+                        if (result.DoFlag) {
+                            alert("重建成功");
+                        } else {
+                            alert("重建失败");
+                        }
+                    }
+                });
+    }
+</script>

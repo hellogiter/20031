@@ -1,0 +1,131 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.RentActivity.BaseRentActivityInfo
+<h2>@ViewBag.Title</h2>
+
+
+<div>
+    <input type="hidden" id="hd_SysNo" value="@Model.SysNo"/>
+    <table class="showDetailTable">
+        <tr>
+            <td>活动名称</td>
+            <td colspan="3">
+                <input type="text" id="txtActivityName" value="@Model.ActivityName" placeholder="必填"/></td>
+        </tr>
+        <tr>
+            <td>开始时间</td>
+            <td>
+                <input type="text" name="dateTime" id="txtStartTime" onfocus="dateFmt(this,1)" value="@Model.StartTime"  placeholder="必填"/>
+            </td>
+            <td>结束时间</td>
+            <td>
+                <input type="text" name="dateTime" id="txtEndTime" onfocus="dateFmt(this,2)" value="@Model.EndTime" placeholder="必填"/>
+            </td>
+        </tr>
+        <tr>
+            <td>活动头图</td>
+            <td colspan="3">
+                <textarea id="txtHeadImgUrl">@Model.Extend.HeadImgUrl</textarea></td>
+        </tr>
+        <tr>
+            <td>活动内容图</td>
+            <td colspan="3">
+                <textarea id="txtActivityContentImgUrl">@Model.Extend.ActivityContentImgUrl</textarea></td>
+        </tr>
+        <tr>
+            <td>申请流程图</td>
+            <td colspan="3">
+                <textarea id="txtActivityProcessImgUrl">@Model.Extend.ActivityProcessImgUrl</textarea></td>
+        </tr>
+        <tr>
+            <td>收回流程图</td>
+            <td colspan="3">
+                <textarea id="txtRecycleProcessImgUrl">@Model.Extend.RecycleProcessImgUrl</textarea></td>
+        </tr>
+        <tr>
+            <td>租赁答疑图</td>
+            <td colspan="3">
+                <textarea id="txtQAndAImgUrl">@Model.Extend.QAndAImgUrl</textarea></td>
+        </tr>
+        <tr>
+            <td>抢租回顾图</td>
+            <td colspan="3">
+                <textarea id="txtReviewImgUrlList">@Model.Extend.ReviewImgUrlList</textarea></td>
+        </tr>
+        <tr>
+            <td>是否启用</td>
+            <td colspan="3">
+                @Html.DropDownListFor(m => m.IsEnable, new KvSelectList(typeof(AppEnum.IsEnable).GetEnumStringList(),AppEnum.IsEnable.True), false)
+            </td>
+        </tr>
+    </table>
+    <div class="rowButton">
+        <input type="button" value="保存" id="btnSave" onclick="SaveActivity();" />
+        @*<input type="button" value="取消" id="btnDel" onclick="window.location.href = window.close()" />*@
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    function dateFmt(obj, type) {
+        if (type == 1) {
+            if (obj.value == "") {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd 00:00:00' });
+            } else {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' });
+            }
+        } else {
+            if (obj.value == "") {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd 23:59:59' });
+            } else {
+                WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' });
+            }
+        }
+
+    }
+
+    function SaveActivity() {
+        if ($.trim($("#txtActivityName").val()) == "") {
+            alert("请输入活动名称");
+            return;
+        }
+        if ($.trim($("#txtStartTime").val()) == "") {
+            alert("请输入开始时间");
+            return;
+        }
+        if ($.trim($("#txtEndTime").val()) == "") {
+            alert("请输入结束时间");
+            return;
+        }
+
+        if (confirm("确定保存 ?")) {
+            var model = {};
+            model.SysNo = $.trim($("#hd_SysNo").val());
+            model.Extend = {};
+            model.Extend.HeadImgUrl = $.trim($("#txtHeadImgUrl").val());
+            model.Extend.ActivityContentImgUrl = $.trim($("#txtActivityContentImgUrl").val());
+            model.Extend.ActivityProcessImgUrl = $.trim($("#txtActivityProcessImgUrl").val());
+            model.Extend.RecycleProcessImgUrl = $.trim($("#txtRecycleProcessImgUrl").val());
+            model.Extend.QAndAImgUrl = $.trim($("#txtQAndAImgUrl").val());
+            model.Extend.ReviewImgUrlList = $.trim($("#txtReviewImgUrlList").val());
+            model.ActivityName = $.trim($("#txtActivityName").val());
+            model.StartTime = $.trim($("#txtStartTime").val());
+            model.EndTime = $.trim($("#txtEndTime").val());
+            model.IsEnable = $("#IsEnable").val();
+            $.ajax({
+                url: '@Url.Action("SaveActivityInfo", "RentManager")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("保存成功");
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        }
+    }
+</script>

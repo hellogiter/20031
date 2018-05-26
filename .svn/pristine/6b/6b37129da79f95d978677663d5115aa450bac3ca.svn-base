@@ -1,0 +1,63 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.SaleHotStyle
+@model Myzj.OPC.UI.Model.ProductLabel.ProductLabelRefer
+<h2>商品标签管理</h2>
+
+<script type="text/javascript">
+    //绑定状态
+    //name 名称
+    //val 值
+    function bingSate(name, val) {
+        $("#" + name).val(val);
+    }
+</script>
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable">
+        <tbody>
+            <tr>
+                <td>标签:</td>
+                <td>@Html.TextBoxFor(m => m.SearchDetail.LabelName)</td>
+                 <td>商品标签名称(多个请以","隔开):</td>
+                <td>@Html.TextBoxFor(m => m.SearchDetail.LabelcontentValue)</td>
+            </tr>
+        </tbody>
+    </table>
+    var success = @ViewData["SuccessMsg"];
+    if (null != success)
+    { 
+    <span style="color: green">@success</span>
+    }
+    var notice = @ViewData["ErrorMsg"];
+    if (null != notice)
+    {
+    <span style="color: red">@notice</span>
+    }
+    @Html.Partial("Item", @Model.List)
+    
+    @Html.Partial("Pager", @Model)
+}
+<script type="text/javascript">
+    $(function () {
+        //删除
+        $(".delFloorConfig").click(function () {
+            var obj = $(this);
+            var id = obj.attr("pvalue");
+            $.ajax({
+                url: "/ProductLabel/Del",
+                data: { "id": id },
+                dataType: 'json',
+                type: 'POST',
+                success: function (res) {
+                    if (res.DoFlag) {
+                        location.reload();
+                    } else {
+                        alert(res.DoResult);
+                    }
+                }
+            });
+        });
+
+    });
+</script>

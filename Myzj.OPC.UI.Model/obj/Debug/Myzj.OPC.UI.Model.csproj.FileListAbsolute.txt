@@ -1,0 +1,5 @@
+E:\ysx2012\svn\20031\Myzj.OPC.UI.Library\Myzj.OPC.UI.Model.dll
+E:\ysx2012\svn\20031\Myzj.OPC.UI.Library\Myzj.OPC.UI.Model.pdb
+E:\ysx2012\svn\20031\Myzj.OPC.UI.Model\obj\Debug\Myzj.OPC.UI.Model.dll
+E:\ysx2012\svn\20031\Myzj.OPC.UI.Model\obj\Debug\Myzj.OPC.UI.Model.pdb
+E:\ysx2012\svn\20031\Myzj.OPC.UI.Model\obj\Debug\Myzj.OPC.UI.Model.csprojResolveAssemblyReference.cache

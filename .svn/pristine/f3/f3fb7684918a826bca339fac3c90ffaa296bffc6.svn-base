@@ -1,0 +1,87 @@
+﻿@using System.Collections
+@using Myzj.OPC.UI.Model.Base
+
+@model IEnumerable<Myzj.OPC.UI.Model.OrderProductState.OrderProductStateDetail>
+@{
+    Layout = null;
+}
+
+@{
+    <div class="rowButton">
+        <input type="submit" name="Query" id="Query" value="查询" />
+        <input type="button" name="Query" id="BtnAdd" value="新增" onclick="javascript: window.open('/OrderProductState/Detail')" />
+    </div>
+
+    if (Model != null && Model.Any())
+    {
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>操作</th>
+                    <th>商城类型</th>
+                    <th>订单状态</th>
+                    <th>仓位名称</th>
+                    <th>间隔时间</th>
+                    <th>扭转描述</th>
+                    <th>备注</th>
+                    <th>创建时间</th>
+                    <th>排序</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.ID</td>
+                        <td>
+                            <a style="color: #191970" target="_blank" href="@Url.Action("Detail", "OrderProductState", new { id = item.ID })" >修改</a>
+                        </td>
+                        @if (item.MallType < 1 || item.MallType > 6)
+                        {
+                            <td>未知类型</td>
+                        }
+                        else
+                        {
+                            <td>@(typeof(AppEnum.MallType).GetEnumDescription(item.MallType))</td>
+                        }
+
+
+                        @if (item.FlowStatus == -1 || item.FlowStatus == 1 || item.FlowStatus == 4 || item.FlowStatus == 7 || item.FlowStatus == 20)
+                        {
+                           <td>@(typeof(AppEnum.FlowStatus).GetEnumDescription(item.FlowStatus)) </td>
+                        }
+                        else
+                        {
+                             <td>未知状态</td>
+                        }
+
+                        <td>@item.WarehouseName</td>
+                        <td>@item.DisplayTime</td>
+                        <td>@item.OrderStatusDesc</td>
+                        <td>@item.Remark</td>
+                        <td>@item.CreateDate</td>
+                        <td>
+                            <input type="text" value="@item.Sort" pvalue="@item.ID" class="Sort" id="Sort"style="width: 30px"/>
+                        </td>
+                        <td>
+                            @{
+                        var checkStr = "";
+                        if (item.IsDeleted == 0)
+                        {
+                            checkStr = "checked='checked'";
+                        }
+                            }
+                            <input id="cbkState-@item.ID" type="checkbox" @checkStr data-id="@item.ID" onclick="updateState(this)" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+    }
+}

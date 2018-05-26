@@ -1,0 +1,121 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.MLTSYSProjectMannger.MLTSYSProjectSearchReq
+<h2>专题管理</h2>
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable" cellspacing="0">
+        <tr>
+            <td>专题编号:</td>
+            <td>@Html.TextBoxFor(m => m.ProjectId)</td>
+            <td>专题名称:</td>
+            <td>@Html.TextBoxFor(m => m.ProjectTitle)</td>
+        </tr>
+        <tr>
+            <td>专题状态:</td>
+            <td colspan="4">@Html.DropDownListFor(m => m.ProjectState, (KvSelectList)ViewData["accountStatus"], true)</td>
+        </tr>
+    </table>
+     <div class="rowButton">
+        <input type="button" name="Add" id="btnAdd" value="新建" />
+        <input type="submit" name="Query" id="Query" value="查询" />
+    </div>
+    
+    var detail = ViewData["Detail"];
+    if (null != detail)
+    {
+    @Html.Partial("Detail", detail)
+    }
+
+    var pager = ViewData["Pager"];
+    if (null != pager)
+    {
+    @Html.Partial("Pager", pager)
+    }
+}
+<script>
+    $(function () {
+
+        //新增
+        $("#btnAdd").click(function () {
+            window.location.href = "/MLTSYSProject/Add";
+        });
+
+        //删除
+        $(".btnDelete").click(function () {
+            var projectId = $(this).attr("pvalue");
+
+            if (confirm("你确定删除吗？")) {
+                $.ajax({
+                    url: "/MLTSYSProject/DelMLTSYSProject",
+                    type: "post",
+                    data: { "id": projectId },
+                    success: function (res) {
+                        if (res.DoFlag) {
+                            alert("删除成功");
+                            location.reload();
+                        } else {
+                            alert(res.DoResult);
+                        }
+                    }
+                });
+            }
+        });
+
+        //修改状态
+        $(".clProjectState").click(function () {
+            var state = 0;
+            var txtid = $(this).attr("pvalue");
+            var txtState = $(this).attr("pstate");
+            if (txtState == 1) {
+                state = 0;
+            } else {
+                state = 1;
+            }
+            var $formData = "{\"ProjectId\":\"" + txtid + "\",";
+            $formData += "\"ProjectState\":\"" + state + "\"}";
+
+            $.ajax({
+                url: "/MLTSYSProject/UpdateStates",
+                type: "post",
+                data: eval("(" + $formData + ")"),
+                success: function (res) {
+                    if (res.DoFlag) {
+                        alert("编辑成功");
+                        location.reload();
+                    } else {
+                        alert(res.DoResult);
+                    }
+                }
+            });
+        });
+
+        //修改排序
+        $(".txtSort").change(function () {
+            var txtSort = $.trim($(this).val());
+            var regex = /^[0-9]*$/;
+            var txtid = $(this).attr("pvalue");
+            if (txtSort == null || txtSort == "") {
+                alert("请输入排序!");
+                return false;
+            }
+            if (!regex.test(txtSort)) {
+                alert("只能输入数字!");
+                return false;
+            } else {
+                $.ajax({
+                    url: "/MLTSYSProject/UpdateSort",
+                    type: "post",
+                    data: { "id": txtid, "sort": txtSort },
+                    success: function (res) {
+                        if (res.DoFlag) {
+                            alert("编辑成功");
+                            location.reload();
+                        } else {
+                            alert(res.DoResult);
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>

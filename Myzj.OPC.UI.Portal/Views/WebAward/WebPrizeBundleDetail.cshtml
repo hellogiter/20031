@@ -1,0 +1,108 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.WebAward
+@using Myzj.OPC.UI.Model.WebIndex
+@model Myzj.OPC.UI.Model.WebAward.WebPrizeBundleDetail
+@{
+    var isEdit = (Model != null && Model.BSysNos > 0);
+    var actionName = isEdit ? "Update" : "Add";
+}
+
+@if (isEdit)
+{
+    <h2>修改捆绑奖品</h2>
+}
+else
+{
+    <h2>新增捆绑奖品</h2>
+}
+
+@if (Model.IntPrizeItemId == null)
+{
+    Model.IntPrizeItemId = ViewBag.IntPrizeItemId;
+}
+else
+{
+    Model.IntPrizeItemId = Model.IntPrizeItemId;
+}
+
+<div id="tableContainer">
+    <form id="detailForm">
+        <input type="hidden" id="hidBSysNos" value="@Model.BSysNos"/>
+        <input type="hidden" value="@Model.IntPrizeItemId" id="HidIntPrizeItemId"/>
+        <input type="hidden" value="@ViewBag.name" />
+
+        <table class="showDetailTableMultiColumnm">
+            <tbody>
+                <tr>
+                    <td>奖项名称:</td>
+                    <td>
+                        <label>@ViewBag.name</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>绑定奖品(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.PrizeCaseId)
+                    </td>
+                </tr>
+                <tr>
+                    <td>开始时间(*):</td>
+                    <td>@Html.TextBoxFor(m => m.DtStartTime)</td>
+                </tr>
+                <tr>
+                    <td>结束时间(*):</td>
+                    <td>
+                        @Html.TextBoxFor(m => m.DtEndTime)
+                    </td>
+                </tr>
+        </table>
+    </form>
+</div>
+
+<div class="rowButton">
+    <input type="button" value="保存" id="btnSave" />
+    <input type="button" value="返回" id="btnDel" onclick="window.close()" />
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        //保存
+        $("#btnSave").click(function () {
+            var model = {};
+            model.BSysNos = $("#hidBSysNos").val();
+            model.IntPrizeItemId = $("#HidIntPrizeItemId").val();
+            model.PrizeCaseId = $("#PrizeCaseId").val();
+            model.DtStartTime = $("#DtStartTime").val();
+            model.DtEndTime = $("#DtEndTime").val();
+
+            if (model.PrizeCaseId == null || model.PrizeCaseId == "") {
+                alert("请填写绑定奖品");
+                return false;
+            }
+            if (model.DtStartTime == null || model.DtStartTime == "") {
+                alert("请填写开始时间");
+                return false;
+            }
+            if (model.DtEndTime == null || model.DtEndTime == "") {
+                alert("请填写结束时间");
+                return false;
+            }
+
+            $.ajax({
+                url: '@Url.Action("SaveWebPrizeBundle", "WebAward")',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (result) {
+                    if (result.DoFlag) {
+                        alert("保存成功！");
+                        reloadPage();
+                    } else {
+                        alert(result.DoResult);
+                    }
+                }
+            });
+        });
+    });
+</script>

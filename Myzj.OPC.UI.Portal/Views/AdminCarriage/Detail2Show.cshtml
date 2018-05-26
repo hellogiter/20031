@@ -1,0 +1,39 @@
+﻿
+@{
+    Layout = null;
+}
+@{
+    int rowindex = 0;
+} 
+
+@model Myzj.OPC.UI.Model.AdminCarriage.Level 
+           <table class="resultTable" id="Plug_Configure">
+            <thead>
+                <tr>
+                     <th>操作</th>
+                    <th>级别</th>
+                    <th>免邮费订单金额</th>
+                    <th>免邮费金额</th>
+                    <th>不免邮费金额</th>
+                    <th>优先级</th>                   
+                     
+                </tr>
+            </thead>
+            <tbody>
+               
+@foreach (var item in Model.LevelParams)
+{  
+    <tr>
+        <td><a   class="xiugai" href='javascript:modify(@rowindex);'>修改</a></td>
+        <td>@string.Join(",", @item.Levels).Replace("1","普通宝宝").Replace("2","星星宝宝").Replace("3","月亮宝宝").Replace("4","太阳宝宝").Replace("5","信用月亮").Replace("6","信用太阳")</td>
+      
+        <td>@item.FreeShippingMoney</td>
+        <td>@item.FullCarriage</td>
+        <td>@item.NoFullCarriage</td>
+        <td>@item.Priority</td>
+    </tr>
+    
+    rowindex++;
+}
+                 </tbody>
+                </table> 

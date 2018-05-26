@@ -1,0 +1,1765 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Myzj.OPC.UI.ServiceClient</name>
+    </assembly>
+    <members>
+        <member name="F:Myzj.OPC.UI.ServiceClient.BaseService._spicyGroupServiceClient">
+            <summary>
+            麻辣团
+            </summary>
+        </member>
+        <member name="F:Myzj.OPC.UI.ServiceClient.BaseService._opcServiceClient">
+            <summary>
+            运营中心
+            </summary>
+        </member>
+        <member name="F:Myzj.OPC.UI.ServiceClient.BaseService._mkmsServiceClient">
+            <summary>
+            运营中心
+            </summary>
+        </member>
+        <member name="F:Myzj.OPC.UI.ServiceClient.BaseService._mkmsReadServiceClient">
+            <summary>
+            mkms只用于 读取文件
+            </summary>
+        </member>
+        <member name="P:Myzj.OPC.UI.ServiceClient.BaseService.MltClient">
+            <summary>
+            麻辣堂
+            </summary>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BargainGroupConfigClient.GroupStructureList(Myzj.OPC.UI.Model.BargainGroup.GroupStructureListRefer)">
+            <summary>
+            查询所有商品团列表
+            </summary>
+            <param name="refer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseCouponConfigClient.AddCouponInfo(Myzj.OPC.UI.Model.BaseCouponConfig.CouponInfoDetailExt)">
+            <summary>
+            1新增优惠券
+            </summary>
+            <param name="request">实体</param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseCouponConfigClient.UpdateCouponInfo(Myzj.OPC.UI.Model.BaseCouponConfig.CouponInfoDetailExt)">
+            <summary>
+            2修改优惠券
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseCouponConfigClient.DeleteCouponInfo(System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Boolean)">
+            <summary>
+            3删除与禁用优惠券
+            </summary>
+            <param name="userId">用户id</param>
+            <param name="sysNo">优惠券SysNo</param>
+            <param name="type">0删除,1(禁用启用)</param>
+            <param name="isTrue">true删除与启用,false禁用</param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseCouponConfigClient.UpdateAuditState(System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            提交修改
+            </summary>
+            <param name="sysNo"></param>
+            <param name="userId"></param>
+            <param name="auditState"></param>
+            <param name="operationType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseCouponConfigClient.CopyCouponInfo(System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            4复制优惠券
+            </summary>
+            <param name="userId"></param>
+            <param name="sysNo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseCouponConfigClient.QueryCouponInfoPageList(Myzj.OPC.UI.Model.BaseCouponConfig.CouponInfoDtailRefer)">
+            <summary>
+            5查询优惠券列表
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseCouponConfigClient.QueryBrandList(System.String)">
+            <summary>
+            查询品牌列表
+            </summary>
+            <param name="brandName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseCouponConfigClient.GetDeptList">
+            <summary>
+            获得所有部门列表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseCouponConfigClient.GetPromotionList">
+            <summary>
+            查询促销类型
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseCouponConfigClient.CountCoupon(System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.Boolean})">
+            <summary>
+            统计优惠券 已领取 或者 已使用的数量
+            </summary>
+            <param name="couponKey"></param>
+            <param name="startTime"></param>
+            <param name="endTime"></param>
+            <param name="isUsed"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseCouponConfigClient.QueryCouponInfoEntity(System.Nullable{System.Int32})">
+            <summary>
+            6查询单条优惠券
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseCouponConfigClient.CouponBatchAudit(System.Collections.Generic.List{Myzj.OPC.UI.Model.BaseCouponConfig.CouponAuditDetail},System.Nullable{System.Int32})">
+            <summary>
+            7批量审核优惠券
+            </summary>
+            <param name="request">审核记录List</param>
+            <param name="auditPeople">审核人id</param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseCouponConfigClient.QueryCouponAuditPageList(Myzj.OPC.UI.Model.BaseCouponConfig.CouponAuditRefer,System.Collections.Generic.List{System.Nullable{System.Int32}})">
+            <summary>
+            8查询审核历史记录
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseCouponConfigClient.ConvertCouponAuditList(Myzj.OPC.UI.Model.BaseCouponConfig.CouponAuditRefer)">
+            <summary>
+            convert audit
+            </summary>
+            <param name="result"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseCouponConfigClient.ConvertCouponList(Myzj.OPC.UI.Model.BaseCouponConfig.CouponInfoDtailRefer)">
+            <summary>
+            convert
+            </summary>
+            <param name="result"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseCouponConfigClient.QueryWareHouseList">
+            <summary>
+            查询发货仓库
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseCouponConfigClient.QueryWebCateName(System.String)">
+            <summary>
+            查询分类名称
+            </summary>
+            <param name="IntCateId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseCouponConfigClient.SendCopuonFunction(Myzj.OPC.UI.Model.BaseCouponConfig.CouponSendDetail,System.String@,System.String@,System.String@)">
+            <summary>
+            发送优惠券
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseCouponConfigClient.QuerySendCouponPageList(Myzj.OPC.UI.Model.BaseCouponConfig.SendCouponRecordRefer)">
+            <summary>
+            发送优惠券记录
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseCouponConfigClient.CancelCoupon(System.Collections.Generic.List{System.Int32},System.String)">
+            <summary>
+            用户优惠券作废
+            </summary>
+            <param name="SysNos"></param>
+            <param name="remarks"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseCouponConfigClient.QueryCouponLog(Myzj.OPC.UI.Model.Base.BaseRefer{Myzj.OPC.UI.Model.BaseCouponConfig.CouponLogDetail,Myzj.OPC.UI.Model.BaseCouponConfig.CouponLogDetailExt})">
+            <summary>
+            查询优惠券操作记录
+            </summary>
+            <param name="refer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseCouponConfigClient.QueryCouponLogDetail(System.Int32)">
+            <summary>
+            查询优惠券操作明细
+            </summary>
+            <param name="sysNo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseCouponConfigClient.GetCouponCategorySource">
+            <summary>
+            券的分类来源
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseDiscountCodeConfigClient.AddActivity(Myzj.OPC.UI.Model.BaseDiscountCodeConfig.DiscountActivityRes,System.String@)">
+            <summary>
+            新增优惠码活动
+            </summary>
+            <param name="req"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseDiscountCodeConfigClient.UpdateActivity(Myzj.OPC.UI.Model.BaseDiscountCodeConfig.DiscountActivityRes,System.String@)">
+            <summary>
+            修改优惠码活动
+            </summary>
+            <param name="req"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseDiscountCodeConfigClient.QueryDiscountActivityList(Myzj.OPC.UI.Model.Base.BaseRefer{Myzj.OPC.UI.Model.BaseDiscountCodeConfig.DiscountActivityReq,Myzj.OPC.UI.Model.BaseDiscountCodeConfig.DiscountActivityRes})">
+            <summary>
+            查询优惠码活动
+            </summary>
+            <param name="refer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseDiscountCodeConfigClient.AddDiscountBatch(Myzj.OPC.UI.Model.BaseDiscountCodeConfig.DiscountCodeBatchRes,System.String@)">
+            <summary>
+            添加优惠码预约执行批次
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseDiscountCodeConfigClient.QueryDiscountCodeUserList(Myzj.OPC.UI.Model.Base.BaseRefer{Myzj.OPC.UI.Model.BaseDiscountCodeConfig.DiscountCodeUserReq,Myzj.OPC.UI.Model.BaseDiscountCodeConfig.DiscountCodeUserRes})">
+            <summary>
+            查询用户优惠码
+            </summary>
+            <param name="refer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseDiscountCodeConfigClient.CancelCoupon(System.Collections.Generic.List{System.Int32},System.String)">
+            <summary>
+            用户优惠券作废
+            </summary>
+            <param name="SysNos"></param>
+            <param name="remarks"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseDiscountCodeConfigClient.QueryDiscountCodeDetailList(Myzj.OPC.UI.Model.Base.BaseRefer{Myzj.OPC.UI.Model.BaseDiscountCodeConfig.DiscountCodeDetailRes,Myzj.OPC.UI.Model.BaseDiscountCodeConfig.DiscountCodeDetailRes})">
+            <summary>
+            查询优惠码明细
+            </summary>
+            <param name="refer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.BaseDiscountCodeConfigClient.DeleteDiscountCode(System.String,System.String@)">
+            <summary>
+            删除优惠码
+            </summary>
+            <param name="discountCode"></param>
+            <param name="message"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.CouponActivityClient.AddCouponActivity(Myzj.OPC.UI.Model.CouponActivity.CouponActivityDetail)">
+            <summary>
+            新增活动
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.CouponActivityClient.QueryCouponActivityPageList(Myzj.OPC.UI.Model.CouponActivity.CouponActivityRefer)">
+            <summary>
+            查询活动列表
+            </summary>
+            <param name="refer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.CouponActivityClient.QueryCouponActivityEntity(System.Int32)">
+            <summary>
+            根据Id查询
+            </summary>
+            <param name="sysNo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.CouponActivityClient.UpdateCouponActivity(Myzj.OPC.UI.Model.CouponActivity.CouponActivityDetail)">
+            <summary>
+            更新活动
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.CouponActivityClient.DeleteCouponActivityConfigure(System.Int32)">
+            <summary>
+            删除活动下优惠券
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.CouponActivityConfigureClient.AddCouponActivityConfigure(Myzj.OPC.UI.Model.CouponActivity.CouponActivityConfigureDetail)">
+            <summary>
+            新增活动
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.CouponActivityConfigureClient.QueryCouponActivityConfigurePageList(Myzj.OPC.UI.Model.CouponActivity.CouponActivityConfigureRefer)">
+            <summary>
+            查询活动列表
+            </summary>
+            <param name="refer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.CouponActivityConfigureClient.QueryCouponActivityConfigureEntity(System.Int32)">
+            <summary>
+            根据Id查询
+            </summary>
+            <param name="sysNo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.CouponActivityConfigureClient.UpdateCouponActivityConfigure(Myzj.OPC.UI.Model.CouponActivity.CouponActivityConfigureDetail)">
+            <summary>
+            更新活动
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.CouponBabyCoinConfigClient.QueryCoponBabyCoinRelationPageList(Myzj.OPC.UI.Model.BaseCouponConfig.CouponBabyCoinRefer)">
+            <summary>
+            查询列表
+            </summary>
+            <param name="floorConfig"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.CouponBabyCoinConfigClient.QueryCoponBabyCoinRelationById(System.Int32,System.Int32)">
+            <summary>
+            根据Id查询单条信息
+            </summary>
+            <param name="floorConfig"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.CouponBabyCoinConfigClient.AddCoponBabyCoinRelation(Myzj.OPC.UI.Model.BaseCouponConfig.CouponBabyCoinDetail)">
+            <summary>
+            新增
+            </summary>
+            <param name="floorConfig"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.CouponBabyCoinConfigClient.UpdateCoponBabyCoinRelation(Myzj.OPC.UI.Model.BaseCouponConfig.CouponBabyCoinDetail)">
+            <summary>
+            修改
+            </summary>
+            <param name="floorConfig"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ExpressClient.QueryCompanPageList(Myzj.OPC.UI.Model.ExpressModel.ExpressCompanyRefer)">
+            <summary>
+            查询配送商列表
+            </summary>
+            <param name="refer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ExpressClient.QueryCompanyEntity(System.Int32)">
+            <summary>
+            查询单个配送商
+            </summary>
+            <param name="SysNo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ExpressClient.UpdateCompany(Myzj.OPC.UI.Model.ExpressModel.CompanyModel)">
+            <summary>
+            修改配送商
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ExpressClient.AddCompany(Myzj.OPC.UI.Model.ExpressModel.CompanyModel)">
+            <summary>
+            新增配送商
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ExpressClient.QueryExpressAccessConfigPageList(Myzj.OPC.UI.Model.ExpressModel.ExpressAcessConfigRefer)">
+            <summary>
+            查询配送商
+            </summary>
+            <param name="refer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ExpressClient.UpdateExpressAccessConfig(Myzj.OPC.UI.Model.ExpressModel.SelfAccessConfigModel)">
+            <summary>
+            修改配送商
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ExpressClient.AddExpressAccessConfig(Myzj.OPC.UI.Model.ExpressModel.SelfAccessConfigModel)">
+            <summary>
+            新增配送商
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ExpressClient.QueryGuojiPageList(Myzj.OPC.UI.Model.ExpressModel.ExpressGuojiRefer)">
+            <summary>
+            查询国际物流
+            </summary>
+            <param name="refer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ExpressClient.QueryAccountStateMent(System.DateTime,System.DateTime)">
+            <summary>
+            对账单查询
+            </summary>
+            <param name="StartTime"></param>
+            <param name="EndTime"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ExpressClient.QueryLogPageList(Myzj.OPC.UI.Model.ExpressModel.ExpressLogRefer)">
+            <summary>
+            查询日志
+            </summary>
+            <param name="refer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ExpressClient.QueryOrderStatusPageList(Myzj.OPC.UI.Model.ExpressModel.ExpressOrderStatusRefer)">
+            <summary>
+            查询订单状态扭转
+            </summary>
+            <param name="refer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ExpressClient.DelExpressInfo(System.Int32,System.String,System.String)">
+            <summary>
+            删除运单
+            </summary>
+            <param name="SysNo"></param>
+            <param name="orderCode"></param>
+            <param name="Reason"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ExpressClient.ImportHandleInfo(System.Collections.Generic.List{Myzj.OPC.UI.Model.ExpressModel.ExpressImportModel})">
+            <summary>
+            导入处理意见
+            </summary>
+            <param name="dList"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.FloorConfigClient.QueryFloorConfigRefer(Myzj.OPC.UI.Model.FloorConfig.FloorConfigRefer)">
+            <summary>
+            楼层配置列表
+            </summary>
+            <param name="floorConfig"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.FloorConfigClient.QueryFloorItemsConfig(System.Int32)">
+            <summary>
+            楼层配置的类型
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.FloorConfigClient.QueryFloorConfigById(System.Int32)">
+            <summary>
+            根据楼层配置Id查询单条信息
+            </summary>
+            <param name="floorConfig"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.FloorConfigClient.AddFloorConfig(Myzj.OPC.UI.Model.FloorConfig.FloorConfigDetail)">
+            <summary>
+            新增楼层配置
+            </summary>
+            <param name="floorConfig"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.FloorConfigClient.UpdateFloorConfig(Myzj.OPC.UI.Model.FloorConfig.FloorConfigDetail)">
+            <summary>
+            修改楼层配置
+            </summary>
+            <param name="floorConfig"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.FloorConfigClient.UpdateFloorConfigSort(System.Int32,System.Int32)">
+            <summary>
+            修改楼层配置排序
+            </summary>
+            <param name="floorConfig"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.FloorConfigClient.DelFloorConfig(System.Int32)">
+            <summary>
+            修改楼层配置
+            </summary>
+            <param name="floorConfig"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.FloorConfigClient.QueryFloorDetail(Myzj.OPC.UI.Model.FloorConfig.FloorDetailRefer)">
+            <summary>
+            根据楼层配置Id查询相关联的楼层配置详细配置列表信息
+            </summary>
+            <param name="floorDetail"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.FloorConfigClient.QueryFloorDetailById(System.Int32)">
+            <summary>
+            根据Id查询单条信息
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.FloorConfigClient.AddFloorDetail(Myzj.OPC.UI.Model.FloorConfig.FloorDetailDetail)">
+            <summary>
+            新增楼层配置相关信息
+            </summary>
+            <param name="floorDetail"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.FloorConfigClient.UpdateFloorDetail(Myzj.OPC.UI.Model.FloorConfig.FloorDetailDetail)">
+            <summary>
+            修改楼层配置相关信息
+            </summary>
+            <param name="floorDetail"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.FloorConfigClient.UpdateDetailSort(System.Int32,System.Int32)">
+            <summary>
+            修改楼层配置相关信息排序
+            </summary>
+            <param name="id"></param>
+            <param name="sort"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.FloorConfigClient.DelDetail(System.Int32)">
+            <summary>
+            删除楼层配置相关信息
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.FloorConfigClient.QueryFloorLabel(Myzj.OPC.UI.Model.FloorConfig.FloorLabelRefer)">
+            <summary>
+            根据楼层floordetailId查询相关联的楼层配置详细配置列表信息
+            </summary>
+            <param name="floorLabel"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.FloorConfigClient.QueryFloorLabelById(System.Int32)">
+            <summary>
+            根据FloorLabelConfig->Id查询单条信息
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.FloorConfigClient.UpdateFloorLabel(Myzj.OPC.UI.Model.FloorConfig.FloorLabelDetail)">
+            <summary>
+            修改FloorLabelConfig
+            </summary>
+            <param name="floorLabel"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.FloorConfigClient.AddFloorLabel(Myzj.OPC.UI.Model.FloorConfig.FloorLabelDetail)">
+            <summary>
+            新增FloorLabelConfig
+            </summary>
+            <param name="floorLabel"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.FloorConfigClient.UpdateFloorLabelSort(System.Int32,System.Int32)">
+            <summary>
+            修改FloorLabelConfig排序
+            </summary>
+            <param name="id"></param>
+            <param name="sort"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.FloorConfigClient.DelFloorLabel(System.Int32)">
+            <summary>
+            删除FloorLabelConfig
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ForbidWordMsgClient.QueryGetWordMsg(Myzj.OPC.UI.Model.WordMsg.WordMsgRefer)">
+            <summary>
+            禁词列表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ForbidWordMsgClient.QueryById(System.Int32)">
+            <summary>
+            根据Id查询单条信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.OrderProductStateClient.QueryOrderProductStatusConfig(Myzj.OPC.UI.Model.OrderProductState.OrderProductStateRefer)">
+            <summary>
+            查询订单扭转物流信息配置
+            </summary>
+            <param name="orderProduct"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.OrderProductStateClient.QueryOrderProductStatusConfigById(System.Int32)">
+            <summary>
+            查询单条订单扭转物流信息配置
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.OrderProductStateClient.QueryBaseWarehouse">
+            <summary>
+            仓位标识列表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.OrderProductStateClient.AddOrderProductStatusConfig(Myzj.OPC.UI.Model.OrderProductState.OrderProductStateDetail)">
+            <summary>
+             新增订单扭转
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.OrderProductStateClient.UpdateOrderProductStatusConfig(Myzj.OPC.UI.Model.OrderProductState.OrderProductStateDetail)">
+            <summary>
+             修改订单扭转
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.OrderProductStateClient.UpdateOrderProductStatusConfigSort(System.Int32,System.Int32)">
+            <summary>
+             修改订单扭转排序
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.OrderProductStateClient.UpdateOrderProductStatusConfigState(System.Int32,System.Int32)">
+            <summary>
+             修改订单扭转状态
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ProductLabelClient.QueryBasetLabels(Myzj.OPC.UI.Model.ProductLabel.ProductLabelRefer)">
+            <summary>
+            商品标签列表
+            </summary>
+            <param name="productLabel"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ProductLabelClient.QueryBasetLabelsById(System.Int32)">
+            <summary>
+            详细信息
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ProductLabelClient.AddBasetLabels(Myzj.OPC.UI.Model.ProductLabel.ProductLabelDetail)">
+            <summary>
+            新增商品标签
+            </summary>
+            <param name="productLabel"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ProductLabelClient.UpdateBasetLabels(Myzj.OPC.UI.Model.ProductLabel.ProductLabelDetail)">
+            <summary>
+            修改商品标签
+            </summary>
+            <param name="productLabel"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ProductLabelClient.DelBasetLabels(System.Int32)">
+            <summary>
+            删除商品标签
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.RentActivityClient.ActivityManager(Myzj.OPC.UI.Model.RentActivity.BaseRentActivityInfo,System.Int32,System.String@)">
+            <summary>
+            活动管理
+            </summary>
+            <param name="req"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.RentActivityClient.QueryRentActivityList(Myzj.OPC.UI.Model.Base.BaseRefer{Myzj.OPC.UI.Model.RentActivity.BaseRentActivityInfo})">
+            <summary>
+            查询活动信息
+            </summary>
+            <param name="refer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.RentActivityClient.RentGoodsManager(Myzj.OPC.UI.Model.RentActivity.BaseRentGoodsInfo,System.Int32,System.String@)">
+            <summary>
+            商品管理
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.RentActivityClient.QueryRentGoodsList(Myzj.OPC.UI.Model.Base.BaseRefer{Myzj.OPC.UI.Model.RentActivity.BaseRentGoodsInfo})">
+            <summary>
+            查询商品信息
+            </summary>
+            <param name="refer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.RentActivityClient.AgreementManager(Myzj.OPC.UI.Model.RentActivity.BaseRentAgreementInfo,System.Int32,System.String@)">
+            <summary>
+            协议管理
+            </summary>
+            <param name="req"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.RentActivityClient.QueryRentAgreementList(Myzj.OPC.UI.Model.Base.BaseRefer{Myzj.OPC.UI.Model.RentActivity.BaseRentAgreementInfo})">
+            <summary>
+            查询协议信息
+            </summary>
+            <param name="refer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.RentActivityClient.QueryStatisticsInfo(Myzj.OPC.UI.Model.Base.BaseRefer{Myzj.OPC.UI.Model.RentActivity.BaseRentStatisticsInfo})">
+            <summary>
+            统计租赁数据
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.RentActivityClient.QueryStatisticsDetailInfo(Myzj.OPC.UI.Model.Base.BaseRefer{Myzj.OPC.UI.Model.RentActivity.BaseRentStatisticsInfo})">
+            <summary>
+            统计明细
+            </summary>
+            <param name="refer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SaleHotStyleClient.QuerySaleHotStyle(Myzj.OPC.UI.Model.SaleHotStyle.SaleHotStyleRefer)">
+            <summary>
+            爆品列表
+            </summary>
+            <param name="saleHotStyle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SaleHotStyleClient.QuerySaleHotStyleApplyPlace">
+            <summary>
+            应用位置列表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SaleHotStyleClient.QuerySaleHotStyleById(Myzj.OPC.UI.Model.SaleHotStyle.SaleHotStyleDetail)">
+            <summary>
+            根据Id查询单条信息
+            </summary>
+            <param name="saleHotStyle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SaleHotStyleClient.GetApplaceName(System.String)">
+            <summary>
+            根据应用位置ID查询对应的应用位置名称
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SaleHotStyleClient.UpdateSaleHotStyleIsTop(System.Int32,System.Int16,System.DateTime,System.DateTime)">
+            <summary>
+            设置爆品商品置顶信息
+            </summary>
+            <param name="id"></param>
+            <param name="istop"></param>
+            <param name="startDate"></param>
+            <param name="endDate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SaleHotStyleClient.CancelSaleHotStyleIsTop(System.Int32)">
+            <summary>
+             取消爆品商品置顶信息
+            </summary>
+            <param name="id"></param>
+            <param name="istop"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SaleHotStyleClient.AddSaleHotStyle(Myzj.OPC.UI.Model.SaleHotStyle.SaleHotStyleDetail,System.String@)">
+            <summary>
+            新增爆品商品
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SaleHotStyleClient.UpdateSaleHotStyle(Myzj.OPC.UI.Model.SaleHotStyle.SaleHotStyleDetail,System.String@)">
+            <summary>
+            修改爆品商品
+            </summary>
+            <param name="saleHotStyle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SaleHotStyleClient.UpdateSaleHotStyleState(System.Int32,System.Int32)">
+            <summary>
+            修改爆品状态
+            </summary>
+            <param name="id"></param>
+            <param name="state"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SaleHotStyleClient.UpdateSaleHotStyleSort(System.Int32,System.Int32)">
+            <summary>
+            修改爆品商品排序
+            </summary>
+            <param name="id"></param>
+            <param name="sort"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SaleHotStyleClient.DelSaleHotStyle(System.Int32)">
+            <summary>
+            删除爆品商品
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SaleHotStyleClient.QueryPdtBaseInfoById(System.Int32)">
+            <summary>
+            根据商品Id返回商品名称
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SaleHotStyleClient.CheckPdtInfoById(System.Int32,System.String@)">
+            <summary>
+            检测商品Id是否存在商品表中
+            </summary>
+            <param name="productId"></param>
+            <param name="str"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SaleHotStyleSpecialSubjectClient.QuertSaleHotStyleSpeciaSubject(Myzj.OPC.UI.Model.SaleHotStyleSpecialSubject.SaleHotStyleSpecialSubjectRefer)">
+            <summary>
+            活动专题列表
+            </summary>
+            <param name="specialSubject"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SaleHotStyleSpecialSubjectClient.QuertSaleHotStyleSpeciaSubjectById(System.Int32)">
+            <summary>
+             根据Id查询单条活动专题信息
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SaleHotStyleSpecialSubjectClient.Update(Myzj.OPC.UI.Model.SaleHotStyleSpecialSubject.SaleHotStyleSpecialSubjectDetail)">
+            <summary>
+            修改专题活动
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SaleHotStyleSpecialSubjectClient.Add(Myzj.OPC.UI.Model.SaleHotStyleSpecialSubject.SaleHotStyleSpecialSubjectDetail)">
+            <summary>
+            修改专题活动
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SaleHotStyleSpecialSubjectClient.UpdateSort(System.Int32,System.Int32)">
+            <summary>
+            修改专题活动排序
+            </summary>
+            <param name="id"></param>
+            <param name="sort"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SaleHotStyleSpecialSubjectClient.UpdateState(System.Int32,System.Int32)">
+            <summary>
+            修改专题活动状态
+            </summary>
+            <param name="id"></param>
+            <param name="state"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SaleHotStyleSpecialSubjectClient.UpdateIsTop(System.Int32,System.Int32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            设置活动专题置顶/取消置顶
+            </summary>
+            <param name="id"></param>
+            <param name="top"></param>
+            <param name="startDate"></param>
+            <param name="endDate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SaleHotStyleSpecialSubjectClient.DelSaleHotStyleSpeciaSubject(System.Int32)">
+            <summary>
+            删除专题活动
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SearchManagementClient.QueryWebSearchManagement(Myzj.OPC.UI.Model.SearchManagement.SearchManagementRefer)">
+            <summary>
+            商品搜索词列表
+            </summary>
+            <param name="search"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SearchManagementClient.QueryWebSearchManagementListById(System.String)">
+            <summary>
+            根据多个ID获取批量数据
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SearchManagementClient.Update(Myzj.OPC.UI.Model.SearchManagement.SearchManagementBody,System.String@)">
+            <summary>
+            批量新增/批量修改商品搜索词
+            </summary>
+            <param name="search"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SearchManagementClient.AddWebSearchManagement(Myzj.OPC.UI.Model.SearchManagement.SearchManagementBody,System.String@)">
+            <summary>
+            批量新增/批量修改商品搜索词
+            </summary>
+            <param name="search"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SearchManagementClient.QueryWebSearchManagementItem(Myzj.OPC.UI.Model.SearchManagement.SearchManagementItemRefer)">
+            <summary>
+            审核商品搜索词列表
+            </summary>
+            <param name="searchItem"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SearchManagementClient.UpdateExamineSearchManage(Myzj.OPC.UI.Model.SearchManagement.ExamineSearch,System.String@)">
+            <summary>
+            批量审核商品搜索词详细
+            </summary>
+            <param name="examine"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SearchManagementClient.CheckPdtInfoById(System.Int32,System.String@)">
+            <summary>
+            检测商品Id是否存在商品表中
+            </summary>
+            <param name="productId"></param>
+            <param name="str"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ShortMessageClient.QueryTemplatePageList(Myzj.OPC.UI.Model.ShortMessage.TemplateListRefer)">
+            <summary>
+            查询短信模板列表
+            </summary>
+            <param name="refer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ShortMessageClient.QueryTemplateEntity(System.Int32)">
+            <summary>
+            查询单个短信模板
+            </summary>
+            <param name="SysNo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ShortMessageClient.UpdateTemplate(Myzj.OPC.UI.Model.ShortMessage.TemplateModel)">
+            <summary>
+            修改短信模板
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ShortMessageClient.AddTemplate(Myzj.OPC.UI.Model.ShortMessage.TemplateModel)">
+            <summary>
+            新增短信模板
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.ShortMessageClient.QuerySendRecordsPageList(Myzj.OPC.UI.Model.ShortMessage.SendRecorsRefer)">
+            <summary>
+            查询发送记录
+            </summary>
+            <param name="refer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SortProductConfigClient.AddSortProduct(Myzj.OPC.UI.Model.KeyWord.SortProductDetail)">
+            <summary>
+            新增商品搜索指定位置显示
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SortProductConfigClient.UpdateSortProduct(Myzj.OPC.UI.Model.KeyWord.SortProductDetail)">
+            <summary>
+            修改商品搜索指定位置显示
+            </summary>
+            <param name="request"></param>
+            <param name="result"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SortProductConfigClient.QuerySortProductEntity(System.Int32)">
+            <summary>
+            根据Id查询
+            </summary>
+            <param name="sysNo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SortProductConfigClient.QuerySortProductPageList(Myzj.OPC.UI.Model.KeyWord.SortProductRefer)">
+            <summary>
+            查询商品指定位置列表
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SortProductConfigClient.DelSortProduct(System.Collections.Generic.List{System.Int32})">
+            <summary>
+            批量删除商品搜索指定显示数据
+            </summary>
+            <param name="idList"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SpreadInfoClient.QuertSpreadInfo(Myzj.OPC.UI.Model.SpreadInfo.SpreadInfoRefer)">
+            <summary>
+            推广信息列表
+            </summary>
+            <param name="spreadInfo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SpreadInfoClient.QueryRegionList">
+            <summary>
+            获取归属地列表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SpreadInfoClient.UpdateSpreadInfo(Myzj.OPC.UI.Model.SpreadInfo.CreateSpreadUser)">
+            <summary>
+            修改推广信息
+            </summary>
+            <param name="spreadUser"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SpreadInfoClient.UpdateSpreadInfoState(System.Int32,System.String)">
+            <summary>
+            修改推广信息状态
+            </summary>
+            <param name="id"></param>
+            <param name="state"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SpreadInfoClient.QueryAllActivity">
+            <summary>
+            获取活动列表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SpreadInfoClient.CreateSpreadUser(Myzj.OPC.UI.Model.SpreadInfo.CreateSpreadUser)">
+            <summary>
+            创建推广点/推广人员信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SpreadInfoClient.CreateRegionUser(Myzj.OPC.UI.Model.SpreadInfo.CreateSpreadUser)">
+            <summary>
+            创建归属地
+            </summary>
+            <param name="spreadUser"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SpreadInfoClient.QueryActivityListByPage(Myzj.OPC.UI.Model.SpreadInfo.SpreadActivityRefer)">
+            <summary>
+            推广活动列表
+            </summary>
+            <param name="activity"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SpreadInfoClient.QuerySpreadActivityById(System.Int32)">
+            <summary>
+            查询活动详情
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SpreadInfoClient.AddSpreadActivity(Myzj.OPC.UI.Model.SpreadInfo.AddSpreadActivity)">
+            <summary>
+            创建推广活动
+            </summary>
+            <param name="activity"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SpreadInfoClient.UpdateActivity(Myzj.OPC.UI.Model.SpreadInfo.AddSpreadActivity)">
+            <summary>
+            修改推广活动
+            </summary>
+            <param name="activity"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SpreadInfoClient.UpdateState(System.Int32,System.Int32)">
+            <summary>
+            修改推广活动状态
+            </summary>
+            <param name="id"></param>
+            <param name="state"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SpreadInfoClient.DelActivity(System.Int32)">
+            <summary>
+            删除推广活动
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SpreadInfoClient.QueryAllSpreadDataReport(Myzj.OPC.UI.Model.SpreadInfo.SpreadBaseRefer)">
+            <summary>
+            推广统计列表
+            </summary>
+            <param name="spreadBase"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SpreadInfoClient.QueryUnRegisterUser(Myzj.OPC.UI.Model.SpreadInfo.UnRegisterUserRefer)">
+            <summary>
+            获取所有未注册用户数据统计列表
+            </summary>
+            <param name="unRegisterUser"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.SpreadInfoClient.QueryUserByUnionIdentity(Myzj.OPC.UI.Model.SpreadInfo.GetUserByUnionIdentity)">
+            <summary>
+            通过第三方标识查找用户信息
+            </summary>
+            <param name="userBy"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.UserPdtCommentClient.QueryUserPdtComment(Myzj.OPC.UI.Model.UserPdtComment.UserPdtCommentRefer)">
+            <summary>
+            评论列表
+            </summary>
+            <param name="comment"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.UserPdtCommentClient.QueryUserPdtCommentById(Myzj.OPC.UI.Model.UserPdtComment.UserPdtCommentDetail)">
+            <summary>
+             根据Id查询单条评论信息
+            </summary>
+            <param name="commentId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.UserPdtCommentClient.QueryUserPdtCommentPLById(System.String)">
+            <summary>
+            根据多个Id批量查询多条数据详细信息
+            </summary>
+            <param name="commentId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.UserPdtCommentClient.UpdatePLUserPdtComment(Myzj.OPC.UI.Model.UserPdtComment.UserPdtCommentBody)">
+            <summary>
+            批量修改评论
+            </summary>
+            <param name="search"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.UserPdtCommentClient.QueryUserPdtCommentCusReply(Myzj.OPC.UI.Model.UserPdtComment.UserPdtCommentCusReplyRefer)">
+            <summary>
+            获取评论信息下面的所有回复信息
+            </summary>
+            <param name="commentDetail"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.UserPdtCommentClient.QueryUserPdtCommentCusReply(Myzj.OPC.UI.Model.UserPdtComment.UserPdtCommentCusReplyBody)">
+            <summary>
+            批量更新回复内容
+            </summary>
+            <param name="comment"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.UserPdtCommentClient.AddPdtComment(Myzj.OPC.UI.Model.UserPdtComment.AddPLPLUserPdtComment)">
+            <summary>
+            导入评价
+            </summary>
+            <param name="pdtComment"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.UserReferClient.GetUserReferList(Myzj.OPC.UI.Model.UserRefer.GetUserRefer)">
+            <summary>
+            咨询列表
+            </summary>
+            <param name="userRefer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.UserReferClient.GetUserRegerDetail(System.Int32)">
+            <summary>
+            根据id查询单条信息
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.UserReferClient.UpdateUserRefer(Myzj.OPC.UI.Model.UserRefer.UserReferDetail)">
+            <summary>
+            回复咨询列表
+            </summary>
+            <param name="userRefer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.UserReferClient.AddUserRefer(Myzj.OPC.UI.Model.UserRefer.UserReferDetail)">
+            <summary>
+            新增咨询
+            </summary>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.UserReferClient.QueryUserReferByPId(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            根据商品Id查询对应的咨询列表 回复列表
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.UserReferClient.UpdateState(System.Int32,System.Int32)">
+            <summary>
+            修改状态
+            </summary>
+            <param name="id"></param>
+            <param name="state"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.UserReferClient.ExportExeclss(Myzj.OPC.UI.Model.UserRefer.ExportExeclModel)">
+            <summary>
+            导出execl
+            </summary>
+            <param name="execlModel"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.QueryWebAward(Myzj.OPC.UI.Model.WebAward.WebAwardRefer)">
+            <summary>
+            抽奖活动列表
+            </summary>
+            <param name="webAward"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.QueryWebAwardById(Myzj.OPC.UI.Model.WebAward.WebAwardDetail)">
+            <summary>
+            根据Id查询单条信息
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.AddWebAward(Myzj.OPC.UI.Model.WebAward.WebAwardDetail)">
+            <summary>
+            新增抽奖活动
+            </summary>
+            <param name="webAward"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.UpdateWebAward(Myzj.OPC.UI.Model.WebAward.WebAwardDetail)">
+            <summary>
+            新增抽奖活动
+            </summary>
+            <param name="webAward"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.UpdateWebAwardStatus(System.Int32,System.Int32)">
+            <summary>
+            修改抽奖活动状态
+            </summary>
+            <param name="id"></param>
+            <param name="state"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.GetUserName(System.Nullable{System.Int32})">
+            <summary>
+            根据用户Id查询用户名称
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.QueryWebAwardUserTags(Myzj.OPC.UI.Model.WebAward.WebAwardUserTagsRefer)">
+            <summary>
+            用户标签组配置列表
+            </summary>
+            <param name="userTags"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.QueryWebAwardUserTagsById(System.Int32)">
+            <summary>
+            根据用户标签组配置Id查询单条信息
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.AddWebAwardUserTags(Myzj.OPC.UI.Model.WebAward.WebAwardUserTagsDetail)">
+            <summary>
+            新增用户标签组配置
+            </summary>
+            <param name="userTags"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.UpdateWebAwardUserTags(Myzj.OPC.UI.Model.WebAward.WebAwardUserTagsDetail)">
+            <summary>
+            修改用户标签组配置
+            </summary>
+            <param name="userTags"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.UpdateWebAwardUserTagsState(System.Int32,System.Int32)">
+            <summary>
+            修改用户标签组配置状态
+            </summary>
+            <param name="id"></param>
+            <param name="state"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.QueryWebAwardLotteryNumber(Myzj.OPC.UI.Model.WebAward.WebLotteryNumberRefer)">
+            <summary>
+            抽奖次数配置列表
+            </summary>
+            <param name="lotteryNumber"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.QueryWebAwardLotteryNumberById(Myzj.OPC.UI.Model.WebAward.WebLotteryNumberDetail)">
+            <summary>
+            根据抽奖次数配置Id查询单条信息
+            </summary>
+            <param name="lotteryNumber"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.AddWebAwardLotteryNumber(Myzj.OPC.UI.Model.WebAward.WebLotteryNumberDetail)">
+            <summary>
+            新增抽奖次数配置
+            </summary>
+            <param name="LotteryNumber"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.UpdateWebAwardLotteryNumber(Myzj.OPC.UI.Model.WebAward.WebLotteryNumberDetail)">
+            <summary>
+            新增抽奖次数配置
+            </summary>
+            <param name="LotteryNumber"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.UpdateWebAwardLotteryNumberState(System.Int32,System.Int32)">
+            <summary>
+            修改抽奖次数配置状态
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.QueryWebAwardPrize(Myzj.OPC.UI.Model.WebAward.WebPrizeRefer)">
+            <summary>
+             奖项配置列表
+            </summary>
+            <param name="webPrize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.QueryWebAwardPrizeById(Myzj.OPC.UI.Model.WebAward.WebPrizeDetail)">
+            <summary>
+            根据奖项配置ID查询单条信息
+            </summary>
+            <param name="webPrize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.AddWebAwardPrize(Myzj.OPC.UI.Model.WebAward.WebPrizeDetail)">
+            <summary>
+            新增奖项配置
+            </summary>
+            <param name="webPrize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.QueryWebAwardPrizeItem(Myzj.OPC.UI.Model.WebAward.WebPrizeItemRefer)">
+            <summary>
+             奖品配置列表
+            </summary>
+            <param name="prizeItem"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.QueryWebAwardPrizeItemById(System.Int32)">
+            <summary>
+            根据奖品配置Id查询单条信息
+            </summary>
+            <param name="prizeItem"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.DelWebAwardPrizeItem(System.Int32)">
+            <summary>
+            删除奖品配置
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.QueryWebLotteryTemplate(System.Int32)">
+            <summary>
+            获取抽奖模型表
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.QueryWebLotteryTemplateConfigure(System.Int32)">
+            <summary>
+            根据抽奖模块Id查询Web_LotteryTemplateConfigure对应的配置
+            </summary>
+            <param name="ltSysNos"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.QueryWebLotteryTemplateById(System.Int32)">
+            <summary>
+             根据抽奖模型Id查询Value值
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.UpdateWebAwardPrizeItem(Myzj.OPC.UI.Model.WebAward.WebPrizeItemDetail)">
+            <summary>
+            修改奖品配置
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.AddWebAwardPrizeItem(Myzj.OPC.UI.Model.WebAward.WebPrizeItemDetail)">
+            <summary>
+            新增奖品配置
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.QueryWebAwardPrizeModel">
+            <summary>
+            活动类型列表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.QueryWebPrizeBundle(Myzj.OPC.UI.Model.WebAward.WebPrizeBundleRefer)">
+            <summary>
+            捆绑奖品列表
+            </summary>
+            <param name="prizeBundle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.QueryWebPrizeBundleById(Myzj.OPC.UI.Model.WebAward.WebPrizeBundleDetail)">
+            <summary>
+            根据捆绑奖品Id查询单条信息
+            </summary>
+            <param name="prizeBundle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.AddWebPrizeBundle(Myzj.OPC.UI.Model.WebAward.WebPrizeBundleDetail)">
+            <summary>
+            新增捆绑奖品
+            </summary>
+            <param name="prizeBundle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.UpdateWebPrizeBundle(Myzj.OPC.UI.Model.WebAward.WebPrizeBundleDetail)">
+            <summary>
+            修改捆绑奖品
+            </summary>
+            <param name="prizeBundle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.UpdateWebPrizeBundleState(System.Int32,System.Int32)">
+            <summary>
+            修改捆绑奖品状态
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.QueryWebAwardRecordItem(Myzj.OPC.UI.Model.WebAward.WebAwardRecordRefer)">
+            <summary>
+            拉取特殊奖品明细/抽奖明细
+            </summary>
+            <param name="id"></param>
+            <param name="recordDetail"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.QueryWebAwardRecordSpecial(System.Int32,System.DateTime,System.DateTime)">
+            <summary>
+            拉取特殊奖品明细
+            </summary>
+            <param name="intawardid"></param>
+            <param name="dtCreateTime"></param>
+            <param name="dtEndCreateTime"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.CheckPdtInfoById(System.Int32,System.String@)">
+            <summary>
+            检测商品Id是否存在商品表中
+            </summary>
+            <param name="productId"></param>
+            <param name="str"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.QueryCouponsInfo(System.Int32)">
+            <summary>
+             获取当所有指定优惠券ID的券信息
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.QueryCouponActivityDetail(System.Int32)">
+            <summary>
+            获取当所有指定优惠码ID的码信息
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.QueryCouponPromotions(System.Int32)">
+            <summary>
+            获取当前促销区域信息
+            </summary>
+            <param name="couponActId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebAwardClient.QueryPromInfo(System.Int32)">
+            <summary>
+            获取当前促销区域促销活动
+            </summary>
+            <param name="promId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebBulletinClient.QueryWebBulletin(Myzj.OPC.UI.Model.WebBulletin.WebBulletinRefer)">
+            <summary>
+            公告列表
+            </summary>
+            <param name="bulletin"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebBulletinClient.QueryWebBulletinById(System.Int32)">
+            <summary>
+            根据Id查询详细信息
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebBulletinClient.AddWebBulletin(Myzj.OPC.UI.Model.WebBulletin.WebBulletinDetail)">
+            <summary>
+            新增公告
+            </summary>
+            <param name="bulletin"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebBulletinClient.UpdateWebBulletin(Myzj.OPC.UI.Model.WebBulletin.WebBulletinDetail)">
+            <summary>
+            新增公告
+            </summary>
+            <param name="bulletin"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebBulletinClient.UpdateWebBulletinSort(System.Int32,System.Int32)">
+            <summary>
+            修改公告排序
+            </summary>
+            <param name="bulletin"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebBulletinClient.UpdateWebBulletinState(System.Int32,System.Byte)">
+            <summary>
+            修改公告状态
+            </summary>
+            <param name="bulletin"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebBulletinClient.DelWebBulletin(System.Int32)">
+            <summary>
+            删除公告
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebIndexRapidInClien.QueryWordMsgRefer(Myzj.OPC.UI.Model.WebIndex.WebIndexRefer)">
+            <summary>
+            快速入口管理
+            </summary>
+            <param name="wordMsg"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebIndexRapidInClien.QueryWebActivity(Myzj.OPC.UI.Model.WebIndex.WebActivityRefer)">
+            <summary>
+            管理活动列表
+            </summary>
+            <param name="activity"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebIndexRapidInClien.QueryById(System.Int32)">
+            <summary>
+             根据ID查询详细信息
+            </summary>
+            <param name="webIndex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebIndexRapidInClien.AddWordMsgRefer(Myzj.OPC.UI.Model.WebIndex.WebIndexDetail)">
+            <summary>
+            新增
+            </summary>
+            <param name="webIndex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebIndexRapidInClien.UpdateWordMsgRefer(Myzj.OPC.UI.Model.WebIndex.WebIndexDetail)">
+            <summary>
+            修改
+            </summary>
+            <param name="webIndex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebIndexRapidInClien.UpdateSort(System.Int32,System.Int32)">
+            <summary>
+            修改排序
+            </summary>
+            <param name="id"></param>
+            <param name="sort"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebIndexRapidInClien.UpdateVisible(System.Int32,System.Byte)">
+            <summary>
+            修改状态
+            </summary>
+            <param name="id"></param>
+            <param name="sort"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebIndexRapidInClien.DelWordMsgRefer(System.Int32)">
+            <summary>
+            删除
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebUserBehaviorClient.GetUserBehavior(Myzj.OPC.UI.Model.WebUserBe.UserBehaviorRefer)">
+            <summary>
+            用户行为管理列表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebUserBehaviorClient.GetuserBehaviorById(System.Int32)">
+            <summary>
+            根据Id查询详细信息
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebUserBehaviorClient.AdduserBehavior(Myzj.OPC.UI.Model.WebUserBe.UserBehaviorDetail)">
+            <summary>
+            新增
+            </summary>
+            <param name="userBehavior"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebUserBehaviorClient.UpdateuserBehavior(Myzj.OPC.UI.Model.WebUserBe.UserBehaviorDetail)">
+            <summary>
+            修改
+            </summary>
+            <param name="userBehavior"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebUserBehaviorClient.UpdateuserBehaviorState(System.Int32,System.Int32)">
+            <summary>
+            修改状态
+            </summary>
+            <param name="id"></param>
+            <param name="state"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WebUserBehaviorClient.DeluserBehavior(System.Int32)">
+            <summary>
+            删除
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Myzj.OPC.UI.ServiceClient.WordLibManageConfigClient">
+            <summary>
+            词库管理操作数据方法
+            </summary>
+            Creator:ysx2012
+            5/30/2016
+            <seealso cref="T:Myzj.OPC.UI.ServiceClient.BaseService"/>
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WordLibManageConfigClient.QueryWordLibManagePageList(Myzj.OPC.UI.Model.WordLibManage.WordLibManageRefer)">
+            <summary>
+            Queries the word library manage page list.查询列表
+            </summary>
+            <param name="request">The request.</param>
+            <returns></returns>
+            Creator:ysx2012
+            6/2/2016
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WordLibManageConfigClient.QueryWordLibManageEntity(System.Int32)">
+            <summary>
+            Queries the word library manage entity.Id查询单条记录
+            </summary>
+            <param name="id">The identifier.</param>
+            <returns></returns>
+            Creator:ysx2012
+            6/2/2016
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WordLibManageConfigClient.UpdateWordLibManageEntity(Myzj.OPC.UI.Model.WordLibManage.WordLibManageDetail)">
+            <summary>
+            Updates the word library manage entity.更新一条数据
+            </summary>
+            <param name="request">The request.</param>
+            <returns></returns>
+            Creator:ysx2012
+            6/2/2016
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WordLibManageConfigClient.AddWordLibManage(Myzj.OPC.UI.Model.WordLibManage.WordLibManageDetail)">
+            <summary>
+            Adds the word library manage.添加数据
+            </summary>
+            <param name="request">The request.</param>
+            <returns></returns>
+            Creator:ysx2012
+            6/2/2016
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WordLibManageConfigClient.SetIsDelOrEnable(System.Collections.Generic.List{System.Int32},System.Int32,System.Int32,System.String,System.DateTime)">
+            <summary>
+            Sets the is delete or enable.设置删除或禁用
+            </summary>
+            <param name="idList">The identifier list.</param>
+            <param name="isDel">The is delete.</param>
+            <param name="isEnable">The is enable.</param>
+            <param name="lastoperator">The lastoperator.</param>
+            <param name="lastupdateTime">The lastupdate time.</param>
+            <returns></returns>
+            Creator:ysx2012
+            6/2/2016
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WordLibManageConfigClient.DeleteForbiddenTp(System.Collections.Generic.List{System.Int32})">
+            <summary>
+            Deletes the forbidden tp.批量删除类型
+            </summary>
+            <param name="idList">The identifier list.</param>
+            <returns></returns>
+            Creator:ysx2012
+            2016/6/10
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WordLibManageConfigClient.ResetIndex">
+            <summary>
+            Resets the index.重建索引
+            </summary>
+            <returns></returns>
+            Creator:ysx2012
+            2016/6/10
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WordLibManageConfigClient.GetForbiddenTypeList">
+            <summary>
+            Gets the forbidden type list.获取禁词类型
+            </summary>
+            <returns></returns>
+            Creator:ysx2012
+            6/1/2016
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WordLibManageConfigClient.QueryForbiddenTypeList">
+            <summary>
+            Queries the forbidden type list.获取类型列表
+            </summary>
+            <returns></returns>
+            Creator:ysx2012
+            2016/6/8
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WordLibManageConfigClient.QueryForbiddenTypeEntity(System.Int32)">
+            <summary>
+            Queries the forbidden type entity.查询一个类型
+            </summary>
+            <param name="id">The identifier.</param>
+            <returns></returns>
+            Creator:ysx2012
+            2016/6/8
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WordLibManageConfigClient.UpdateFbTpEntity(Myzj.OPC.UI.Model.WordLibManage.ForbiddenTypeDetail)">
+            <summary>
+            Updates the fb tp entity.更新一条数据
+            </summary>
+            <param name="request">The request.</param>
+            <returns></returns>
+            Creator:ysx2012
+            2016/6/8
+        </member>
+        <member name="M:Myzj.OPC.UI.ServiceClient.WordLibManageConfigClient.AddForbiddenType(Myzj.OPC.UI.Model.WordLibManage.ForbiddenTypeDetail)">
+            <summary>
+            Adds the word library manage.新增一个类型
+            </summary>
+            <param name="request">The request.</param>
+            <returns></returns>
+            Creator:ysx2012
+            2016/6/8
+        </member>
+    </members>
+</doc>

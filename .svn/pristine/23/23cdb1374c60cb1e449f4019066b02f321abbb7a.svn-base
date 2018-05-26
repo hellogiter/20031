@@ -1,0 +1,135 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.SearchManagement.SearchManagementRefer
+
+@{
+	ViewBag.Title = "查看相关商品";
+	var noAudit =ViewBag.NoAudit;
+	var checkid = ViewBag.CheckId;
+	var sum = Model.SearchItemList.Count;
+}
+<style>
+	.resultTable thead tr { height: 36px;}
+	.sBtnb { width: 10%; height: 30px; margin-top: 10px; margin-left: 10px; cursor: pointer; }
+</style>
+
+<h2>商品搜索词管理</h2>
+@using (Html.BeginForm())
+{
+	var success = @ViewData["SuccessMsg"];
+    if (null != success)
+    {
+		<span style="color: green">@success</span>
+    }
+    var notice = @ViewData["ErrorMsg"];
+	if (null != notice)
+	{
+	<span style="color: red">@notice</span>
+	}
+
+	if (noAudit)
+	{
+		<input type="button" value="批量审核" class="sBtnb" onclick="javascript:AuditProductList();"/>
+	}
+	if (Model.SearchItemList != null && Model.SearchItemList.Any())
+	{
+		<table class="resultTable" style="margin-top: 30px">
+	<thead>
+		<tr>
+			<th>
+				<input type="checkbox" id="CheckAll" value="全选" @(noAudit?"":"disabled") />
+			</th>
+			<th>商品编号</th>
+			<th>商品名称</th>
+			<th>原搜索词</th>
+			<th>现搜索词</th>
+			<th>状态</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model.SearchItemList)
+		{
+			<tr>
+				<td>
+					<input type="checkbox" name="checkitem" value="@item.ProductId" @(noAudit?"":"disabled") />
+				</td>
+				<td>@item.ProductId</td>
+				<td>@item.ProductName<a href="@(ViewBag.Productlink+item.ProductId).html" target="_blank"><strong>【PC 查看】</strong></a></td>
+				<td>@item.AuidtSearchWord</td>
+				<td>@item.MixedToAuditSearchWord</td>
+				<td>@(typeof(AppEnum.SearchState).GetEnumDescription(item.State))</td>
+			</tr>
+					}
+	</tbody>
+</table>
+	}
+}
+
+<script type="text/javascript">
+	//全选和反选
+	$("#CheckAll").click(function() {
+		var flag = $("#CheckAll").is(":checked"); //判断全选按钮的状态
+		$("input[name=checkitem]").prop("checked", flag);
+	});
+
+	function AuditProductList() {
+		var array = new Array();
+		$.each($("input[name=checkitem]:checked"), function(index, content) {
+			var iindex = $("input[name=checkitem]:checked")[index].value;
+			array.push(iindex);
+		});
+		var todostr="";
+		var productIds = "";
+		var refusedReason = "";
+		if (array.length < 1) {
+			todostr = "提示：<br/>是否选择全部拒绝";
+		} else {
+			productIds = array.join(",");
+		}
+		var sum = @sum;
+		if (array.length < sum) {
+			todostr = "是否确认操作";
+		}
+		//审核功能
+		function auditProduct() {
+			var postdata = { CheckId: @checkid, ProductIds: productIds, RefusedReason: refusedReason };
+			$.ajax({
+				url: '@Url.Action("AuditWebSearchManagementItem", "SearchManagement")',
+				type: 'post',
+				dataType: 'json',
+				contentType: 'application/json',
+				data: JSON.stringify(postdata),
+				success: function (result) {
+					if (result.DoFlag) {
+						alert(result.DoResult);
+						location.reload();
+					} else {
+						alert(result.DoResult);
+					}
+				},
+				error: function (data) {
+					alert(data.responseText);
+				}
+			});
+		}
+
+		if (array.length < sum) {
+			if (confirm(todostr)) {
+				dialog = new $.Zebra_Dialog("<div><input type=\"text\" id=\"refusedre\" placeholder=\"*注明拒绝理由\" maxlength=\"500\" style=\"width:240px;height:60px;line-height:30px\"/></div>", {
+					'type': '',
+					'modal': true,
+					'overlay_close': false,
+					'custom_class': 'dialog',
+					'overlay_opacity': 0.5,
+					'width': 300,
+					'height': 200,
+					'title': '拒绝理由',
+					'buttons':   [{caption: '确认', callback: function() { refusedReason = $.trim(($("#refusedre").val())); auditProduct();}}],
+					'onClose': function(caption) {}
+				});
+			}
+		}
+		if (array.length == sum) {   //如果填写了拒绝原因或全部审核通过
+			auditProduct();
+		}
+	}
+</script>

@@ -1,0 +1,116 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+@using Myzj.OPC.UI.Model.Base
+@model Myzj.OPC.UI.Model.ExpressModel.ExpressInfoRefer
+<h2>物流信息管理</h2>
+<style>
+    .input-validation-error {
+        border: 1px solid #c0c0c0;
+        background-color: white;
+    }
+
+    .showDetailTable tbody tr.tk-guanli td {
+        width: 15%;
+    }
+
+        .showDetailTable tbody tr.tk-guanli td.tk-name {
+            width: 5%;
+            text-align: center;
+        }
+
+        .showDetailTable tbody tr.tk-guanli td input {
+            text-align: left;
+            width: 85%;
+        }
+
+    .rowButton {
+        margin: 20px 0 30px 0;
+        text-align: center;
+        width: 90%;
+    }
+
+        .rowButton input {
+            margin: 2px 15px;
+            height: 30px;
+            width: 11%;
+            text-align: center;
+        }
+
+    textarea {
+        min-height: 41px;
+        min-width: 94%;
+    }
+</style>
+
+
+@using (Html.BeginForm())
+{
+    <table class="showDetailTable" style="width: 99%; margin: 5px auto;">
+        <tbody>
+            <tr class="tk-guanli">
+                <td class="tk-name">订单号:<br />
+                    (多个以逗号分割)</td>
+                <td>
+                    @Html.TextAreaFor(m => m.Search.OrderCode)
+                </td>
+                <td class="tk-name">快递运单号:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.Search.LogiscticNo)
+                </td>
+                <td class="tk-name">是否归档:</td>
+                <td>
+                @Html.DropDownListFor(m => m.Search.IsGuidang, new KvSelectList(typeof(AppEnum.ExpressGuiDangEnum).GetEnumList()), false)
+                <td class="tk-name">对接方式:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.Search.CallType, new KvSelectList(typeof(AppEnum.ExpressCallTypeModeEnum).GetEnumList()), true)
+                </td>
+            </tr>
+            <tr class="tk-guanli">
+                <td class="tk-name">订单类型:</td>
+                <td>
+                    @Html.DropDownListFor(m => m.Search.OrderType, new KvSelectList(typeof(AppEnum.ExpressOrderTypeEnum).GetEnumList()), true)
+                </td>
+                <td class="tk-name">快递公司名称:</td>
+                <td>
+                    @Html.TextBoxFor(m => m.Search.LogiscticCompanyName)
+                </td>
+                <td class="tk-name">运单状态:<br />
+                    (快递100参考)</td>
+                <td>
+                    @Html.DropDownListFor(m => m.Search.LastStatus, new KvSelectList(typeof(AppEnum.ExpressLastStatusEnum).GetEnumList()), true)
+                </td>
+                <td class="tk-name">订阅状态:<br/>(快递100参考)</td>
+                <td>
+                    @Html.DropDownListFor(m => m.Search.SubscribeStatus, new KvSelectList(typeof(AppEnum.ExpressSubscribeStatusEnum).GetEnumList()), true)
+                </td>
+            </tr>
+            <tr class="tk-guanli">
+
+                <td class="tk-name">有无物流信息:<br/>(字段为空)</td>
+                <td>
+                @Html.DropDownListFor(m => m.Search.IsWuliuInfo, new KvSelectList(typeof(AppEnum.ExpressContentEnum).GetEnumList()), true)
+
+                <td class="tk-name">开始日期:</td>
+                <td>
+                @Html.TextBoxFor(m => m.Search.BeginTime)
+
+                <td class="tk-name">结束日期:</td>
+                <td>
+                @Html.TextBoxFor(m => m.Search.EndTime)
+            </tr>
+        </tbody>
+    </table>
+    <div class="rowButton">
+        <input type="submit" value="查询" id="btnSearch" />
+        @*<input type="button" value="批量订阅" id="batchDingYue" />*@
+        <input type="button" value="订单扭转" id="btnAdd" onclick="window.open('/Express/OrderStatusIndex')" />
+        <input type="button" value="国际物流" onclick="window.open('/Express/InterNationalIndex')" />
+        <input type="button" value="配送商管理" id="" onclick="window.open('/Express/CompanyIndex')" />
+        <input type="button" value="查看日志" id="" onclick="window.open('/Express/LogIndex')" />
+        <input type="button" value="查询对账单" id="" onclick="window.open('/Express/AccountStateMentIndex')" />
+
+    </div>
+    @Html.Partial("IndexItem", @Model.List)
+    @Html.Partial("Pager", @Model)
+}

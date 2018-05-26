@@ -1,0 +1,137 @@
+﻿@using Myzj.OPC.UI.Model.Base
+@using Myzj.OPC.UI.Model.WebAward
+@model Myzj.OPC.UI.Model.WebAward.WebPrizeRefer
+<h2>@ViewBag.strName 奖项配置管理</h2>
+
+
+@{
+    var prizeModel = (WebPrizeModelRefer)ViewBag.WebAwardPrizeModel;
+}
+
+<form id="WebPrizeItem" action="/WebAward/WebAwardPrizeDetail" target="_blank" method="POST">
+    <div class="rowButton">
+        <input type="hidden" value="0" name="id" />
+        <input type="hidden" value="@ViewBag.IntNumId" name="intNumId"/>
+        <input type="hidden" value="@ViewBag.AwardId" name="awardId"/>
+        <input type="hidden" value="@ViewBag.strName" name="strName"/>
+
+        <input type="button" name="Query" id="BtnAdd" value="新增" />
+    </div>
+</form>
+
+@if (Model != null)
+{
+    <div class="resultDiv">
+        <table class="resultTable" id="calcTotalAmount">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>操作</th>
+                    <th>抽奖活动名称</th>
+                    <th>奖品类型</th>
+                    <th>奖品名称</th>
+                    <th>奖品编号</th>
+                    <th>权重</th>
+                    <th>数量</th>
+                    <th>消息</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.List)
+                {
+                    <tr>
+                        <td>@item.IntPrizeId</td>
+                        <td>
+                            <a style="color: #191970" target="_blank"  href="@Url.Action("WebAwardPrizeDetail", "WebAward", new { id = item.IntPrizeId, strName = ViewBag.strName })" >修改</a>
+                            <form id="FormWebAwardPrizeItem" action="/WebAward/WebPrizeItem" target="_blank" method="POST">
+                                <input type="hidden" value="@ViewBag.strName" name="strName"/>
+                                <a href="javascript:(0);" class="btnAwardPrizeItem" pvalue="@item.IntPrizeId" ptype="@item.IntPrizeType">奖品配置</a>
+                            </form>
+                            @* <a style="color: #191970" target="_blank"  href="@Url.Action("WebPrizeItem", "WebAward", new { prizeId = item.IntPrizeId, prizeType = item.IntPrizeType, strName = ViewBag.strName })">奖品配置</a>*@
+                        </td>
+                        <td>
+                            @{
+                    var name = "";
+                    if (item.vchAwardName == null || item.vchAwardName == "")
+                    {
+                        name = ViewBag.strName;
+                    }
+                    else
+                    {
+                        name = item.vchAwardName;
+                    }
+                            }@name
+                        </td>
+                        <td>@item.vchModelName</td>
+                        <td>@item.VchPrizeName</td>
+                        <td>@(typeof(AppEnum.IntPrizeNo).GetEnumDescription(item.IntPrizeNo))</td>
+                        <td>@item.IntPrizeWeight</td>
+                        <td>@item.IntPrizeCount</td>
+                        <td>@item.VchRemark</td>
+                        <td>
+                            @{
+                                var checkStr = "";
+                                if (item.IntStatus == 1)
+                                {
+                                    checkStr = "checked='checked'";
+                                }
+                            }
+                            <input id="cbkState-@item.IntPrizeId" type="checkbox" @checkStr data-id="@item.IntPrizeId" onclick="updateState(this)" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+}
+<script type="text/javascript">
+    $(function () {
+        //新增
+        $("#BtnAdd").click(function () {
+            @* var intAwardId = '@ViewBag.AwardId';
+            var name = '@ViewBag.strName';
+            var intNumId = '@ViewBag.IntNumId';
+            window.open("/WebAward/WebAwardPrizeDetail?intNumId=" + intNumId + "&intAwardId=" + intAwardId + "&strName=" + name + "&backurl=" + window.location.href);*@
+            $("#WebPrizeItem").submit();
+        });
+        //奖品配置
+        $(".btnAwardPrizeItem").click(function () {
+            var id = $(this).attr("pvalue");
+            var type = $(this).attr("ptype");
+
+            var td = $("<input type='hidden' value='" + id + "' id='prizeId' name='prizeId'>");
+            var tdType = $("<input type='hidden' value='" + type + "' id='prizeType' name='prizeType'>");
+
+            $("#FormWebAwardPrizeItem").append(td);
+            $("#FormWebAwardPrizeItem").append(tdType);
+
+            $("#FormWebAwardPrizeItem").submit();
+            $("#prizeId").remove();
+            $("#prizeType").remove();
+
+        });
+
+    });
+    //修改状态
+    function updateState(obj) {
+        var id = $(obj).data("id");
+        var state = 0;
+        if (obj.checked) {
+            state = 1;
+        }
+        $.ajax({
+            url: "/WebAward/UpdateWebAwardPrizeState?id=" + id + "&state=" + state,
+            type: "Post",
+            success: function (res) {
+                if (res.DoFlag) {
+                    location.reload();
+                } else {
+                    alert(res.DoResult);
+                }
+            }
+        });
+    }
+</script>
